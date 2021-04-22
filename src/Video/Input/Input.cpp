@@ -46,7 +46,6 @@ void Input::updateEvents() {
             // mouse button released
             case SDL_MOUSEBUTTONUP:
                 m_mouseButtons[m_events.button.button] = false;
-                //std::cout << "mouse button down: " << m_events.button.button << std::endl;
                 break;
 
             // mouse move
