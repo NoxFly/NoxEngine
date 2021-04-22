@@ -17,6 +17,8 @@ class Engine {
 
         static void SIGINT_handler(int s);
 
+        void terminate();
+
     private:
         Engine();
         void loop();

@@ -1,5 +1,7 @@
 #include "Input.h"
 
+#include <iostream>
+
 // CONSTRUCTOR
 Input::Input():
 	m_x(0), m_y(0), m_xRel(0), m_yRel(0), m_closeStates{}
@@ -22,6 +24,8 @@ Input::~Input() {
 void Input::updateEvents() {
 	m_xRel = 0;
 	m_yRel = 0;
+
+    std::cout << "updating events..." << std::endl;
 
 	// Event loop
 	while(SDL_PollEvent(&m_events)) {
@@ -57,6 +61,7 @@ void Input::updateEvents() {
                 m_yRel = m_events.motion.yrel;
                 break;
 
+            // ----------------------------- WINDOW
             case SDL_WINDOWEVENT:
                 if(m_events.window.event == SDL_WINDOWEVENT_CLOSE)
                     m_closeStates[m_events.window.windowID] = true;

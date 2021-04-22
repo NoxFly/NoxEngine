@@ -35,7 +35,7 @@ Engine::~Engine() {
 }
 
 void Engine::SIGINT_handler(int s) {
-    exit(0);
+    Engine::getInstance()->terminate();
 }
 
 void Engine::loop_process() {
@@ -61,4 +61,8 @@ void Engine::updateVideo() {
         video.close();
         _exit_loop = true;
     }
+}
+
+void Engine::terminate() {
+    _exit_loop = true;
 }
