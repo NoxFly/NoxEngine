@@ -80,8 +80,11 @@ void Input::updateEvents() {
 // getters and setters
 
 bool Input::shouldClose(SDL_Window* window) const {
-    Uint32 id = SDL_GetWindowID(window);
-	return m_closeStates.count(id) && m_closeStates.at(id) == true;
+	return shouldClose(SDL_GetWindowID(window));
+}
+
+bool Input::shouldClose(Uint32 windowId) const {
+    return m_closeStates.count(windowId) && m_closeStates.at(windowId) == true;
 }
 
 bool Input::getKey(const SDL_Scancode key) const {

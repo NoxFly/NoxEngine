@@ -13,6 +13,7 @@ class Input {
 
 		// getters
 		bool shouldClose(SDL_Window* window) const; // return if we must stop program
+        bool shouldClose(Uint32 windowId) const;
 		bool getKey(const SDL_Scancode key) const; // get the correspondant key of the entry
 		bool getMouseButton(const Uint8 button) const; // get the current mouse button of the entry
 		bool mouseMovement() const; // get mouse movement
