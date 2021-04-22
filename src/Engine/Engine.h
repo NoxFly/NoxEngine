@@ -22,7 +22,6 @@ class Engine {
     private:
         Engine();
         void loop();
-        void loop_process();
         void update();
         void updateVideo();
 

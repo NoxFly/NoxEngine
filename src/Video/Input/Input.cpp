@@ -25,8 +25,6 @@ void Input::updateEvents() {
 	m_xRel = 0;
 	m_yRel = 0;
 
-    std::cout << "updating events..." << std::endl;
-
 	// Event loop
 	while(SDL_PollEvent(&m_events)) {
 		switch(m_events.type) {

@@ -38,15 +38,9 @@ void Engine::SIGINT_handler(int s) {
     Engine::getInstance()->terminate();
 }
 
-void Engine::loop_process() {
-
-}
-
 void Engine::loop() {
-    std::lock_guard<std::mutex> lock(loop_mutex);
-
     while(!_exit_loop) {
-        loop_process();
+        update();
     }
 }
 
