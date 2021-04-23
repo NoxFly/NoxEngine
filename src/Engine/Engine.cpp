@@ -102,7 +102,7 @@ void Engine::updateVideo() {
     video.clear();
 
     if(_renderFunction != nullptr)
-        _updateFunction(*this);
+        _renderFunction(*this);
 
     video.display();
 }
