@@ -12,6 +12,13 @@ typedef struct {
     const char* title;
 } Window_props;
 
+typedef struct {
+    double r;
+    double g;
+    double b;
+    double a;
+} Color;
+
 class Video {
 	public:
         Video();
@@ -24,6 +31,11 @@ class Video {
         void close();
         bool hasWindow() const;
         Window_props getWindowProps() const;
+        void clear();
+        void display();
+        void setClearColor(const double r, const double g, const double b, const double a);
+        void setClearColor(const Color& color);
+        void updateTick(Uint32 fps);
 
     protected:
         SDL_Window* m_window;
@@ -32,6 +44,8 @@ class Video {
         int initSDL();
         int initGL();
         void destroyWindow(bool destroyContext);
+        Color m_clear_color;
+        Uint32 m_tick;
 };
 
 #endif // VIDEO_H

@@ -5,13 +5,15 @@
 #include <GL/glew.h>
 
 Video::Video():
-    m_window(nullptr)
+    m_window(nullptr),
+    m_clear_color{0, 0, 0, 1},
+    m_tick(SDL_GetTicks())
 {
 
 }
 
 Video::Video(unsigned int x, unsigned int y, unsigned int width, unsigned int height, std::string title, Uint32 flags):
-    m_window(nullptr)
+    Video()
 {
     createWindow(x, y, width, height, title, flags);
 }
@@ -138,4 +140,24 @@ Window_props Video::getWindowProps() const {
     const char* title = SDL_GetWindowTitle(m_window);
 
     return (Window_props){ x, y, w, h, title };
+}
+
+void Video::clear() {
+    glClearColor(m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Video::display() {
+    SDL_GL_SwapWindow(m_window);
+}
+
+void Video::updateTick(Uint32 fps) {
+    Uint32 now = SDL_GetTicks();
+    Uint32 delta = now - m_tick;
+
+    if(delta < fps) {
+        SDL_Delay(fps - delta);
+    }
+
+    m_tick = now - (delta % fps);
 }

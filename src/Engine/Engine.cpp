@@ -10,6 +10,7 @@ Engine* Engine::getInstance() {
 }
 
 Engine::Engine():
+    fps(50),
     video(),
     video_input(),
     _exit_loop(false),
@@ -24,9 +25,11 @@ Engine::Engine():
 
     // load default config
     config.LoadData(
-        "[app]\nname=OpenGL + SDL Window\n"
+        "[app]\nname=OpenGL + SDL Window\nfps=50"
         "[window]\nx=center\ny=center\nwidth=640\nheight=480"
     );
+
+    fps = std::stoi(config.GetValue("app", "fps"));
 
     // initialize opengl
     Video_driver::loadLastGlVersion();
@@ -70,6 +73,8 @@ void Engine::loop() {
 
     // main loop
     while(!_exit_loop) {
+        video.updateTick(fps);
+
         update();
     }
 }
@@ -87,6 +92,10 @@ void Engine::updateVideo() {
         video.close();
         _exit_loop = true;
     }
+
+    video.clear();
+
+    video.display();
 }
 
 void Engine::terminate() {
@@ -97,7 +106,7 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
     std::lock_guard<std::mutex> lock(loop_mutex);
 
     const std::map<std::string, std::vector<std::string>> model_sections = {
-        { "app", { "name" } },
+        { "app", { "name", "fps" } },
         { "window", { "x", "y", "width", "height" } }
     };
 
@@ -149,6 +158,8 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
             config.SetValue(sctName, keyName, newConfig.GetValue(sctName, keyName));
         }
     }
+
+    fps = std::stoi(config.GetValue("app", "fps"));
 
     std::cout << "[Info] Engine::loadConfig : New configuration loaded" << std::endl;
 }

@@ -36,6 +36,7 @@ class Engine {
         int getWindowConfigWidth() const;
         int getWindowConfigHeight() const;
 
+        Uint32 fps;
         Video video;
         Input video_input;
         std::mutex loop_mutex;
