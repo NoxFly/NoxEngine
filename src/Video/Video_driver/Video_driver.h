@@ -10,6 +10,8 @@ class Video_driver {
         static int opengl_major_version;
         static int opengl_minor_version;
 
+        static bool is_initialized;
+
     private:
         static Video video;
 };

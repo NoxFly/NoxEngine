@@ -35,7 +35,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
     );
 
     if(m_window == nullptr) {
-        std::cout << "Video::createWindow [SDL Window Creation Error] : " << SDL_GetError() << std::endl;
+        std::cout << "[Error] Video::createWindow : SDL Window Creation (" << SDL_GetError() << ")" << std::endl;
 		SDL_Quit();
 		return nullptr;
     }
@@ -44,14 +44,15 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
         return nullptr;
     }
 
-    SDL_SetWindowInputFocus(m_window);
+    // disabled : can cause some troubles for some people
+    //SDL_SetWindowInputFocus(m_window);
 
     return m_window;
 }
 
 int Video::initSDL() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		std::cout << "Video::initSDL [SDL Init Error] : " << SDL_GetError() << std::endl;
+		std::cout << "[Error] Video::initSDL : SDL Init (" << SDL_GetError() << ")" << std::endl;
 		SDL_Quit();
 		return -1;
 	}
@@ -71,7 +72,7 @@ int Video::initGL() {
     m_oglContext = SDL_GL_CreateContext(m_window);
 
 	if(m_oglContext == nullptr) {
-		std::cout << "Video::initGL [OpenGL Context Creation Error] : " << SDL_GetError() << std::endl;
+		std::cout << "[Error] Video::initGL : OpenGL Context Creation (" << SDL_GetError() << ")" << std::endl;
 		destroyWindow(false);
 		return -3;
 	}
@@ -79,7 +80,7 @@ int Video::initGL() {
     GLenum glew_init = glewInit();
 
     if(glew_init != GLEW_OK) {
-        std::cout << "Engine::initGL [GLEW Init Error] : " << glewGetErrorString(glew_init) << std::endl;
+        std::cout << "[Error] Engine::initGL : Glew Init (" << glewGetErrorString(glew_init) << ")" << std::endl;
         destroyWindow(true);
         return -4;
     }

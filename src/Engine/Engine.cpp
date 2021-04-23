@@ -21,7 +21,7 @@ Engine::Engine():
     Video_driver::loadLastGlVersion();
 
     if(video.createWindow(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, "OpenGL C++ Engine") == nullptr) {
-        std::cout << "Engine constructor Error : Failed to create main window" << std::endl;
+        std::cout << "[Error] Engine constructor : Failed to create main window" << std::endl;
         return;
     }
 }
@@ -39,13 +39,19 @@ void Engine::SIGINT_handler(int s) {
 }
 
 void Engine::loop() {
+    // wait for video initialization
+    while(!_exit_loop && !Video_driver::is_initialized);
+
+    // main loop
     while(!_exit_loop) {
         update();
     }
 }
 
 void Engine::update() {
-    updateVideo();
+    if(video.hasWindow()) {
+        updateVideo();
+    }
 }
 
 void Engine::updateVideo() {
