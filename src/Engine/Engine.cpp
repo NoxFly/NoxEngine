@@ -15,7 +15,9 @@ Engine::Engine():
     video_input(),
     _exit_loop(false),
     thread_loop(&Engine::loop, this),
-    paths{}
+    paths{},
+    _updateFunction(nullptr),
+    _renderFunction(nullptr)
 {
     // handle ctrl^C
     sigIntHandler.sa_handler = Engine::SIGINT_handler;
@@ -25,7 +27,7 @@ Engine::Engine():
 
     // load default config
     config.LoadData(
-        "[app]\nname=OpenGL + SDL Window\nfps=50"
+        "[app]\nname=OpenGL + SDL Window\nfps=50\nresourcesFolder=./"
         "[window]\nx=center\ny=center\nwidth=640\nheight=480"
     );
 
@@ -91,9 +93,16 @@ void Engine::updateVideo() {
     if(video_input.shouldClose(video.id())) {
         video.close();
         _exit_loop = true;
+        return;
     }
 
+    if(_updateFunction != nullptr)
+        _updateFunction(*this);
+
     video.clear();
+
+    if(_renderFunction != nullptr)
+        _updateFunction(*this);
 
     video.display();
 }
@@ -106,7 +115,7 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
     std::lock_guard<std::mutex> lock(loop_mutex);
 
     const std::map<std::string, std::vector<std::string>> model_sections = {
-        { "app", { "name", "fps" } },
+        { "app", { "name", "fps", "resourcesFolder" } },
         { "window", { "x", "y", "width", "height" } }
     };
 
@@ -160,6 +169,10 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
     }
 
     fps = std::stoi(config.GetValue("app", "fps"));
+    config.Delete("app", "fps");
+
+    setResourcesPath(config.GetValue("app", "resourcesFolder"));
+    config.Delete("app", "resourcesFolder");
 
     std::cout << "[Info] Engine::loadConfig : New configuration loaded" << std::endl;
 }
@@ -257,4 +270,12 @@ int Engine::getWindowConfigHeight() const {
     } catch(std::exception &e) {
         return 0;
     }
+}
+
+void Engine::setUpdateFunction(std::function<void(Engine& engine)> func) {
+    _updateFunction = func;
+}
+
+void Engine::setRenderFunction(std::function<void(Engine& engine)> func) {
+    _renderFunction = func;
 }

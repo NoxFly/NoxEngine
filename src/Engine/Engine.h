@@ -10,6 +10,7 @@
 #include <thread>
 #include <signal.h>
 #include <map>
+#include <functional>
 
 class Engine {
 	public:
@@ -24,6 +25,8 @@ class Engine {
         void loadConfig(const std::string &configFilepath);
         void setResourcesPath(const std::string &path);
         void createMainWindow();
+        void setUpdateFunction(std::function<void(Engine& engine)> func);
+        void setRenderFunction(std::function<void(Engine& engine)> func);
 
     private:
         Engine();
@@ -37,10 +40,12 @@ class Engine {
         int getWindowConfigHeight() const;
 
         Uint32 fps;
+        bool _exit_loop;
+        std::function<void(Engine& engine)> _updateFunction;
+        std::function<void(Engine& engine)> _renderFunction;
         Video video;
         Input video_input;
         std::mutex loop_mutex;
-        bool _exit_loop;
         std::thread thread_loop;
         struct sigaction sigIntHandler;
         std::map<std::string, std::string> paths;
