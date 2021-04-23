@@ -16,11 +16,22 @@ Video::Video(unsigned int x, unsigned int y, unsigned int width, unsigned int he
     createWindow(x, y, width, height, title, flags);
 }
 
+Video::Video(Window_props& properties, Uint32 flags):
+    Video(properties.x, properties.y, properties.width, properties.height, properties.title, flags)
+{
+    
+}
+
 Video::~Video() {
     destroyWindow(true);
 }
 
 SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int width, unsigned int height, std::string title, Uint32 flags) {
+    if(m_window != nullptr) {
+        std::cerr << "[Warning] Video::createWindow : Window already created" << std::endl;
+        return nullptr;
+    }
+
     if(initSDL() < 0) {
         return nullptr;
     }
@@ -35,7 +46,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
     );
 
     if(m_window == nullptr) {
-        std::cout << "[Error] Video::createWindow : SDL Window Creation (" << SDL_GetError() << ")" << std::endl;
+        std::cerr << "[Error] Video::createWindow : SDL Window Creation (" << SDL_GetError() << ")" << std::endl;
 		SDL_Quit();
 		return nullptr;
     }
@@ -52,7 +63,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
 
 int Video::initSDL() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		std::cout << "[Error] Video::initSDL : SDL Init (" << SDL_GetError() << ")" << std::endl;
+		std::cerr << "[Error] Video::initSDL : SDL Init (" << SDL_GetError() << ")" << std::endl;
 		SDL_Quit();
 		return -1;
 	}
@@ -72,7 +83,7 @@ int Video::initGL() {
     m_oglContext = SDL_GL_CreateContext(m_window);
 
 	if(m_oglContext == nullptr) {
-		std::cout << "[Error] Video::initGL : OpenGL Context Creation (" << SDL_GetError() << ")" << std::endl;
+		std::cerr << "[Error] Video::initGL : OpenGL Context Creation (" << SDL_GetError() << ")" << std::endl;
 		destroyWindow(false);
 		return -3;
 	}
@@ -80,7 +91,7 @@ int Video::initGL() {
     GLenum glew_init = glewInit();
 
     if(glew_init != GLEW_OK) {
-        std::cout << "[Error] Engine::initGL : Glew Init (" << glewGetErrorString(glew_init) << ")" << std::endl;
+        std::cerr << "[Error] Engine::initGL : Glew Init (" << glewGetErrorString(glew_init) << ")" << std::endl;
         destroyWindow(true);
         return -4;
     }
@@ -113,4 +124,18 @@ Uint32 Video::id() const {
 
 bool Video::hasWindow() const {
     return m_window != nullptr;
+}
+
+Window_props Video::getWindowProps() const {
+    if(!hasWindow()) {
+        return (Window_props){ 0, 0, 0, 0, "" };
+    }
+
+    int x, y, w, h;
+
+    SDL_GetWindowSize(m_window, &w, &h);
+    SDL_GetWindowPosition(m_window, &x, &y);
+    const char* title = SDL_GetWindowTitle(m_window);
+
+    return (Window_props){ x, y, w, h, title };
 }

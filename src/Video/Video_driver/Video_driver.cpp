@@ -15,7 +15,7 @@ bool Video_driver::loadLastGlVersion() {
     Video_driver::video.createWindow(0, 0, 0, 0, "dummy", SDL_WINDOW_HIDDEN);
     
     if(!Video_driver::video.hasWindow()) {
-        std::cout << "[Error] Video_driver::loadLastGlVersion : Cannot load openGL version" << std::endl;
+        std::cerr << "[Error] Video_driver::loadLastGlVersion : Cannot load openGL version" << std::endl;
         return false;
     }
 
@@ -24,7 +24,7 @@ bool Video_driver::loadLastGlVersion() {
     try {
         GL_version = std::string((char*)glGetString(GL_VERSION));
     } catch(std::exception const &e) {
-        std::cout << "[Error] Video_driver::loadLastGlVersion : Cannot recover GL_VERSION :\n" << e.what() << std::endl;
+        std::cerr << "[Error] Video_driver::loadLastGlVersion : Cannot recover GL_VERSION :\n" << e.what() << std::endl;
         Video_driver::video.close();
         return false;
     }
