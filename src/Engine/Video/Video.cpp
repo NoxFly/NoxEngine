@@ -48,7 +48,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
     );
 
     if(m_window == nullptr) {
-        std::cerr << "[Error] Video::createWindow : SDL Window Creation (" << SDL_GetError() << ")" << std::endl;
+        std::cerr << "[Error]   Video::createWindow : SDL Window Creation (" << SDL_GetError() << ")" << std::endl;
 		SDL_Quit();
 		return nullptr;
     }
@@ -65,7 +65,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
 
 int Video::initSDL() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "[Error] Video::initSDL : SDL Init (" << SDL_GetError() << ")" << std::endl;
+		std::cerr << "[Error]   Video::initSDL : SDL Init (" << SDL_GetError() << ")" << std::endl;
 		SDL_Quit();
 		return -1;
 	}
@@ -85,15 +85,16 @@ int Video::initGL() {
     m_oglContext = SDL_GL_CreateContext(m_window);
 
 	if(m_oglContext == nullptr) {
-		std::cerr << "[Error] Video::initGL : OpenGL Context Creation (" << SDL_GetError() << ")" << std::endl;
+		std::cerr << "[Error]   Video::initGL : OpenGL Context Creation (" << SDL_GetError() << ")" << std::endl;
 		destroyWindow(false);
 		return -3;
 	}
 
+    glewExperimental = GL_TRUE;
     GLenum glew_init = glewInit();
 
     if(glew_init != GLEW_OK) {
-        std::cerr << "[Error] Engine::initGL : Glew Init (" << glewGetErrorString(glew_init) << ")" << std::endl;
+        std::cerr << "[Error]   Engine::initGL : Glew Init (" << glewGetErrorString(glew_init) << ")" << std::endl;
         destroyWindow(true);
         return -4;
     }

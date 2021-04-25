@@ -5,6 +5,7 @@
 #include "Video_driver.h"
 #include "Input.h"
 #include "SimpleIni.h"
+#include "Shader.h"
 
 #include <mutex>
 #include <thread>
@@ -23,10 +24,10 @@ class Engine {
         void terminate();
         void loadConfig(CSimpleIniA &newConfig);
         void loadConfig(const std::string &configFilepath);
-        void setResourcesPath(const std::string &path);
         void createMainWindow();
         void setUpdateFunction(std::function<void(Engine& engine)> func);
         void setRenderFunction(std::function<void(Engine& engine)> func);
+        Shader createShader(std::string vertexName, std::string fragmentName);
 
     private:
         Engine();
@@ -38,6 +39,9 @@ class Engine {
         int getWindowConfigY() const;
         int getWindowConfigWidth() const;
         int getWindowConfigHeight() const;
+
+        void setResourcesPath(const std::string &path);
+        void setShadersPath(const std::string &path);
 
         Uint32 fps;
         bool _exit_loop;
