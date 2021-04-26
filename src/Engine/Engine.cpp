@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <vector>
 
+#include "Console.h"
+
 Engine* Engine::getInstance() {
     static Engine engine;
     return &engine;
@@ -55,21 +57,18 @@ void Engine::SIGINT_handler(int s) {
 
 void Engine::createMainWindow() {
     if(video.hasWindow()) {
-        std::cerr << "[Warning] Engine::createMainWindow : Main window already created" << std::endl;
+        Console::warn("Engine::createMainWindow", "Main window already created");
         return;
     }
 
-    SDL_Window* w = video.createWindow(
+    if(!video.createWindow(
         getWindowConfigX(),
         getWindowConfigY(),
         getWindowConfigWidth(),
         getWindowConfigHeight(),
         config.GetValue("app", "name")
-    );
-    
-    // create main window
-    if(w == nullptr) {
-        std::cerr << "[Error]   Engine constructor : Failed to create main window" << std::endl;
+    )) {
+        Console::error("Engine constructor", "Failed to create main window");
     }
 }
 
@@ -141,7 +140,7 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
 
     for(auto section : sections) {
         if(!_config.count(section.pItem)) {
-            std::cerr << "[Warning] Engine::loadConfig : Unknown section " << section.pItem << std::endl;
+            Console::warn("Engine::loadConfig", "Unknown section " + (std::string)section.pItem);
             newConfig.Delete(section.pItem, nullptr);
         }
 
@@ -151,7 +150,7 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
 
             for(auto key : keys) {
                 if(!std::count(_config.at(section.pItem).begin(), _config.at(section.pItem).end(), key.pItem)) {
-                    std::cerr << "[Warning] Engine::loadConfig : Unknown key " << key.pItem << std::endl;
+                    Console::warn("Engine::loadConfig", "Unknown key " + (std::string)key.pItem);
                     newConfig.Delete(section.pItem, key.pItem);
                 }
             }
@@ -190,14 +189,14 @@ void Engine::loadConfig(CSimpleIniA &newConfig) {
     setShadersPath(config.GetValue("app", "shadersFolder"));
     config.Delete("app", "shadersFolder");
 
-    std::cout << "[Info]    Engine::loadConfig : New configuration loaded" << std::endl;
+    Console::info("Engine::loadConfig", "New configuration loaded");
 }
 
 void Engine::loadConfig(const std::string &configFilepath) {
     std::string ext = configFilepath.substr(configFilepath.find_last_of(".") + 1);
 
     if(ext != "ini") {
-        std::cerr << "[Error]   Engine::loadConfig : Wrong file type. ini expected, " << ext << " given" << std::endl;
+        Console::error("Engine::loadConfig", "Wrong file type. ini expected, " + ext + " given");
         return;
     }
 
@@ -205,12 +204,12 @@ void Engine::loadConfig(const std::string &configFilepath) {
     bool exists = stat(configFilepath.c_str(), &buffer) == 0;
 
     if(!exists) {
-        std::cerr << "[Error]   Engine::loadConfig : File not found" << std::endl;
+        Console::error("Engine::loadConfig", "File not found");
         return;
     }
 
     if(!(buffer.st_mode & S_IFREG)) {
-        std::cerr << "[Error]   Engine::loadConfig : Not a file" << std::endl;
+        Console::error("Engine::loadConfig", "Not a file");
         return;
     }
 
@@ -220,7 +219,7 @@ void Engine::loadConfig(const std::string &configFilepath) {
     SI_Error rc = ini.LoadFile(configFilepath.c_str());
 
     if(rc < 0) {
-        std::cerr << "[Error]   Engine::loadConfig : config file not found, or unreadable" << std::endl;
+        Console::error("Engine::loadConfig", "config file not found, or unreadable");
         return;
     }
 
@@ -237,12 +236,12 @@ void Engine::setResourcesPath(const std::string &path) {
         }
 
         else {
-            std::cerr << "[Error]   Engine::setResourcesPath : Given path must be a folder" << std::endl;
+            Console::error("Engine::setResourcesPath", "Given path must be a folder");
         }
     }
 
     else {
-        std::cerr << "[Error]   Engine::setResourcesPath : Could not locate resources folder" << std::endl;
+        Console::error("Engine::setResourcesPath", "Could not locate resources folder");
     }
 }
 
@@ -257,12 +256,12 @@ void Engine::setShadersPath(const std::string &path) {
         }
 
         else {
-            std::cerr << "[Error]   Engine::setShadersPath : Given path must be a folder" << std::endl;
+            Console::error("Engine::setShadersPath", "Given path must be a folder");
         }
     }
 
     else {
-        std::cerr << "[Error]   Engine::setShadersPath : Could not locate shaders folder" << std::endl;
+        Console::error("Engine::setShadersPath", "Could not locate shaders folder");
     }
 }
 
@@ -270,7 +269,7 @@ int Engine::getWindowConfigX() const {
     std::string v = config.GetValue("window", "x");
 
     if(!v.compare("center"))
-        return SDL_WINDOWPOS_CENTERED;
+        return VIDEO_POS_CENTER;
 
     try {
         return std::stoi(v);
@@ -283,7 +282,7 @@ int Engine::getWindowConfigY() const {
     std::string v = config.GetValue("window", "y");
 
     if(!v.compare("center"))
-        return SDL_WINDOWPOS_CENTERED;
+        return VIDEO_POS_CENTER;
 
     try {
         return std::stoi(v);

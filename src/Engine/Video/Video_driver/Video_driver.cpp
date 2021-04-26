@@ -4,6 +4,9 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <array>
+#include <sstream>
+
+#include "Console.h"
 
 Video Video_driver::video;
 
@@ -12,10 +15,10 @@ int Video_driver::opengl_minor_version = 1;
 bool Video_driver::is_initialized = false;
 
 bool Video_driver::loadLastGlVersion() {
-    Video_driver::video.createWindow(0, 0, 0, 0, "dummy", SDL_WINDOW_HIDDEN);
+    Video_driver::video.createWindow(0, 0, 0, 0, "dummy", VIDEO_HIDDEN);
     
     if(!Video_driver::video.hasWindow()) {
-        std::cerr << "[Error]   Video_driver::loadLastGlVersion : Cannot load openGL version" << std::endl;
+        Console::error("Video_driver::loadLastGlVersion", "Cannot load openGL version");
         return false;
     }
 
@@ -24,7 +27,7 @@ bool Video_driver::loadLastGlVersion() {
     try {
         GL_version = std::string((char*)glGetString(GL_VERSION));
     } catch(std::exception const &e) {
-        std::cerr << "[Error]   Video_driver::loadLastGlVersion : Cannot recover GL_VERSION :\n" << e.what() << std::endl;
+        Console::error("Video_driver::loadLastGlVersion", "Cannot recover GL_VERSION :\n" + (std::string)e.what());
         Video_driver::video.close();
         return false;
     }
@@ -50,7 +53,9 @@ bool Video_driver::loadLastGlVersion() {
         Video_driver::opengl_minor_version = v[1];
         Video_driver::is_initialized = true;
 
-        std::cout << "[Info]    Video_driver::loadLastGlVersion : Load OpenGL " << v[0] << "." << v[1] << std::endl;
+        std::ostringstream oss;
+        oss << "Load OpenGL " << v[0] << "." << v[1];
+        Console::info("Video_driver::loadLastGlVersion", oss.str());
 
         return true;
     }

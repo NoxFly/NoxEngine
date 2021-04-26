@@ -1,8 +1,10 @@
 #include "Video.h"
 
-#include "Video_driver.h"
 #include <iostream>
 #include <GL/glew.h>
+
+#include "Video_driver.h"
+#include "Console.h"
 
 Video::Video():
     m_window(nullptr),
@@ -30,7 +32,7 @@ Video::~Video() {
 
 SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int width, unsigned int height, std::string title, Uint32 flags) {
     if(m_window != nullptr) {
-        std::cerr << "[Warning] Video::createWindow : Window already created" << std::endl;
+        Console::warn("Video::createWindow", "Window already created");
         return nullptr;
     }
 
@@ -38,7 +40,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
         return nullptr;
     }
 
-    flags |= SDL_WINDOW_OPENGL;
+    flags |= VIDEO_OPENGL;
 
     m_window = SDL_CreateWindow(
         title.c_str(),
@@ -48,7 +50,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
     );
 
     if(m_window == nullptr) {
-        std::cerr << "[Error]   Video::createWindow : SDL Window Creation (" << SDL_GetError() << ")" << std::endl;
+        Console::error("Video::createWindow", "SDL Window Creation (" + (std::string)SDL_GetError() + ")");
 		SDL_Quit();
 		return nullptr;
     }
@@ -65,7 +67,7 @@ SDL_Window* Video::createWindow(unsigned int x, unsigned int y, unsigned int wid
 
 int Video::initSDL() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "[Error]   Video::initSDL : SDL Init (" << SDL_GetError() << ")" << std::endl;
+		Console::error("Video::initSDL", "SDL Init (" + (std::string)SDL_GetError() + ")");
 		SDL_Quit();
 		return -1;
 	}
@@ -85,7 +87,7 @@ int Video::initGL() {
     m_oglContext = SDL_GL_CreateContext(m_window);
 
 	if(m_oglContext == nullptr) {
-		std::cerr << "[Error]   Video::initGL : OpenGL Context Creation (" << SDL_GetError() << ")" << std::endl;
+		Console::error("Video::initGL", "OpenGL Context Creation (" + (std::string)SDL_GetError() + ")");
 		destroyWindow(false);
 		return -3;
 	}
@@ -94,9 +96,23 @@ int Video::initGL() {
     GLenum glew_init = glewInit();
 
     if(glew_init != GLEW_OK) {
-        std::cerr << "[Error]   Engine::initGL : Glew Init (" << glewGetErrorString(glew_init) << ")" << std::endl;
+        Console::error("Video::initGL", "Glew Init (" + (std::string)(char*)glewGetErrorString(glew_init) + ")");
         destroyWindow(true);
         return -4;
+    }
+
+    if(Video_driver::is_initialized && Video_driver::opengl_major_version < 2) {
+        if(!GLEW_ARB_shader_objects) {
+            Console::warn("Video::iniGL", "GLEW_ARB_shader_objects not available");
+        }
+
+        if(!GLEW_ARB_vertex_shader) {
+            Console::warn(" Video::iniGL", "GLEW_ARB_vertex_shader not available");
+        }
+
+        if(!GLEW_ARB_fragment_shader) {
+            Console::warn("Video::iniGL", "GLEW_ARB_fragment_shader not available");
+        }
     }
 
 	// Depth Buffer activation

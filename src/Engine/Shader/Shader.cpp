@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "Console.h"
+
 unsigned int last_opengl_major_version = -1;
 unsigned int last_opengl_minor_version = -1;
 
@@ -26,7 +28,7 @@ int Shader::getGLSLVersion(const unsigned int opengl_major_version, const unsign
     const unsigned int id = std::stoi(std::to_string(opengl_major_version) + std::to_string(opengl_minor_version));
 
     if(Shader::GLSLversions.begin()->first >= id) {
-        return Shader::GLSLversions.begin()->second;
+        return 0;
     }
 
     if(Shader::GLSLversions.end()->first <= id) {
@@ -57,8 +59,9 @@ void Shader::setGLSLVersion(const unsigned int opengl_major_version, const unsig
         return;
 
     if((opengl_major_version != last_opengl_major_version || opengl_minor_version != last_opengl_minor_version) && opengl_major_version < 2) {
-        std::cerr << "[Warning] Shader::setGLSLVersion : Shaders won't be created due to unsupported OpenGL version ("
-        << opengl_major_version << "." << opengl_minor_version << ")" << std::endl;
+        std::ostringstream oss;
+        oss << "Shaders won't be created due to unsupported OpenGL version (" << opengl_major_version << "." << opengl_minor_version << ")";
+        Console::warn("Shader::setGLSLVersion", oss.str());
     }
 
     last_opengl_major_version = opengl_major_version;
@@ -161,17 +164,17 @@ bool Shader::compileShader(GLuint& shader, std::string type, std::string const& 
 
     catch(std::ifstream::failure e)
     {
-        std::cerr << "[Error]   Shader::compileShader : Cannot read file" << std::endl;
+        Console::error("Shader::compileShader", "Cannot read file");
         return false;
     }
 
     const GLchar* GLshaderCode = shaderCode.c_str();
 
     // 2. compile shaders
-    shader = glCreateShader(shaderType);
+    shader = (Shader::version == 0) ? glCreateShaderObjectARB(shaderType) : glCreateShader(shaderType);
 
     if(shader == 0) {
-        std::cerr << "[Error]   Shader::load : Cannot create " << type << " shader" << std::endl;
+        Console::error("Shader::load", "Cannot create " + type + " shader");
         return false;
     }
 
@@ -195,7 +198,7 @@ bool Shader::checkCompileErrors(GLuint shader, std::string type) {
 
         if(success != GL_TRUE) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            std::cerr << "[Error]   Shader::checkCompileErrors : shader compilation error of type: " << type << "\n" << infoLog << std::endl;
+            Console::error("Shader::checkCompileErrors", "shader compilation error of type: " + type + "\n" + infoLog);
             return false;
         }
     }
@@ -205,7 +208,7 @@ bool Shader::checkCompileErrors(GLuint shader, std::string type) {
 
         if(success != GL_TRUE) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            std::cerr << "[Error]   Shader::checkCompileErrors : program linking error of type: " << type << "\n" << infoLog << std::endl;
+            Console::error("Shader::checkCompileErrors", "program linking error of type: " + type + "\n" + infoLog);
             return false;
         }
     }
