@@ -36,7 +36,7 @@ string replace(const string& str, const string& find, const string& replace) {
 }
 
 int inInterval(int min, int val, int max) {
-    return std::max(0, std::min(val, max));
+    return std::max(min, std::min(val, max));
 }
 
 vector<string> split(string sequence, string separator) {
@@ -63,7 +63,7 @@ Color getColorFromString(string str) {
         if(vColor.size() == 3 || vColor.size() == 4) {
             int arr[] = { 0, 0, 0, 255 };
 
-            for(int i=0; i < vColor.size(); i++) {
+            for(int i=0; i < (int)vColor.size(); i++) {
                 string c = vColor[i];
 
                 if(isNumber(c))

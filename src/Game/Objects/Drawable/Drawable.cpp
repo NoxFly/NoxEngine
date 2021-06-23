@@ -6,39 +6,45 @@
 
 ResourceHolder<Shader, std::string>* Drawable::shadersBank = 0;
 
+// defines the pointer of the shader's resource holder
 void Drawable::setShadersBank(ResourceHolder<Shader, std::string>& shadersBank) {
     Drawable::shadersBank = &shadersBank;
 }
 
+// empty entity
 Drawable::Drawable():
-    shader(0),
-    wireframe(false),
-    vertexNumber(0),
-    VBO(0), VAO(0)
+    m_wireframe(false),
+    m_shader(0),
+    m_VBO(0), m_VAO(0),
+    m_vertexNumber(0)
 {
 
 }
 
+// creates entity only with vertices
 Drawable::Drawable(float* vertices, GLuint verticesSize):
     Drawable(vertices, 0, verticesSize)
 {
     
 }
 
+// creates entity with vertices and colors
 Drawable::Drawable(float* vertices, float* colors, GLuint verticesSize):
-    shader(0),
-    wireframe(false),
-    vertexNumber(0),
-    VBO(0), VAO(0)
+    m_wireframe(false),
+    m_shader(0),
+    m_VBO(0), m_VAO(0),
+    m_vertexNumber(0)
 {
     load(vertices, colors, verticesSize);
 }
 
 Drawable::~Drawable() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &m_VAO);
+    glDeleteBuffers(1, &m_VBO);
 }
 
+
+// loads the vertices, colors and textures of the entity in the memory
 void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
     if(verticesSize % 3 != 0)
         return;
@@ -46,27 +52,35 @@ void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
     size_t sizeVertices = sizeof(float) * 108;
     size_t sizeColors = (colors != 0)? sizeVertices : 0;
 
-    vertexNumber = verticesSize / 3;
+    m_vertexNumber = verticesSize / 3;
     
-    if(glIsBuffer(VBO) == GL_TRUE)
-        glDeleteBuffers(1, &VBO);
+    // delete possibly existing older VBO & VAO
+    if(glIsBuffer(m_VBO) == GL_TRUE)
+        glDeleteBuffers(1, &m_VBO);
 
-    if(glIsVertexArray(VAO) == GL_TRUE)
-        glDeleteVertexArrays(1, &VAO);
+    if(glIsVertexArray(m_VAO) == GL_TRUE)
+        glDeleteVertexArrays(1, &m_VAO);
+    //
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    // generates new VBO & VAO
+    glGenVertexArrays(1, &m_VAO);
+    glGenBuffers(1, &m_VBO);
 
-    glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
+    // bind the VAO and the VBO
+    glBindVertexArray(m_VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+            
+            // allocate memory
             glBufferData(GL_ARRAY_BUFFER, sizeVertices + sizeColors, 0, GL_STATIC_DRAW);
 
+            // transfert data for vertices
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeVertices, vertices);
 
+            // transfert data for colors
             if(colors != 0)
                 glBufferSubData(GL_ARRAY_BUFFER, sizeVertices, sizeColors, colors);
 
+            // access to coords in the memory and lock these
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
             glEnableVertexAttribArray(0);
 
@@ -75,35 +89,44 @@ void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
                 glEnableVertexAttribArray(1);
             }
 
+        // unlock VBO & VAO
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
+
+// defines the shader of the entity
 void Drawable::setShader(const std::string& shaderName) {
     if(Drawable::shadersBank != 0 && Drawable::shadersBank->has(shaderName))
-        this->shader = &Drawable::shadersBank->get(shaderName);
+        this->m_shader = &Drawable::shadersBank->get(shaderName);
 }
 
+
+// enables or disables the wireframe mode
 void Drawable::setWireframe(const bool wireframeState) {
-    wireframe = wireframeState;
+    m_wireframe = wireframeState;
 }
 
-void Drawable::draw(glm::mat4& projection, glm::mat4& modelview) {
-    if(!shader)
+
+// draw the entity on given MVP
+void Drawable::draw(const glm::mat4& MVP) {
+    // can't draw if the entity has not a shader
+    if(!m_shader)
         return;
     
-    glPolygonMode(GL_FRONT_AND_BACK, wireframe? GL_LINE : GL_FILL);
+    // wireframe mode
+    glPolygonMode(GL_FRONT_AND_BACK, m_wireframe? GL_LINE : GL_FILL);
 
-    glUseProgram(shader->getId());
-
-        glBindVertexArray(VAO);
-
-            glUniformMatrix4fv(glGetUniformLocation(shader->getId(), "modelview"), 1, GL_FALSE, glm::value_ptr(modelview));
-            glUniformMatrix4fv(glGetUniformLocation(shader->getId(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-            glDrawArrays(GL_TRIANGLES, 0, vertexNumber);
-
+    // lock shader
+    glUseProgram(m_shader->getId());
+        // lock VAO
+        glBindVertexArray(m_VAO);
+            // sends the matrices
+            glUniformMatrix4fv(glGetUniformLocation(m_shader->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+            // renders
+            glDrawArrays(GL_TRIANGLES, 0, m_vertexNumber);
+        // unlock VAO
         glBindVertexArray(0);
-
+    // unlock shader
     glUseProgram(0);
 }

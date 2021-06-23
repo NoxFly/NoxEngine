@@ -11,6 +11,7 @@
 #include "Video.h"
 #include "utils.h"
 #include "Camera.h"
+#include "MatricesMVP.h"
 
 class Scene {
 	public:
@@ -20,10 +21,10 @@ class Scene {
 
         void show();
         void close();
-        void updateView(const Input &input, glm::mat4& projection, glm::mat4& modelview);
+        void updateView(const Input &input);
         void updatePlayerControls(const Input &input);
         void setDrawFunction(std::function<void()> drawFunction);
-        void bindMatrixes(glm::mat4& projection, glm::mat4& modelview, glm::mat4& saveModelview);
+        void bindMatrices(MatricesMVP& mvp);
 
         bool isOpen() const;
 
@@ -32,17 +33,17 @@ class Scene {
         Video* getVideo();
 
     private:
-        void render(glm::mat4& projection, glm::mat4& modelview);
+        void render();
         std::function<void()> draw;
 
-        IniSet* config;
-        bool running;
-        int fps;
-        Video video;
-        Color clearColor;
-        Uint32 earlyLoop, endLoop, spentTime;
-        Camera camera;
-        glm::mat4 *projection, *modelview, *saveModelview;
+        IniSet* m_config;
+        bool m_running;
+        int m_fps;
+        Video m_video;
+        Color m_clearColor;
+        Uint32 m_earlyLoop, m_endLoop, m_spentTime;
+        Camera m_camera;
+        MatricesMVP* m_mvp;
 };
 
 #endif // SCENE_H

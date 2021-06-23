@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Drawable.h"
+#include "MatricesMVP.h"
 
 class Application {
 	public:
@@ -29,14 +30,14 @@ class Application {
         bool isMouseFocused() const;
         void setMouseFocus(const bool focus);
 
-        IniSet& config;
-        const std::string basePath;
-        Scene scene;
-        Input input;
-        ResourceHolder<Shader, std::string> shaders;
-        ResourceHolder<Texture, std::string> textures;
-        glm::mat4 projection, modelview, saveModelview;
-        Drawable shape; // tmp
+        IniSet& m_config;
+        const std::string m_basePath;
+        Scene m_scene;
+        Input m_input;
+        ResourceHolder<Shader, std::string> m_shaders;
+        ResourceHolder<Texture, std::string> m_textures;
+        MatricesMVP m_mvp;
+        Drawable m_shape; // tmp
 };
 
 #endif // APPLICATION_H

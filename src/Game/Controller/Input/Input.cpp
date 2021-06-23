@@ -3,17 +3,17 @@
 #include <iostream>
 
 Input::Input():
-    mouseX(0), mouseY(0), mouseRelX(0), mouseRelY(0),
-    oldMouseX(0), oldMouseY(0), oldMouseRelX(0), oldMouseRelY(0),
-    close(false)
+    m_mouseX(0), m_mouseY(0), m_mouseRelX(0), m_mouseRelY(0),
+    m_oldMouseX(0), m_oldMouseY(0), m_oldMouseRelX(0), m_oldMouseRelY(0),
+    m_close(false)
 {
     for (int i=0; i < SDL_NUM_SCANCODES; i++)
-		keys[i] = false;
+		m_keys[i] = false;
 
 	for (int i=0; i < 8; i++)
-		mouseButtons[i] = false;
+		m_mouseButtons[i] = false;
 
-	wheelEvent = 0;
+	m_wheelEvent = 0;
 }
 
 Input::~Input() {
@@ -30,74 +30,65 @@ void Input::updateEvents() {
         switch(events.type) {
             case SDL_WINDOWEVENT:
                 if(events.window.event == SDL_WINDOWEVENT_CLOSE)
-                    close = true;
-                    break;
+                    m_close = true;
+                break;
 
+            // ----------------------------- KEYBOARD
+            // key down
             case SDL_KEYDOWN:
-                if(!keys[kc])
-                    keys[kc] = true;
+                if(!m_keys[kc])
+                    m_keys[kc] = true;
 			    break;
 
-			// case of key released
+			// key up
             case SDL_KEYUP:
-                if(keys[kc])
-                    keys[kc] = false;
+                if(m_keys[kc])
+                    m_keys[kc] = false;
                 break;
 
-                // ----------------------------- MOUSE
-                // mouse button pressed
+            // ----------------------------- MOUSE
+            // mouse button pressed
             case SDL_MOUSEBUTTONDOWN:
-                if(!mouseButtons[mb])
-                    mouseButtons[mb] = true;
+                if(!m_mouseButtons[mb])
+                    m_mouseButtons[mb] = true;
                 break;
 
-                // mouse button released
+            // mouse button released
             case SDL_MOUSEBUTTONUP:
-                if(mouseButtons[mb])
-                    mouseButtons[mb] = false;
+                if(m_mouseButtons[mb])
+                    m_mouseButtons[mb] = false;
                 break;
 
-                // mouse move
+            // mouse move
             case SDL_MOUSEMOTION:
-                oldMouseX = mouseX;
-                oldMouseY = mouseY;
-                oldMouseRelX = mouseRelX;
-                oldMouseRelY = mouseRelY;
+                m_oldMouseX = m_mouseX;
+                m_oldMouseY = m_mouseY;
+                m_oldMouseRelX = m_mouseRelX;
+                m_oldMouseRelY = m_mouseRelY;
                 
-                mouseX = events.motion.x;
-                mouseY = events.motion.y;
+                m_mouseX = events.motion.x;
+                m_mouseY = events.motion.y;
 
-                mouseRelX = events.motion.xrel;
-                mouseRelY = events.motion.yrel;
+                m_mouseRelX = events.motion.xrel;
+                m_mouseRelY = events.motion.yrel;
                 break;
         }
 
-        wheelEvent = (events.wheel.y > 0)? 1 : (events.wheel.y < 0)? -1 : 0;
+        // wheel
+        m_wheelEvent = (events.wheel.y > 0)? 1 : (events.wheel.y < 0)? -1 : 0;
     }
 }
 
 bool Input::shouldClose() const {
-    return close;
-}
-
-// SHOW OR HIDE POINTER
-void Input::showPointer(bool show) const {
-	if(show) SDL_ShowCursor(SDL_ENABLE);
-	else SDL_ShowCursor(SDL_DISABLE);
-}
-
-// FIX THE POINTER TO CENTER CENTER OF THE WINDOW
-void Input::capturePointer(bool capture) const {
-	if(capture) SDL_SetRelativeMouseMode(SDL_TRUE);
-	else SDL_SetRelativeMouseMode(SDL_FALSE);
+    return m_close;
 }
 
 bool Input::isKeyDown(const SDL_Scancode key) const {
-    return keys[key];
+    return m_keys[key];
 }
 
 bool Input::isMouseButtonDown(const Uint8 button) const {
-	return mouseButtons[button];
+	return m_mouseButtons[button];
 }
 
 bool Input::isMouseMoving() const {
@@ -106,28 +97,28 @@ bool Input::isMouseMoving() const {
 }
 
 int Input::getMouseX() const {
-	return mouseX;
+	return m_mouseX;
 }
 
 // actual Y
 int Input::getMouseY() const {
-	return mouseY;
+	return m_mouseY;
 }
 
 // older X
 int Input::getRelMouseX() const {
-	return mouseRelX;
+	return m_mouseRelX;
 }
 
 // older Y
 int Input::getRelMouseY() const {
-	return mouseRelY;
+	return m_mouseRelY;
 }
 
 int Input::wheelScroll() const {
-	return wheelEvent;
+	return m_wheelEvent;
 }
 
 glm::vec2 Input::getMouseDir() const {
-    return glm::vec2(mouseRelX, mouseRelY);
+    return glm::vec2(m_mouseRelX, m_mouseRelY);
 }

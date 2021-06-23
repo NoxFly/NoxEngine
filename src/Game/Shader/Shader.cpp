@@ -30,11 +30,11 @@ void Shader::setShadersPath(const std::string& shadersPath) {
 
 
 Shader::Shader():
-    vertexID(0),
-    fragmentID(0),
-    programID(0),
-    glVersion(20),
-    shaderName("unknown")
+    m_glVersion(20),
+    m_vertexID(0),
+    m_fragmentID(0),
+    m_programID(0),
+    m_shaderName("unknown")
 {
 
 }
@@ -42,45 +42,51 @@ Shader::Shader():
 Shader::Shader(const std::string& shaderName, GLuint glVersion):
     Shader()
 {
-    this->glVersion = glVersion;
-    this->shaderName = shaderName;
+    this->m_glVersion = glVersion;
+    this->m_shaderName = shaderName;
 }
 
 Shader::~Shader() {
     destroyShader();
 }
 
+
 GLuint Shader::getGLSLversion() const {
     const GLuint lastVersion = 43;
 
-    if(glVersion > lastVersion)
+    if(m_glVersion > lastVersion)
         return Shader::GLSLversions[lastVersion];
     
-    return Shader::GLSLversions[glVersion];
+    return Shader::GLSLversions[m_glVersion];
 }
+
 
 std::string Shader::getName() const {
-    return shaderName;
+    return m_shaderName;
 }
+
 
 GLuint Shader::getId() const {
-    return programID;
+    return m_programID;
 }
+
 
 void Shader::destroyShader() {
-    if(glIsShader(vertexID) == GL_TRUE)
-		glDeleteShader(vertexID);
+    if(glIsShader(m_vertexID) == GL_TRUE)
+		glDeleteShader(m_vertexID);
 
-	if(glIsShader(fragmentID) == GL_TRUE)
-		glDeleteShader(fragmentID);
+	if(glIsShader(m_fragmentID) == GL_TRUE)
+		glDeleteShader(m_fragmentID);
 
-	if(glIsProgram(programID) == GL_TRUE)
-		glDeleteProgram(programID);
+	if(glIsProgram(m_programID) == GL_TRUE)
+		glDeleteProgram(m_programID);
 }
+
 
 void Shader::use() { 
-    glUseProgram(programID);
+    glUseProgram(m_programID);
 }
+
 
 bool Shader::load() {
     std::lock_guard<std::mutex> guard(shaderMutex);
@@ -89,35 +95,36 @@ bool Shader::load() {
     destroyShader();
 
     // compile vertex & fragment
-    if(!compileShader(vertexID, "VERTEX", Shader::shadersPath + shaderName + ".vert"))
+    if(!compileShader(m_vertexID, "VERTEX", Shader::shadersPath + m_shaderName + ".vert"))
 		return false;
 
-	if(!compileShader(fragmentID, "FRAGMENT", Shader::shadersPath + shaderName + ".frag"))
+	if(!compileShader(m_fragmentID, "FRAGMENT", Shader::shadersPath + m_shaderName + ".frag"))
 		return false;
 
     // shader Program
-    programID = glCreateProgram();
-    glAttachShader(programID, vertexID);
-    glAttachShader(programID, fragmentID);
+    m_programID = glCreateProgram();
+    glAttachShader(m_programID, m_vertexID);
+    glAttachShader(m_programID, m_fragmentID);
 
     // lock shader's entries
-    glBindAttribLocation(programID, 0, "in_Vertex");
-    glBindAttribLocation(programID, 1, "in_Color");
-    glBindAttribLocation(programID, 2, "in_TexCoord0");
+    glBindAttribLocation(m_programID, 0, "in_Vertex");
+    glBindAttribLocation(m_programID, 1, "in_Color");
+    glBindAttribLocation(m_programID, 2, "in_TexCoord0");
 
-    glLinkProgram(programID);
+    glLinkProgram(m_programID);
 
-    if(!checkCompileErrors(programID, "PROGRAM")) {
-        glDeleteProgram(programID);
+    if(!checkCompileErrors(m_programID, "PROGRAM")) {
+        glDeleteProgram(m_programID);
         return false;
     }
 
     // delete the shaders as they're linked into our program now and no longer necessary
-    glDeleteShader(vertexID);
-    glDeleteShader(fragmentID);
+    glDeleteShader(m_vertexID);
+    glDeleteShader(m_fragmentID);
 
     return true;
 }
+
 
 bool Shader::compileShader(GLuint& shader, const std::string& type, const std::string& filepath) {
     GLenum shaderType = type == "VERTEX" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
@@ -143,7 +150,7 @@ bool Shader::compileShader(GLuint& shader, const std::string& type, const std::s
         shaderCode = shaderStream.str();
     }
 
-    catch(std::ifstream::failure e)
+    catch(std::ifstream::failure const& e)
     {
         Console::error("Shader::compileShader", "Cannot read file");
         return false;
@@ -171,6 +178,7 @@ bool Shader::compileShader(GLuint& shader, const std::string& type, const std::s
 
     return true;
 }
+
 
 bool Shader::checkCompileErrors(GLuint& shader, const std::string& type) {
     int success;

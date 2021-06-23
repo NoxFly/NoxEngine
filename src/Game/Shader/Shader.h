@@ -26,15 +26,15 @@ class Shader {
         void setFloat(const std::string& name, float value) const;
 
     protected:
-        GLuint glVersion, vertexID, fragmentID, programID;
-		std::string shaderName;
+        static std::map<GLuint, GLuint> GLSLversions;
+        static std::string shadersPath;
 
         bool checkCompileErrors(GLuint& shader, const std::string& type);
         bool compileShader(GLuint& shader, const std::string& type, const std::string& filepath);
         void destroyShader();
 
-        static std::map<GLuint, GLuint> GLSLversions;
-        static std::string shadersPath;
+        GLuint m_glVersion, m_vertexID, m_fragmentID, m_programID;
+		std::string m_shaderName;
 };
 
 #endif // SHADER_H

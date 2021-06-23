@@ -4,26 +4,27 @@
 #include <GL/glew.h>
 #include <filesystem>
 
-#ifdef __MINGW32__
-#include <windows.h>
-#endif
-
 #include "IniSet.h"
 #include "Console.h"
 #include "Application.h"
 
 
-int run(int argc, char** argv, std::string os) {
-    IniSet ini;
+int main(int argc, char** argv) {
+    // get executable absolute path
     std::string argv0 = argv[0];
+    (void)argc;
 
     size_t posLastDir = argv0.find_last_of('/');
 
-    if(posLastDir == string::npos)
+    if(posLastDir == std::string::npos)
         posLastDir = argv0.find_last_of('\\');
 
     std::string exePath = argv0.substr(0, posLastDir);
-    
+    //
+
+    // load application's config - REQUIRED
+    IniSet ini;
+
     if(!ini.loadFromFile(exePath + "/config/config.ini")) {
         Console::error("Failed to load the configuration.\nExiting.");
         return 1;
@@ -34,8 +35,4 @@ int run(int argc, char** argv, std::string os) {
     app.start();
     
     return 0;
-}
-
-int main(int argc, char** argv) {
-    return run(argc, argv, "unix");
 }

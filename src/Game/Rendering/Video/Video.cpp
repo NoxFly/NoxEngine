@@ -7,7 +7,7 @@
 #include "Application.h"
 
 Video::Video():
-    window(0), glContext(0), isInit(false)
+    m_window(0), m_glContext(0), m_isInit(false)
 {
 
 }
@@ -15,13 +15,14 @@ Video::Video():
 Video::Video(IniSet& config, const std::string& section):
     Video()
 {
-    if(InitSDL(config, section) && InitGL(config, section))
-        isInit = true;
+    if(InitSDL(config, section) && InitGL())
+        m_isInit = true;
 }
 
 Video::~Video() {
     destroy();
 }
+
 
 bool Video::InitSDL(IniSet& config, const std::string& section) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -67,19 +68,20 @@ bool Video::InitSDL(IniSet& config, const std::string& section) {
 	// OpenGL version
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, sdl_maj_v);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, sdl_min_v);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	// Double Buffer
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	window = SDL_CreateWindow(
+	m_window = SDL_CreateWindow(
         title.c_str(),
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         windowWidth, windowHeight,
         SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL
     );
 
-	if(window == 0) {
+	if(m_window == 0) {
         std::string err = SDL_GetError();
 		Console::error("Video::InitSDL", "Failed to create the window : " + err);
 		destroy();
@@ -87,7 +89,7 @@ bool Video::InitSDL(IniSet& config, const std::string& section) {
 	}
 
     if(fullscreenMode == 1)
-        SDL_SetWindowFullscreen(window, SDL_TRUE);
+        SDL_SetWindowFullscreen(m_window, SDL_TRUE);
 
 	// set window's icon
     if(config.hasKey(section, "icon")) {
@@ -95,7 +97,7 @@ bool Video::InitSDL(IniSet& config, const std::string& section) {
         SDL_Surface* icon = IMG_Load(Application::getPath(iconPath).c_str());
 
         if(icon != NULL) {
-            SDL_SetWindowIcon(window, icon);
+            SDL_SetWindowIcon(m_window, icon);
             SDL_FreeSurface(icon);
         }
         else {
@@ -107,12 +109,13 @@ bool Video::InitSDL(IniSet& config, const std::string& section) {
     return true;
 }
 
-bool Video::InitGL(IniSet& config, const std::string& section) {
+
+bool Video::InitGL() {
     // OpenGL context's creation
-	glContext = SDL_GL_CreateContext(window);
+	m_glContext = SDL_GL_CreateContext(m_window);
 
 	// error initializing openGL = qui window
-	if(glContext == 0) {
+	if(m_glContext == 0) {
         std::string err = SDL_GetError();
 		Console::error("Video::InitGL", "Failed to create SDL_GL context : " + err);
 		destroy();
@@ -140,27 +143,32 @@ bool Video::InitGL(IniSet& config, const std::string& section) {
     return true;
 }
 
+
 void Video::destroy() {
-    if(glContext != 0)
-        SDL_GL_DeleteContext(glContext);
+    if(m_glContext != 0)
+        SDL_GL_DeleteContext(m_glContext);
     
-    if(window != 0)
-        SDL_DestroyWindow(window);
+    if(m_window != 0)
+        SDL_DestroyWindow(m_window);
     
     SDL_Quit();
 }
 
+
 void Video::show() {
-    SDL_ShowWindow(window);
+    SDL_ShowWindow(m_window);
 }
+
 
 void Video::hide() {
-    SDL_HideWindow(window);
+    SDL_HideWindow(m_window);
 }
 
+
 bool Video::isInitialized() const {
-    return isInit;
+    return m_isInit;
 }
+
 
 void Video::clear(Color clearColor) {
     float r = clearColor.r / 255.0f;
@@ -173,21 +181,26 @@ void Video::clear(Color clearColor) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+
 void Video::swapWindow() {
-    SDL_GL_SwapWindow(window);
+    SDL_GL_SwapWindow(m_window);
 }
 
+
 void Video::setMouseGrab(const bool grabbed) {
-    SDL_SetWindowGrab(window, grabbed? SDL_TRUE : SDL_FALSE);
+    SDL_SetWindowGrab(m_window, grabbed? SDL_TRUE : SDL_FALSE);
 }
+
 
 void Video::setMouseFocus(const bool focus) {
     SDL_SetRelativeMouseMode(focus? SDL_TRUE : SDL_FALSE);
 }
 
+
 bool Video::isMouseGrabbed() const {
-    return SDL_GetWindowGrab(window);
+    return SDL_GetWindowGrab(m_window);
 }
+
 
 bool Video::isMouseFocused() const {
     return SDL_GetRelativeMouseMode();

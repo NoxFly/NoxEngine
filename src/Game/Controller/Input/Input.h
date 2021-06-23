@@ -12,9 +12,6 @@ class Input {
         void updateEvents();
         bool shouldClose() const;
 
-        void showPointer(bool response) const;
-		void capturePointer(bool response) const;
-
         bool isKeyDown(const SDL_Scancode key) const;
 		bool isMouseButtonDown(const Uint8 button) const;
 		bool isMouseMoving() const;
@@ -27,12 +24,12 @@ class Input {
         glm::vec2 getMouseDir() const;
 
     private:
-        bool keys[SDL_NUM_SCANCODES];
-		bool mouseButtons[8];
-		int wheelEvent;
-        int mouseX, mouseY, mouseRelX, mouseRelY;
-        int oldMouseX, oldMouseY, oldMouseRelX, oldMouseRelY;
-        bool close;
+        bool m_keys[SDL_NUM_SCANCODES];
+		bool m_mouseButtons[8];
+		int m_wheelEvent;
+        int m_mouseX, m_mouseY, m_mouseRelX, m_mouseRelY;
+        int m_oldMouseX, m_oldMouseY, m_oldMouseRelX, m_oldMouseRelY;
+        bool m_close;
 };
 
 #endif // INPUT_H

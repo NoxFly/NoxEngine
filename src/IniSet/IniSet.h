@@ -12,13 +12,30 @@ class IniSet {
 		IniSet();
 		~IniSet();
 
+        /**
+         * Loads a configuration from file, and returns either it has been successfully loaded or not.
+         * If it couldn't, then the configuration's object is empty.
+         * @param filepath The file to read its configuration
+         * @return Either it has successfully read the file and loaded the configuration
+         */
         bool loadFromFile(const string& filepath);
+        
+        /**
+         * Returns the configuration in a string format. Written like a .ini file.
+         * @return The configuration in a string format
+         */
         string toString() const;
+
+        /**
+         * Returns the configuration in a json format, as a string.
+         * @return The configuration in a json string format
+         */
         string toJSONString() const;
+        
         friend ostream& operator<<(ostream& os, const IniSet& ini);
 
-        vector<string> getSections() const;
 
+        vector<string> getSections() const;
         map<string, pair<string, string>> getEntries() const;
         map<string, pair<string, string>> getEntries(const string& section) const;
 
@@ -53,10 +70,10 @@ class IniSet {
         void assignFromRawString(const string& section, const string& str);
 
         // { section: { key: { type, value } } }
-        map<string, map<string, pair<string, string>>> iniMap;
+        map<string, map<string, pair<string, string>>> m_iniMap;
         // { key: { type, value } }
-        map<string, pair<string, string>> rootMap;
-        int sectionCount;
+        map<string, pair<string, string>> m_rootMap;
+        int m_sectionCount;
 };
 
 #endif // INISET_H

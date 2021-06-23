@@ -27,12 +27,12 @@ class Video {
 
     protected:
         bool InitSDL(IniSet& config, const std::string& section);
-        bool InitGL(IniSet& config, const std::string& section);
+        bool InitGL();
         void destroy();
 
-        SDL_Window* window;
-        SDL_GLContext glContext;
-        bool isInit;
+        SDL_Window* m_window;
+        SDL_GLContext m_glContext;
+        bool m_isInit;
 };
 
 #endif // VIDEO_H

@@ -1,5 +1,5 @@
 # modify these 3 lines depending of what you want
-CFLAGS 		:= #-Wno-unused-command-line-argument -Werror -Wall -Wextra
+CFLAGS 		:= -Werror -Wall -Wextra
 LDFLAGS		:= -lmingw32
 LIBS 		:= -lopengl32 -lglew32 -lSDL2main -lSDL2 -lSDL2_image
 # type of source files

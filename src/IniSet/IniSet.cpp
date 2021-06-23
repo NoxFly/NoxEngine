@@ -8,9 +8,9 @@
 string IniSet::pairSeparator = "=";
 
 IniSet::IniSet():
-    iniMap{},
-    rootMap{},
-    sectionCount(0)
+    m_iniMap{},
+    m_rootMap{},
+    m_sectionCount(0)
 {
 
 }
@@ -47,8 +47,8 @@ bool IniSet::loadFromFile(const string& filepath) {
     }
 
     // reinitialize maps
-    iniMap = {};
-    rootMap = {};
+    m_iniMap = {};
+    m_rootMap = {};
 
     int m = content.size();
 
@@ -65,15 +65,15 @@ bool IniSet::loadFromFile(const string& filepath) {
             string sectionName = replace(line.substr(1, line.length() - 2), " ", "_");
 
             if(sectionName.size() > 0) {
-                iniMap[sectionName] = {};
+                m_iniMap[sectionName] = {};
                 sectionDetails.push_back(pair(i, sectionName));
             }
         }
     }
 
-    sectionCount = sectionDetails.size();
+    m_sectionCount = sectionDetails.size();
 
-    int n = (sectionCount == 0)? m : sectionDetails[0].first;
+    int n = (m_sectionCount == 0)? m : sectionDetails[0].first;
     int i, j, k;
 
     i = -1;
@@ -82,10 +82,10 @@ bool IniSet::loadFromFile(const string& filepath) {
         assignFromRawString("", content[i]);
 
     // get all keys
-    for(i=0; i < sectionCount; i++) {
+    for(i=0; i < m_sectionCount; i++) {
         pair<int, string> section = sectionDetails[i];
         j = section.first;
-        k = (i < sectionCount-1)? sectionDetails[i+1].first : m;
+        k = (i < m_sectionCount-1)? sectionDetails[i+1].first : m;
         
         while(++j < k)
             assignFromRawString(section.second, content[j]);
@@ -136,9 +136,9 @@ void IniSet::assignFromRawString(const string& section, const string& str) {
         string valueType = isNumber(value)? "number" : (value == "true" || value == "false")? "boolean": "string";
 
         if(section == "")
-            rootMap[key] = pair(valueType, value);
+            m_rootMap[key] = pair(valueType, value);
         else
-            iniMap.at(section)[key] = pair(valueType, value);
+            m_iniMap.at(section)[key] = pair(valueType, value);
     }
 }
 
@@ -146,8 +146,8 @@ void IniSet::assignFromRawString(const string& section, const string& str) {
 vector<string> IniSet::getSections() const {
     vector<string> sections = {};
 
-    if(sectionCount > 0) {
-        for(auto section : iniMap) {
+    if(m_sectionCount > 0) {
+        for(auto section : m_iniMap) {
             sections.push_back(section.first);
         }
     }
@@ -156,45 +156,45 @@ vector<string> IniSet::getSections() const {
 }
 
 map<string, pair<string, string>> IniSet::getEntries() const {
-    return rootMap;
+    return m_rootMap;
 }
 
 map<string, pair<string, string>> IniSet::getEntries(const string& section) const {
-    if(iniMap.count(section) == 0)
+    if(m_iniMap.count(section) == 0)
         return {};
-    return iniMap.at(section);
+    return m_iniMap.at(section);
 }
 
 vector<string> IniSet::getKeys() const {
     vector<string> keys;
-    for(pair<string, pair<string, string>> p : rootMap)
+    for(pair<string, pair<string, string>> p : m_rootMap)
         keys.push_back(p.first);
     return keys;
 }
 
 vector<string> IniSet::getKeys(const string& section) const {
-    if(iniMap.count(section) == 0)
+    if(m_iniMap.count(section) == 0)
         return {};
     
     vector<string> keys;
-    for(pair<string, pair<string, string>> p : iniMap.at(section))
+    for(pair<string, pair<string, string>> p : m_iniMap.at(section))
         keys.push_back(p.first);
     return keys;
 }
 
 vector<string> IniSet::getValues() const {
     vector<string> values;
-    for(pair<string, pair<string, string>> p : rootMap)
+    for(pair<string, pair<string, string>> p : m_rootMap)
         values.push_back(p.second.second);
     return values;
 }
 
 vector<string> IniSet::getValues(const string& section) const {
-    if(iniMap.count(section) == 0)
+    if(m_iniMap.count(section) == 0)
         return {};
 
     vector<string> values;
-    for(pair<string, pair<string, string>> p : iniMap.at(section))
+    for(pair<string, pair<string, string>> p : m_iniMap.at(section))
         values.push_back(p.second.second);
     return values;
 }
@@ -204,7 +204,7 @@ string IniSet::getValue(const string& section, const string& key) {
 }
 
 pair<string, string> IniSet::getPairValue(const string& section, const string& key) {
-    return hasKey(section, key)? iniMap[section][key] : pair("", "");
+    return hasKey(section, key)? m_iniMap[section][key] : pair("", "");
 }
 
 int IniSet::getIntValue(const string& section, const string& key, int defaultValue) {
@@ -227,11 +227,11 @@ string IniSet::getValue(const string& key) {
 }
 
 string IniSet::getType(const string &section, const string &key) {
-    return hasKey(section, key)? iniMap[section][key].first : "string";
+    return hasKey(section, key)? m_iniMap[section][key].first : "string";
 }
 
 pair<string, string> IniSet::getPairValue(const string& key) {
-    return hasKey(key)? rootMap[key] : pair("", "");
+    return hasKey(key)? m_rootMap[key] : pair("", "");
 }
 
 int IniSet::getIntValue(const string& key, int defaultValue) {
@@ -250,40 +250,38 @@ bool IniSet::getBoolValue(const string& key, bool defaultValue) {
 }
 
 bool IniSet::hasSection(const string& section) {
-    return iniMap.count(section) > 0;
+    return m_iniMap.count(section) > 0;
 }
 
 bool IniSet::hasKey(const string& key) {
-    return rootMap.count(key) > 0;
+    return m_rootMap.count(key) > 0;
 }
 
 bool IniSet::hasKey(const string& section, const string& key) {
-    return hasSection(section) && iniMap[section].count(key) > 0;
+    return hasSection(section) && m_iniMap[section].count(key) > 0;
 }
 
 string IniSet::getType(const string &key) {
-    return hasKey(key)? rootMap[key].first : "string";
+    return hasKey(key)? m_rootMap[key].first : "string";
 }
 
 
 string IniSet::toString() const {
     string str = "";
-    int i = 0;
 
-    for(auto &p : rootMap)
+    for(auto &p : m_rootMap)
         str += p.first + "=" + p.second.second + "\n";
 
-    i = 0;
-
-    for(auto &p : iniMap) {
+    for(auto &p : m_iniMap) {
         str += "\n[" + p.first + "]\n";
 
         int j = 0;
+        int size = p.second.size();
         
         for(auto &sp : p.second) {
             str += "  " + sp.first + "=" + sp.second.second;
 
-            if(++j < p.second.size())
+            if(++j < size)
                 str += "\n";
         }
 
@@ -297,17 +295,17 @@ string IniSet::toJSONString() const {
     string str = "{";
     int i = 0;
 
-    if(rootMap.size() > 0 || iniMap.size() > 0)
+    if(m_rootMap.size() > 0 || m_iniMap.size() > 0)
         str += "\n";
 
-    for(auto &p : rootMap) {
+    for(auto &p : m_rootMap) {
         string g = p.second.first == "string" ? "\"" : "";
-        str += "  \"" + p.first + "\": " + g + p.second.second + g + ((++i < rootMap.size())? "," : "") + "\n";
+        str += "  \"" + p.first + "\": " + g + p.second.second + g + ((++i < (int)m_rootMap.size())? "," : "") + "\n";
     }
 
     i = 0;
     
-    for(auto &p : iniMap) {
+    for(auto &p : m_iniMap) {
         str += "  \"" + p.first + "\": {\n";
 
         int j = 0;
@@ -316,7 +314,7 @@ string IniSet::toJSONString() const {
             string g = sp.second.first == "string" ? "\"" : "";
             str += "    \"" + sp.first + "\": " + g + sp.second.second + g;
 
-            if(++j < p.second.size())
+            if(++j < (int)p.second.size())
                 str += ",";
             
             str += "\n";
@@ -324,7 +322,7 @@ string IniSet::toJSONString() const {
 
         str += "  }";
 
-        if(++i < iniMap.size())
+        if(++i < (int)m_iniMap.size())
             str += ",";
         
         str += "\n";

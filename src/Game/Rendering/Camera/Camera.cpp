@@ -5,16 +5,17 @@
 #include "Console.h"
 
 Camera::Camera():
-    phi(0.0), theta(0.0), orientation(), verticalAxis(0, 0, 1),
-    lateralDisplacement(), position(), target()
+    m_phi(0.0), m_theta(0.0), m_orientation(), m_verticalAxis(0, 0, 1),
+    m_lateralDisplacement(), m_position(), m_target(),
+    m_sensivity(1), m_maxSpeed(1), m_speed(1), m_velocity(1)
 {
 
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 verticalAxis, float sensivity, float maxSpeed):
-    phi(0.0), theta(0.0), orientation(), verticalAxis(verticalAxis),
-    lateralDisplacement(), position(position), target(target),
-    sensivity(sensivity), speed(0), maxSpeed(maxSpeed), velocity(1)
+    m_phi(0.0), m_theta(0.0), m_orientation(), m_verticalAxis(verticalAxis),
+    m_lateralDisplacement(), m_position(position), m_target(target),
+    m_sensivity(sensivity), m_maxSpeed(maxSpeed), m_speed(0), m_velocity(1)
 {
     
 }
@@ -23,40 +24,43 @@ Camera::~Camera() {
 
 }
 
+// orientates the camera's target point
 void Camera::orientate(const glm::vec2& mouseDir) {
-    phi += -mouseDir.y * sensivity;
-    theta += -mouseDir.x * sensivity;
+    m_phi += -mouseDir.y * m_sensivity;
+    m_theta += -mouseDir.x * m_sensivity;
 
-    if(phi > 89.0) phi = 89.0;
-    else if(phi < -89.0) phi = -89.0;
+    if(m_phi > 89.0) m_phi = 89.0;
+    else if(m_phi < -89.0) m_phi = -89.0;
 
     const float PI = 3.14;
 
-    float phiRadian = phi * PI / 180;
-    float thetaRadian = theta * PI / 180;
+    float phiRadian = m_phi * PI / 180;
+    float thetaRadian = m_theta * PI / 180;
 
     // vertical axis = horizontal axis
-    if(verticalAxis.x == 1.0) {
-        orientation.x = sin(phiRadian);
-        orientation.y = cos(phiRadian) * cos(thetaRadian);
-        orientation.z = cos(phiRadian) * sin(thetaRadian);
+    if(m_verticalAxis.x == 1.0) {
+        m_orientation.x = sin(phiRadian);
+        m_orientation.y = cos(phiRadian) * cos(thetaRadian);
+        m_orientation.z = cos(phiRadian) * sin(thetaRadian);
     }
     // Y axis
-    else if(verticalAxis.y == 1.0) {
-        orientation.x = cos(phiRadian) * sin(thetaRadian);
-        orientation.y = sin(phiRadian);
-        orientation.z = cos(phiRadian) * cos(thetaRadian);
+    else if(m_verticalAxis.y == 1.0) {
+        m_orientation.x = cos(phiRadian) * sin(thetaRadian);
+        m_orientation.y = sin(phiRadian);
+        m_orientation.z = cos(phiRadian) * cos(thetaRadian);
     }
     // Z axis
     else {
-        orientation.x = cos(phiRadian) * cos(thetaRadian);
-        orientation.y = cos(phiRadian) * sin(thetaRadian);
-        orientation.z = sin(phiRadian);
+        m_orientation.x = cos(phiRadian) * cos(thetaRadian);
+        m_orientation.y = cos(phiRadian) * sin(thetaRadian);
+        m_orientation.z = sin(phiRadian);
     }
 
-    lateralDisplacement = normalize(cross(verticalAxis, orientation));
+    m_lateralDisplacement = normalize(cross(m_verticalAxis, m_orientation));
+    m_target = m_position + m_orientation;
 }
 
+// Updates the camera position and look
 void Camera::update(const Input& input) {
     if(input.isMouseMoving())
 		orientate(input.getMouseDir());
@@ -65,97 +69,167 @@ void Camera::update(const Input& input) {
     bool isMoving = false;
 
     if(isMoving |= (input.isKeyDown(SDL_SCANCODE_UP) || input.isKeyDown(SDL_SCANCODE_W)))
-        movementVector = orientation;
+        movementVector = m_orientation;
 
     if(isMoving |= (input.isKeyDown(SDL_SCANCODE_DOWN) || input.isKeyDown(SDL_SCANCODE_S)))
-        movementVector = orientation * -1.0f;
+        movementVector = m_orientation * -1.0f;
 
     if(isMoving |= (input.isKeyDown(SDL_SCANCODE_LEFT) || input.isKeyDown(SDL_SCANCODE_A)))
-        movementVector = lateralDisplacement;
+        movementVector = m_lateralDisplacement;
 
     if(isMoving |= (input.isKeyDown(SDL_SCANCODE_RIGHT) || input.isKeyDown(SDL_SCANCODE_D)))
-        movementVector = lateralDisplacement * -1.0f;
+        movementVector = m_lateralDisplacement * -1.0f;
 
     if(isMoving |= (input.isKeyDown(SDL_SCANCODE_SPACE)))
-        movementVector = verticalAxis;
+        movementVector = m_verticalAxis;
 
     if(isMoving |= (input.isKeyDown(SDL_SCANCODE_LCTRL)))
-        movementVector = verticalAxis * -1.0f;
+        movementVector = m_verticalAxis * -1.0f;
 
     if(isMoving) {
-        speed += velocity;
+        m_speed += m_velocity;
 
-        if(speed > maxSpeed) 
-		    speed = maxSpeed;
+        if(m_speed > m_maxSpeed) 
+		    m_speed = m_maxSpeed;
 
-        position += movementVector * speed;
+        m_position += movementVector * m_speed;
     }
 
 	else {
-        speed -= velocity;
+        m_speed -= m_velocity;
         
-        if(speed < 0)
-            speed = 0;
+        if(m_speed < 0)
+            m_speed = 0;
 	}
 
-	target = position + orientation;
+	m_target = m_position + m_orientation;
 }
 
-void Camera::lookAt(glm::mat4& modelview) {
-    modelview = glm::lookAt(position, target, verticalAxis);
-}
-
+// Defines the camera's target
 void Camera::setTarget(const glm::vec3& target) {
-    orientation = target - position;
-    orientation = normalize(orientation);
+    m_orientation = target - m_position;
+    m_orientation = normalize(m_orientation);
 
-    if(verticalAxis.x == 1.0) {
-        phi = asin(orientation.x);
-        theta = acos(orientation.y / cos(phi));
+    if(m_verticalAxis.x == 1.0) {
+        m_phi = asin(m_orientation.x);
+        m_theta = acos(m_orientation.y / cos(m_phi));
 
-        if(orientation.y < 0)
-            theta *= 1;
+        if(m_orientation.y < 0)
+            m_theta *= 1;
     }
 
-    else if(verticalAxis.y == 1.0) {
-        phi = asin(orientation.y);
-        theta = acos(orientation.z / cos(phi));
+    else if(m_verticalAxis.y == 1.0) {
+        m_phi = asin(m_orientation.y);
+        m_theta = acos(m_orientation.z / cos(m_phi));
 
-        if(orientation.z < 0)
-            theta *= -1;
+        if(m_orientation.z < 0)
+            m_theta *= -1;
     }
 
     else {
-        phi = asin(orientation.x);
-        theta = acos(orientation.z / cos(phi));
+        m_phi = asin(m_orientation.x);
+        m_theta = acos(m_orientation.z / cos(m_phi));
 
-        if(orientation.z < 0)
-            theta *= -1;
+        if(m_orientation.z < 0)
+            m_theta *= -1;
     }
 
     float PI = 3.14;
 
-    phi *= 180 / PI;
-    theta *= 180 / PI;
+    m_phi *= 180 / PI;
+    m_theta *= 180 / PI;
 }
 
+
+// Defines the camera's position
 void Camera::setPosition(const glm::vec3& position) {
-    this->position = position;
-    target = position + orientation;
+    this->m_position = position;
+    m_target = position + m_orientation;
 }
+
+
+// Updates the view matrix. Normally called every update loop
+void Camera::lookAt(glm::mat4& view) {
+    view = glm::lookAt(m_position, m_target, m_verticalAxis);
+}
+
+
+// Set's the camera's look at. The view matrix will be upated in the loop
+void Camera::lookAt(const glm::vec3 eye, const glm::vec3 center, const glm::vec3 up) {
+    m_position = eye;
+    m_target = center;
+    m_verticalAxis = up;
+}
+
+
+// moves the camera's position with given offset
+void Camera::move(const glm::vec3 offset) {
+    m_position += offset;
+}
+
+
+// moves the camera's vertical axis with given offset
+void Camera::addUp(const glm::vec3 offset) {
+    m_verticalAxis += offset;
+}
+
+
+// moves the camera's target with given offset
+void Camera::addTarget(const glm::vec3 offset) {
+    m_target += offset;
+}
+
+
+// moves the camera's position with given offset
+void Camera::move(const float x, const float y, const float z) {
+    m_position += glm::vec3(x, y, z);
+}
+
+
+// moves the camera's position with given offset
+void Camera::move(const int x, const int y, const int z) {
+    m_position += glm::vec3(x, y, z);
+}
+
+
+// moves the camera's vertical axis with given offset
+void Camera::addUp(const float x, const float y, const float z) {
+    m_verticalAxis += glm::vec3(x, y, z);
+}
+
+// moves the camera's vertical axis with given offset
+void Camera::addUp(const int x, const int y, const int z) {
+    m_verticalAxis += glm::vec3(x, y, z);
+}
+
+
+// moves the camera's target with given offset
+void Camera::addTarget(const float x, const float y, const float z) {
+    m_target += glm::vec3(x, y, z);
+}
+
+
+// moves the camera's target with given offset
+void Camera::addTarget(const int x, const int y, const int z) {
+    m_target += glm::vec3(x, y, z);
+}
+
 
 float Camera::getSensivity() const {
-    return sensivity;
+    return m_sensivity;
 }
+
 
 float Camera::getSpeed() const {
-    return speed;
+    return m_speed;
 }
+
 
 void Camera::setSensivity(const float sensivity) {
-    this->sensivity = sensivity;
+    this->m_sensivity = sensivity;
 }
 
+
 void Camera::setSpeed(const float speed) {
-    this->speed = speed;
+    this->m_speed = speed;
 }

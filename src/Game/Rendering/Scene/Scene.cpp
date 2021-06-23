@@ -9,108 +9,121 @@
 std::mutex sceneMutex;
 
 Scene::Scene():
-    config(nullptr),
-    fps(0), running(false), video(),
-    earlyLoop(0), endLoop(0), spentTime(0),
-    clearColor{ 0, 0, 0 },
-    draw(0), camera()
+    draw(0), 
+    m_config(nullptr),
+    m_running(false), m_fps(0), m_video(),
+    m_clearColor{ 0, 0, 0 },
+    m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
+    m_camera(),
+    m_mvp(0)
 {
 
 }
 
 Scene::Scene(IniSet* config):
-    config(config),
-    fps(0), running(false), video(*config, "WINDOW"),
-    earlyLoop(0), endLoop(0), spentTime(0),
-    clearColor{ 0, 0, 0 },
-    draw(0), camera()
+    draw(0),
+    m_config(config),
+    m_running(false), m_fps(0), m_video(*config, "WINDOW"),
+    m_clearColor{ 0, 0, 0 },
+    m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
+    m_camera(),
+    m_mvp(0)
 {
-    if(!video.isInitialized()) {
+    if(!m_video.isInitialized()) {
         Console::error("Scene::constructor", "Failed to init video.");
         exit(3);
     }
 
-    fps = config->getIntValue("WINDOW", "fps", 30);
+    m_fps = config->getIntValue("WINDOW", "fps", 30);
 
-    clearColor = getColorFromString(config->getValue("WINDOW", "background"));
+    m_clearColor = getColorFromString(config->getValue("WINDOW", "background"));
 }
 
 Scene::~Scene() {
 
 }
 
+
 void Scene::updatePlayerControls(const Input &input) {
-    camera.update(input);
+    m_camera.update(input);
 }
 
-void Scene::updateView(const Input &input, glm::mat4& projection, glm::mat4& modelview) {
-    if(video.isInitialized()) {
-        Uint32 frameRate = 1000 / fps;
 
-        if(running) {
-            camera.update(input);
+void Scene::updateView(const Input &input) {
+    if(m_video.isInitialized()) {
+        Uint32 frameRate = 1000 / m_fps;
 
-            render(projection, modelview);
+        if(m_running) {
+            m_camera.update(input);
 
-            endLoop = SDL_GetTicks();
-            spentTime = endLoop - earlyLoop;
+            render();
 
-            if(spentTime < frameRate)
-                SDL_Delay(frameRate - spentTime);
+            m_endLoop = SDL_GetTicks();
+            m_spentTime = m_endLoop - m_earlyLoop;
+
+            if(m_spentTime < frameRate)
+                SDL_Delay(frameRate - m_spentTime);
         }
     }
 }
 
-void Scene::render(glm::mat4& projection, glm::mat4& modelview) {
-    video.clear(clearColor);
+// clear - draw - swap (refresh)
+void Scene::render() {
+    m_video.clear(m_clearColor);
 
-    camera.lookAt(modelview);
+    m_camera.lookAt(m_mvp->getView());
 
     // draw stuff
     if(draw != 0)
         draw();
 
     // refresh
-    video.swapWindow();
+    m_video.swapWindow();
 }
 
+// shows the window
 void Scene::show() {
-    running = true;
-    video.show();
+    m_running = true;
+    m_video.show();
 }
 
+
+// hides the window
 void Scene::close() {
-    running = false;
-    video.hide();
+    m_running = false;
+    m_video.hide();
 }
 
+// returns the opengl version as a string : for example, for version 1.1, returns "11"
 GLuint Scene::getCompactGLversion() const {
-    GLuint major = config->getIntValue("WINDOW", "OPENGL_MAJOR_VERSION", 1);
-    GLuint minor = config->getIntValue("WINDOW", "OPENGL_MINOR_VERSION", 1);
+    GLuint major = m_config->getIntValue("WINDOW", "OPENGL_MAJOR_VERSION", 1);
+    GLuint minor = m_config->getIntValue("WINDOW", "OPENGL_MINOR_VERSION", 1);
 
     return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
 }
 
+
 bool Scene::isOpen() const {
-    return running;
+    return m_running;
 }
+
 
 void Scene::setDrawFunction(std::function<void()> drawFunction) {
     draw = drawFunction;
 }
 
+
 Camera Scene::getCamera() {
-    return camera;
+    return m_camera;
 }
 
-void Scene::bindMatrixes(glm::mat4& projection, glm::mat4& modelview, glm::mat4& saveModelview) {
-    this->projection = &projection;
-    this->modelview = &modelview;
-    this->saveModelview = &saveModelview;
-
-    camera.lookAt(modelview);
-}
 
 Video* Scene::getVideo() {
-    return &video;
+    return &m_video;
+}
+
+
+void Scene::bindMatrices(MatricesMVP& mvp) {
+    m_mvp = &mvp;
+    m_camera.lookAt(mvp.getView());
 }

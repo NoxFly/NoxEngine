@@ -28,7 +28,9 @@ void Console::message(Console::method method, const std::string& where, const st
     std::string spaces = " ";
     std::string sMethod = coloredName(method);
 
-    for(int i=10; i > sMethod.size(); i--) {
+    int sSize = sMethod.size();
+
+    for(int i=10; i > sSize; i--) {
         spaces += " ";
     }
 
