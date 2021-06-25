@@ -21,7 +21,7 @@ class Scene {
 
         void show();
         void close();
-        void updateView(const Input &input);
+        void updateView();
         void updatePlayerControls(const Input &input);
         void setDrawFunction(std::function<void()> drawFunction);
         void bindMatrices(MatricesMVP& mvp);
@@ -38,10 +38,8 @@ class Scene {
 
         IniSet* m_config;
         bool m_running;
-        int m_fps;
         Video m_video;
         Color m_clearColor;
-        Uint32 m_earlyLoop, m_endLoop, m_spentTime;
         Camera m_camera;
         MatricesMVP* m_mvp;
 };

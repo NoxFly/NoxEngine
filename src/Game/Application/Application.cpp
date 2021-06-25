@@ -1,6 +1,5 @@
 #include "Application.h"
 
-#include <future>
 #include <SDL2/SDL.h>
 #include <filesystem>
 
@@ -9,11 +8,14 @@
 
 namespace fs = std::filesystem;
 
+
 std::string Application::appBasePath = "./";
+
 
 Application::Application(IniSet& config, std::string basePath):
     m_config(config),
     m_basePath(basePath),
+    m_FPS(config.getIntValue("WINDOW", "fps", 30)),
     m_scene(&config),
     m_input(),
     m_mvp(70.0, (double)(config.getFloatValue("WINDOW", "width", 1) / config.getFloatValue("WINDOW", "height", 1)), 1.0, 100.0),
@@ -24,6 +26,7 @@ Application::Application(IniSet& config, std::string basePath):
         new float[9]{  1.0,  0.0,  0.0,   0.0, 1.0,  0.0,   0.0,  0.0,  1.0 },
         9
     )
+    //m_shape(0, 0, 0, 1)
     //
 {
     Application::appBasePath = basePath;
@@ -41,11 +44,11 @@ Application::~Application() {
 
 
 void Application::start() {
-    // compile shaders asynchronously
-    auto futureCompileShaders = std::async([this]() {
-        compileShaders();
-        m_shape.setShader("color3D");
-    });
+    m_scene.show();
+
+    compileShaders();
+
+    m_shape.setShader("color3D");
 
     // capture the mouse
     m_scene.getVideo()->setMouseFocus(true);
@@ -61,11 +64,23 @@ void Application::start() {
 
 
 void Application::mainLoop() {
-    m_scene.show();
+
+    Uint32 earlyLoop(0), endLoop(0), spentTime(0);
 
     while(m_scene.isOpen()) {
+        Uint32 frameRate = 1000 / m_FPS;
+        earlyLoop = SDL_GetTicks();
+
+
         update();
-        m_scene.updateView(m_input);
+        m_scene.updateView();
+
+
+        endLoop = SDL_GetTicks();
+        spentTime = endLoop - earlyLoop;
+
+        if(spentTime < frameRate)
+            SDL_Delay(frameRate - spentTime);
     }
 }
 
@@ -103,9 +118,6 @@ void Application::update() {
 
 
 void Application::compileShaders() {
-    // create fake gl context to compile shaders
-    SDL_GL_CreateContext(SDL_CreateWindow("", 0, 0, 0, 0, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL));
-
     std::string shadersDir = Application::getPath(m_config.getValue("PATH", "shaders"));
     std::map<std::string, std::pair<bool, bool>> shadersName = {};
 

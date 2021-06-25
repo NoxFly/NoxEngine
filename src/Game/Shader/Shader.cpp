@@ -9,19 +9,6 @@
 
 std::mutex shaderMutex;
 
-std::map<GLuint, GLuint> Shader::GLSLversions = {
-    { 20, 110 },
-    { 21, 120 },
-    { 30, 130 },
-    { 31, 140 },
-    { 32, 150 },
-    { 33, 330 },
-    { 40, 400 },
-    { 41, 410 },
-    { 32, 420 },
-    { 43, 430 }
-};
-
 std::string Shader::shadersPath = "./";
 
 void Shader::setShadersPath(const std::string& shadersPath) {
@@ -46,18 +33,32 @@ Shader::Shader(const std::string& shaderName, GLuint glVersion):
     this->m_shaderName = shaderName;
 }
 
+Shader::Shader(Shader const &copy) {
+    m_shaderName = copy.getName();
+    m_glVersion = copy.getGLversion();
+
+    load();
+}
+
+Shader& Shader::operator=(Shader const &copy) {
+    m_shaderName = copy.getName();
+    m_glVersion = copy.getGLSLversion();
+
+    load();
+
+    return *this;
+}
+
 Shader::~Shader() {
     destroyShader();
 }
 
+GLuint Shader::getGLversion() const {
+    return m_glVersion;
+}
 
 GLuint Shader::getGLSLversion() const {
-    const GLuint lastVersion = 43;
-
-    if(m_glVersion > lastVersion)
-        return Shader::GLSLversions[lastVersion];
-    
-    return Shader::GLSLversions[m_glVersion];
+    return m_glVersion * 10; // OpenGL 4.2 = 42 * 10 = GLSL 420
 }
 
 

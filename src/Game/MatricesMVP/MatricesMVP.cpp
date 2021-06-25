@@ -28,6 +28,10 @@ glm::mat4& MatricesMVP::getView() {
     return m_view;
 }
 
-const glm::mat4& MatricesMVP::getMVP() {
+glm::mat4& MatricesMVP::getMVP() {
+    return m_MVP;
+}
+
+const glm::mat4& MatricesMVP::getMVP() const {
     return m_MVP;
 }

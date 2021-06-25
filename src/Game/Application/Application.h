@@ -32,6 +32,7 @@ class Application {
 
         IniSet& m_config;
         const std::string m_basePath;
+        int m_FPS;
         Scene m_scene;
         Input m_input;
         ResourceHolder<Shader, std::string> m_shaders;

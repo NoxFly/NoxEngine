@@ -11,9 +11,8 @@ std::mutex sceneMutex;
 Scene::Scene():
     draw(0), 
     m_config(nullptr),
-    m_running(false), m_fps(0), m_video(),
+    m_running(false), m_video(),
     m_clearColor{ 0, 0, 0 },
-    m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
     m_camera(),
     m_mvp(0)
 {
@@ -23,9 +22,8 @@ Scene::Scene():
 Scene::Scene(IniSet* config):
     draw(0),
     m_config(config),
-    m_running(false), m_fps(0), m_video(*config, "WINDOW"),
+    m_running(false), m_video(*config, "WINDOW"),
     m_clearColor{ 0, 0, 0 },
-    m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
     m_camera(),
     m_mvp(0)
 {
@@ -33,8 +31,6 @@ Scene::Scene(IniSet* config):
         Console::error("Scene::constructor", "Failed to init video.");
         exit(3);
     }
-
-    m_fps = config->getIntValue("WINDOW", "fps", 30);
 
     m_clearColor = getColorFromString(config->getValue("WINDOW", "background"));
 }
@@ -49,21 +45,9 @@ void Scene::updatePlayerControls(const Input &input) {
 }
 
 
-void Scene::updateView(const Input &input) {
-    if(m_video.isInitialized()) {
-        Uint32 frameRate = 1000 / m_fps;
-
-        if(m_running) {
-            m_camera.update(input);
-
-            render();
-
-            m_endLoop = SDL_GetTicks();
-            m_spentTime = m_endLoop - m_earlyLoop;
-
-            if(m_spentTime < frameRate)
-                SDL_Delay(frameRate - m_spentTime);
-        }
+void Scene::updateView() {
+    if(m_video.isInitialized() && m_running) {
+        render();
     }
 }
 

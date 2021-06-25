@@ -7,7 +7,7 @@
 Camera::Camera():
     m_phi(0.0), m_theta(0.0), m_orientation(), m_verticalAxis(0, 0, 1),
     m_lateralDisplacement(), m_position(), m_target(),
-    m_sensivity(1), m_maxSpeed(1), m_speed(1), m_velocity(1)
+    m_sensivity(0.4), m_maxSpeed(0.05), m_speed(0.01), m_velocity(0.01)
 {
 
 }
@@ -15,7 +15,7 @@ Camera::Camera():
 Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 verticalAxis, float sensivity, float maxSpeed):
     m_phi(0.0), m_theta(0.0), m_orientation(), m_verticalAxis(verticalAxis),
     m_lateralDisplacement(), m_position(position), m_target(target),
-    m_sensivity(sensivity), m_maxSpeed(maxSpeed), m_speed(0), m_velocity(1)
+    m_sensivity(sensivity), m_maxSpeed(maxSpeed), m_speed(0), m_velocity(0.1)
 {
     
 }
@@ -32,10 +32,8 @@ void Camera::orientate(const glm::vec2& mouseDir) {
     if(m_phi > 89.0) m_phi = 89.0;
     else if(m_phi < -89.0) m_phi = -89.0;
 
-    const float PI = 3.14;
-
-    float phiRadian = m_phi * PI / 180;
-    float thetaRadian = m_theta * PI / 180;
+    float phiRadian = m_phi * M_PI / 180;
+    float thetaRadian = m_theta * M_PI / 180;
 
     // vertical axis = horizontal axis
     if(m_verticalAxis.x == 1.0) {
@@ -134,10 +132,8 @@ void Camera::setTarget(const glm::vec3& target) {
             m_theta *= -1;
     }
 
-    float PI = 3.14;
-
-    m_phi *= 180 / PI;
-    m_theta *= 180 / PI;
+    m_phi *= 180 / M_PI;
+    m_theta *= 180 / M_PI;
 }
 
 

@@ -16,7 +16,8 @@ class MatricesMVP {
         glm::mat4& getProjection();
         glm::mat4& getModel();
         glm::mat4& getView();
-        const glm::mat4& getMVP();
+        glm::mat4& getMVP();
+        const glm::mat4& getMVP() const;
 
     private:
         glm::mat4 m_projection, m_model, m_view;

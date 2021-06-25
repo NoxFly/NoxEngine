@@ -25,7 +25,7 @@ class Drawable {
         Drawable(float* vertices, float* colors, GLuint verticesSize);
         virtual ~Drawable();
 
-        virtual void draw(const glm::mat4& MVP);
+        virtual void draw(glm::mat4& MVP);
         void setShader(const std::string& shaderName);
         void setWireframe(const bool wireframeState);
 

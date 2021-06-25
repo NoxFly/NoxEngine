@@ -49,7 +49,7 @@ void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
     if(verticesSize % 3 != 0)
         return;
 
-    size_t sizeVertices = sizeof(float) * 108;
+    size_t sizeVertices = sizeof(float) * verticesSize;
     size_t sizeColors = (colors != 0)? sizeVertices : 0;
 
     m_vertexNumber = verticesSize / 3;
@@ -77,14 +77,14 @@ void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeVertices, vertices);
 
             // transfert data for colors
-            if(colors != 0)
+            if(sizeColors > 0)
                 glBufferSubData(GL_ARRAY_BUFFER, sizeVertices, sizeColors, colors);
 
             // access to coords in the memory and lock these
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
             glEnableVertexAttribArray(0);
 
-            if(colors != 0) {
+            if(sizeColors > 0) {
                 glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeVertices));
                 glEnableVertexAttribArray(1);
             }
@@ -97,8 +97,9 @@ void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
 
 // defines the shader of the entity
 void Drawable::setShader(const std::string& shaderName) {
-    if(Drawable::shadersBank != 0 && Drawable::shadersBank->has(shaderName))
+    if(Drawable::shadersBank != 0 && Drawable::shadersBank->has(shaderName)) {
         this->m_shader = &Drawable::shadersBank->get(shaderName);
+    }
 }
 
 
@@ -109,7 +110,7 @@ void Drawable::setWireframe(const bool wireframeState) {
 
 
 // draw the entity on given MVP
-void Drawable::draw(const glm::mat4& MVP) {
+void Drawable::draw(glm::mat4& MVP) {
     // can't draw if the entity has not a shader
     if(!m_shader)
         return;

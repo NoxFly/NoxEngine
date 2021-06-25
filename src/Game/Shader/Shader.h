@@ -11,6 +11,8 @@ class Shader {
 
 		Shader();
 		Shader(const std::string& shaderName, GLuint glVersion);
+        Shader(Shader const &copy);
+        Shader& operator=(Shader const &copy);
 		~Shader();
 
         bool load();
@@ -18,6 +20,7 @@ class Shader {
 
         GLuint getId() const;
         GLuint getGLSLversion() const;
+        GLuint getGLversion() const;
         std::string getName() const;
 
         // utility uniform functions
@@ -26,7 +29,6 @@ class Shader {
         void setFloat(const std::string& name, float value) const;
 
     protected:
-        static std::map<GLuint, GLuint> GLSLversions;
         static std::string shadersPath;
 
         bool checkCompileErrors(GLuint& shader, const std::string& type);
