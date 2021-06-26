@@ -59,10 +59,10 @@ SRCDIR 		?= ./src
 # header files location
 INCDIR 		?= ./include
 
+LIBDIR		?= ./libs
+
 SOURCES 	:= $(shell find $(SRCDIR)/** -type f -name *.$(SRCEXT))
 
-INCDIRS		:=
-INCLIST		:=
 BUILDLIST	:=
 INC			:=
 
@@ -77,6 +77,17 @@ ifneq ($(SRCDIR), $(INCDIR))
 	INC += -I $(INCDIR)
 endif
 
+ifneq (, $(LIBDIR))
+	ifneq ($(wildcard $(LIBDIR)/include),)
+		INC += -I $(LIBDIR)/include
+	endif
+
+	ifneq ($(wildcard $(LIBDIR)/lib),)
+		LDFLAGS += -L $(LIBDIR)/lib
+	endif
+endif
+
+
 
 ifdef DEBUG
 OBJECTS 	:= $(patsubst $(SRCDIR)/%, $(BUILDDIR)/%, $(SOURCES:.$(SRCEXT)=.o))
@@ -85,7 +96,7 @@ $(TARGET): $(OBJECTS)
 	@mkdir -p $(TARGETDIR)
 	@echo -e "\033[0;35mLinking...\033[0;90m"
 	@echo "  Linking $(TARGET)"
-	@$(CC) -g -o $(TARGET) $^  $(LDFLAGS) $(LIBS)
+	@$(CC) -g -o $(TARGET) $^ $(LDFLAGS) $(LIBS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDDIR)
