@@ -4,11 +4,14 @@
 #include <SDL2/SDL.h>
 #include <glm/vec2.hpp>
 
+#include "Video.h"
+
 class Input {
 	public:
 		Input();
 		~Input();
 
+        void setCurrentWindow(Video& window);
         void updateEvents();
         bool shouldClose() const;
 
@@ -18,17 +21,19 @@ class Input {
 
         int getMouseX() const;
 		int getMouseY() const;
-		int getRelMouseX() const;
-		int getRelMouseY() const;
 		int wheelScroll() const;
         glm::vec2 getMouseDir() const;
+        glm::vec2 getMousePoint() const;
+        glm::vec2 getMousePointFromCenter() const;
 
     private:
+        Video* m_window;
         bool m_keys[SDL_NUM_SCANCODES];
 		bool m_mouseButtons[8];
 		int m_wheelEvent;
         int m_mouseX, m_mouseY, m_mouseRelX, m_mouseRelY;
-        int m_oldMouseX, m_oldMouseY, m_oldMouseRelX, m_oldMouseRelY;
+        int m_oldMouseX, m_oldMouseY;
+        glm::vec2 mouseMotion;
         bool m_close;
 };
 

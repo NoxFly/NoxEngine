@@ -1,10 +1,13 @@
 #include "Input.h"
 
 #include <iostream>
+#include <glm/gtx/transform.hpp>
+
 
 Input::Input():
+    m_window(0),
     m_mouseX(0), m_mouseY(0), m_mouseRelX(0), m_mouseRelY(0),
-    m_oldMouseX(0), m_oldMouseY(0), m_oldMouseRelX(0), m_oldMouseRelY(0),
+    m_oldMouseX(0), m_oldMouseY(0), mouseMotion(0, 0),
     m_close(false)
 {
     for (int i=0; i < SDL_NUM_SCANCODES; i++)
@@ -18,6 +21,10 @@ Input::Input():
 
 Input::~Input() {
 
+}
+
+void Input::setCurrentWindow(Video& window) {
+    m_window = &window;
 }
 
 void Input::updateEvents() {
@@ -63,14 +70,11 @@ void Input::updateEvents() {
             case SDL_MOUSEMOTION:
                 m_oldMouseX = m_mouseX;
                 m_oldMouseY = m_mouseY;
-                m_oldMouseRelX = m_mouseRelX;
-                m_oldMouseRelY = m_mouseRelY;
-                
-                m_mouseX = events.motion.x;
-                m_mouseY = events.motion.y;
 
-                m_mouseRelX = events.motion.xrel;
-                m_mouseRelY = events.motion.yrel;
+                mouseMotion = glm::vec2(events.motion.xrel, events.motion.yrel);
+                
+                m_mouseX = events.button.x;
+                m_mouseY = events.button.y;
                 break;
         }
 
@@ -105,20 +109,20 @@ int Input::getMouseY() const {
 	return m_mouseY;
 }
 
-// older X
-int Input::getRelMouseX() const {
-	return m_mouseRelX;
-}
-
-// older Y
-int Input::getRelMouseY() const {
-	return m_mouseRelY;
-}
-
 int Input::wheelScroll() const {
 	return m_wheelEvent;
 }
 
 glm::vec2 Input::getMouseDir() const {
-    return glm::vec2(m_mouseRelX, m_mouseRelY);
+    return mouseMotion;
+}
+
+glm::vec2 Input::getMousePoint() const {
+    return glm::vec2(m_mouseX, m_mouseY);
+}
+
+glm::vec2 Input::getMousePointFromCenter() const {
+    glm::vec2 windowSize = m_window->getSize();
+    glm::vec2 v((float)m_mouseX - windowSize.x / 2, (float)m_mouseY - windowSize.y / 2);
+    return v;
 }

@@ -97,7 +97,7 @@ void Scene::setDrawFunction(std::function<void()> drawFunction) {
 }
 
 
-Camera Scene::getCamera() {
+Camera& Scene::getCamera() {
     return m_camera;
 }
 
@@ -109,5 +109,4 @@ Video* Scene::getVideo() {
 
 void Scene::bindMatrices(MatricesMVP& mvp) {
     m_mvp = &mvp;
-    m_camera.lookAt(mvp.getView());
 }

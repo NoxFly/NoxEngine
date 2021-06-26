@@ -1,23 +1,16 @@
 #include "Camera.h"
 
 #include <glm/gtx/transform.hpp>
+#include <algorithm>
 
 #include "Console.h"
 
 Camera::Camera():
     m_phi(0.0), m_theta(0.0), m_orientation(), m_verticalAxis(0, 0, 1),
     m_lateralDisplacement(), m_position(), m_target(),
-    m_sensivity(0.4), m_maxSpeed(0.05), m_speed(0.01), m_velocity(0.01)
+    m_sensivity(1), m_maxSpeed(0.05), m_speed(0.3), m_velocity(0.01)
 {
 
-}
-
-Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 verticalAxis, float sensivity, float maxSpeed):
-    m_phi(0.0), m_theta(0.0), m_orientation(), m_verticalAxis(verticalAxis),
-    m_lateralDisplacement(), m_position(position), m_target(target),
-    m_sensivity(sensivity), m_maxSpeed(maxSpeed), m_speed(0), m_velocity(0.1)
-{
-    
 }
 
 Camera::~Camera() {
@@ -25,24 +18,21 @@ Camera::~Camera() {
 }
 
 // orientates the camera's target point
-void Camera::orientate(const glm::vec2& mouseDir) {
-    m_phi += -mouseDir.y * m_sensivity;
-    m_theta += -mouseDir.x * m_sensivity;
-
-    if(m_phi > 89.0) m_phi = 89.0;
-    else if(m_phi < -89.0) m_phi = -89.0;
+void Camera::orientate(const glm::vec2& dir) {
+    m_phi += std::clamp(-dir.y * m_sensivity, -89.0f, 89.0f);
+    m_theta += -dir.x * m_sensivity;
 
     float phiRadian = m_phi * M_PI / 180;
     float thetaRadian = m_theta * M_PI / 180;
 
     // vertical axis = horizontal axis
-    if(m_verticalAxis.x == 1.0) {
+    if(m_verticalAxis.x == 1.0f) {
         m_orientation.x = sin(phiRadian);
         m_orientation.y = cos(phiRadian) * cos(thetaRadian);
         m_orientation.z = cos(phiRadian) * sin(thetaRadian);
     }
     // Y axis
-    else if(m_verticalAxis.y == 1.0) {
+    else if(m_verticalAxis.y == 1.0f) {
         m_orientation.x = cos(phiRadian) * sin(thetaRadian);
         m_orientation.y = sin(phiRadian);
         m_orientation.z = cos(phiRadian) * cos(thetaRadian);
@@ -54,7 +44,7 @@ void Camera::orientate(const glm::vec2& mouseDir) {
         m_orientation.z = sin(phiRadian);
     }
 
-    m_lateralDisplacement = normalize(cross(m_verticalAxis, m_orientation));
+    m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
     m_target = m_position + m_orientation;
 }
 
@@ -62,51 +52,32 @@ void Camera::orientate(const glm::vec2& mouseDir) {
 void Camera::update(const Input& input) {
     if(input.isMouseMoving())
 		orientate(input.getMouseDir());
-
-    glm::vec3 movementVector;
-    bool isMoving = false;
-
-    if(isMoving |= (input.isKeyDown(SDL_SCANCODE_UP) || input.isKeyDown(SDL_SCANCODE_W)))
-        movementVector = m_orientation;
-
-    if(isMoving |= (input.isKeyDown(SDL_SCANCODE_DOWN) || input.isKeyDown(SDL_SCANCODE_S)))
-        movementVector = m_orientation * -1.0f;
-
-    if(isMoving |= (input.isKeyDown(SDL_SCANCODE_LEFT) || input.isKeyDown(SDL_SCANCODE_A)))
-        movementVector = m_lateralDisplacement;
-
-    if(isMoving |= (input.isKeyDown(SDL_SCANCODE_RIGHT) || input.isKeyDown(SDL_SCANCODE_D)))
-        movementVector = m_lateralDisplacement * -1.0f;
-
-    if(isMoving |= (input.isKeyDown(SDL_SCANCODE_SPACE)))
-        movementVector = m_verticalAxis;
-
-    if(isMoving |= (input.isKeyDown(SDL_SCANCODE_LCTRL)))
-        movementVector = m_verticalAxis * -1.0f;
-
-    if(isMoving) {
-        m_speed += m_velocity;
-
-        if(m_speed > m_maxSpeed) 
-		    m_speed = m_maxSpeed;
-
-        m_position += movementVector * m_speed;
+    
+    if(input.isKeyDown(SDL_SCANCODE_W)) {
+        m_position = m_position + m_orientation * m_speed;
+        m_target = m_position + m_orientation;
     }
 
-	else {
-        m_speed -= m_velocity;
-        
-        if(m_speed < 0)
-            m_speed = 0;
-	}
+    if(input.isKeyDown(SDL_SCANCODE_S)) {
+        m_position = m_position - m_orientation * m_speed;
+        m_target = m_position + m_orientation;
+    }
 
-	m_target = m_position + m_orientation;
+    if(input.isKeyDown(SDL_SCANCODE_A)) {
+        m_position = m_position + m_lateralDisplacement * m_speed;
+        m_target = m_position + m_orientation;
+    }
+
+    if(input.isKeyDown(SDL_SCANCODE_D)) {
+        m_position = m_position - m_lateralDisplacement * m_speed;
+        m_target = m_position + m_orientation;
+    }
 }
 
 // Defines the camera's target
 void Camera::setTarget(const glm::vec3& target) {
     m_orientation = target - m_position;
-    m_orientation = normalize(m_orientation);
+    m_orientation = glm::normalize(m_orientation);
 
     if(m_verticalAxis.x == 1.0) {
         m_phi = asin(m_orientation.x);

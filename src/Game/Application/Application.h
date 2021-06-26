@@ -10,7 +10,7 @@
 #include "Input.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Drawable.h"
+#include "Cube.h"
 #include "MatricesMVP.h"
 
 class Application {
@@ -25,6 +25,7 @@ class Application {
 
     protected:
         void compileShaders();
+        void loadTextures();
         void mainLoop();
         void update();
         bool isMouseFocused() const;
@@ -38,7 +39,7 @@ class Application {
         ResourceHolder<Shader, std::string> m_shaders;
         ResourceHolder<Texture, std::string> m_textures;
         MatricesMVP m_mvp;
-        Drawable m_shape; // tmp
+        Cube m_shape; // tmp
 };
 
 #endif // APPLICATION_H

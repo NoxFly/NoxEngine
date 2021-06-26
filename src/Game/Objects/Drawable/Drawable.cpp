@@ -14,6 +14,7 @@ void Drawable::setShadersBank(ResourceHolder<Shader, std::string>& shadersBank) 
 // empty entity
 Drawable::Drawable():
     m_wireframe(false),
+    m_geometry(),
     m_shader(0),
     m_VBO(0), m_VAO(0),
     m_vertexNumber(0)
@@ -21,21 +22,14 @@ Drawable::Drawable():
 
 }
 
-// creates entity only with vertices
-Drawable::Drawable(float* vertices, GLuint verticesSize):
-    Drawable(vertices, 0, verticesSize)
-{
-    
-}
-
-// creates entity with vertices and colors
-Drawable::Drawable(float* vertices, float* colors, GLuint verticesSize):
+Drawable::Drawable(Geometry& geometry):
     m_wireframe(false),
+    m_geometry(geometry),
     m_shader(0),
     m_VBO(0), m_VAO(0),
     m_vertexNumber(0)
 {
-    load(vertices, colors, verticesSize);
+    load();
 }
 
 Drawable::~Drawable() {
@@ -43,16 +37,31 @@ Drawable::~Drawable() {
     glDeleteBuffers(1, &m_VBO);
 }
 
+Drawable& Drawable::operator=(Drawable const &copy) {
+    m_geometry = copy.getGeometry();
+    m_shader = copy.getShader();
+
+    load();
+
+    return *this;
+}
+
+Drawable::Drawable(Drawable const &copy) {
+    m_geometry = copy.getGeometry();
+    m_shader = copy.getShader();
+
+    load();
+}
 
 // loads the vertices, colors and textures of the entity in the memory
-void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
-    if(verticesSize % 3 != 0)
+void Drawable::load() {
+    if(m_geometry.elementCount % 3 != 0 || m_geometry.vertices == 0)
         return;
 
-    size_t sizeVertices = sizeof(float) * verticesSize;
-    size_t sizeColors = (colors != 0)? sizeVertices : 0;
+    size_t sizeVertices = sizeof(float) * m_geometry.elementCount;
+    size_t sizeColors = (m_geometry.colors != 0)? sizeVertices : 0;
 
-    m_vertexNumber = verticesSize / 3;
+    m_vertexNumber = m_geometry.elementCount / 3;
     
     // delete possibly existing older VBO & VAO
     if(glIsBuffer(m_VBO) == GL_TRUE)
@@ -74,11 +83,11 @@ void Drawable::load(float* vertices, float* colors, GLuint verticesSize) {
             glBufferData(GL_ARRAY_BUFFER, sizeVertices + sizeColors, 0, GL_STATIC_DRAW);
 
             // transfert data for vertices
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeVertices, vertices);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeVertices, m_geometry.vertices);
 
             // transfert data for colors
             if(sizeColors > 0)
-                glBufferSubData(GL_ARRAY_BUFFER, sizeVertices, sizeColors, colors);
+                glBufferSubData(GL_ARRAY_BUFFER, sizeVertices, sizeColors, m_geometry.colors);
 
             // access to coords in the memory and lock these
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
@@ -108,6 +117,19 @@ void Drawable::setWireframe(const bool wireframeState) {
     m_wireframe = wireframeState;
 }
 
+bool Drawable::isWireframed() const {
+    return m_wireframe;
+}
+
+Geometry Drawable::getGeometry() const {
+    return m_geometry;
+}
+
+Shader* Drawable::getShader() const {
+    return m_shader;
+}
+
+
 
 // draw the entity on given MVP
 void Drawable::draw(glm::mat4& MVP) {
@@ -116,10 +138,10 @@ void Drawable::draw(glm::mat4& MVP) {
         return;
     
     // wireframe mode
-    glPolygonMode(GL_FRONT_AND_BACK, m_wireframe? GL_LINE : GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, isWireframed()? GL_LINE : GL_FILL);
 
     // lock shader
-    glUseProgram(m_shader->getId());
+    m_shader->use();
         // lock VAO
         glBindVertexArray(m_VAO);
             // sends the matrices

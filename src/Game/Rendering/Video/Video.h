@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 #include "IniSet.h"
 #include "utils.h"
@@ -24,6 +25,8 @@ class Video {
         void setMouseFocus(const bool focus);
         bool isMouseGrabbed() const;
         bool isMouseFocused() const;
+
+        glm::vec2 getSize() const;
 
     protected:
         bool InitSDL(IniSet& config, const std::string& section);

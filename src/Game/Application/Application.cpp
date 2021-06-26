@@ -18,16 +18,14 @@ Application::Application(IniSet& config, std::string basePath):
     m_FPS(config.getIntValue("WINDOW", "fps", 30)),
     m_scene(&config),
     m_input(),
-    m_mvp(70.0, (double)(config.getFloatValue("WINDOW", "width", 1) / config.getFloatValue("WINDOW", "height", 1)), 1.0, 100.0),
-    
+    m_mvp(
+        glm::radians(70.0f),
+        (double)(config.getFloatValue("WINDOW", "width", 1) / config.getFloatValue("WINDOW", "height", 1)),
+        0.1f,
+        100.0f
+    ),
     // tmp
-    m_shape(
-        new float[9]{ -0.5, -0.5, -1.0,   0.0, 0.5, -1.0,   0.5, -0.5, -1.0 },
-        new float[9]{  1.0,  0.0,  0.0,   0.0, 1.0,  0.0,   0.0,  0.0,  1.0 },
-        9
-    )
-    //m_shape(0, 0, 0, 1)
-    //
+    m_shape(0, 0, 0, 1)
 {
     Application::appBasePath = basePath;
 
@@ -35,7 +33,8 @@ Application::Application(IniSet& config, std::string basePath):
     Drawable::setShadersBank(m_shaders);
 
     m_scene.bindMatrices(m_mvp);
-    m_scene.getCamera().lookAt(glm::vec3(3, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    m_input.setCurrentWindow(*m_scene.getVideo());
+    m_scene.getCamera().lookAt(glm::vec3(2, 2, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
 Application::~Application() {
@@ -47,6 +46,7 @@ void Application::start() {
     m_scene.show();
 
     compileShaders();
+    loadTextures();
 
     m_shape.setShader("color3D");
 
@@ -153,16 +153,40 @@ void Application::compileShaders() {
             Shader shader(key, m_scene.getCompactGLversion());
 
             // try to compile it
-            if(shader.load()) {
+            if(shader.load())
                 m_shaders.set(key, shader);
-#ifdef DEBUG
-                Console::info("Compiled shader '" + key + "'");
-#endif
-            }
 #ifdef DEBUG
             else
                 Console::error("Failed to compile shader '" + key + "'");
 #endif
+        }
+    }
+}
+
+
+void Application::loadTextures() {
+    std::string texDir = Application::getPath(m_config.getValue("PATH", "textures") + "blocks/");
+
+    // read shaders dir and compile all of them
+    for(const auto& entry : fs::directory_iterator(texDir)) {
+        if(entry.exists()) {
+            if(entry.is_regular_file()) {
+                std::string fullname = entry.path().string().substr(texDir.size());
+                size_t extPos = fullname.find_last_of('.');
+                std::string ext = fullname.substr(extPos+1);
+                std::string name = fullname.substr(0, extPos);
+
+                if(ext == "png" || ext == "jpg") {
+                    Texture tex(texDir + fullname, name);
+
+                    if(tex.load())
+                        m_textures.set(name, tex);
+#ifdef DEBUG
+                    else
+                        Console::info("Failed to load texture " + name);
+#endif
+                }
+            }
         }
     }
 }

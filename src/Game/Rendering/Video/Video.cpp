@@ -74,6 +74,10 @@ bool Video::InitSDL(IniSet& config, const std::string& section) {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+    // multi-sampling
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config.getIntValue("WINDOW", "multisampling_buffer", 1));
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.getIntValue("WINDOW", "multisampling_amples", 16));
+
 	m_window = SDL_CreateWindow(
         title.c_str(),
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -194,6 +198,8 @@ void Video::setMouseGrab(const bool grabbed) {
 
 void Video::setMouseFocus(const bool focus) {
     SDL_SetRelativeMouseMode(focus? SDL_TRUE : SDL_FALSE);
+    glm::vec2 v = getSize();
+    SDL_WarpMouseInWindow(m_window, v.x / 2, v.y / 2);
 }
 
 
@@ -204,4 +210,10 @@ bool Video::isMouseGrabbed() const {
 
 bool Video::isMouseFocused() const {
     return SDL_GetRelativeMouseMode();
+}
+
+glm::vec2 Video::getSize() const {
+    int w, h;
+    SDL_GetWindowSize(m_window, &w, &h);
+    return glm::vec2(w, h);
 }

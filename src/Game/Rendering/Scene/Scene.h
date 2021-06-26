@@ -29,7 +29,7 @@ class Scene {
         bool isOpen() const;
 
         GLuint getCompactGLversion() const;
-        Camera getCamera();
+        Camera& getCamera();
         Video* getVideo();
 
     private:
