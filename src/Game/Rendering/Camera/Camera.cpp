@@ -54,27 +54,29 @@ void Camera::update(const Input& input) {
     if(input.isMouseMoving())
 		orientate(input.getMouseDir());
 
-    if(input.isKeyDown(SDL_SCANCODE_W)) {
-        m_position = m_position + m_orientation * m_speed;
-        m_target = m_orientation;
-    }
+    if(input.isKeyDown(SDL_SCANCODE_W))
+        m_position += m_orientation * m_speed;
 
-    if(input.isKeyDown(SDL_SCANCODE_S)) {
-        m_position = m_position - m_orientation * m_speed;
-        m_target = m_orientation;
-    }
+    if(input.isKeyDown(SDL_SCANCODE_S))
+        m_position -= m_orientation * m_speed;
 
     if(input.isKeyDown(SDL_SCANCODE_A)) {
-        m_position = m_position + m_lateralDisplacement * m_speed;
+        m_position += m_lateralDisplacement * m_speed;
         m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
-        m_target = m_orientation;
     }
 
     if(input.isKeyDown(SDL_SCANCODE_D)) {
-        m_position = m_position - m_lateralDisplacement * m_speed;
+        m_position -= m_lateralDisplacement * m_speed;
         m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
-        m_target = m_orientation;
     }
+
+    if(input.isKeyDown(SDL_SCANCODE_SPACE))
+		m_position += m_verticalAxis * m_speed;
+
+    if(input.isKeyDown(SDL_SCANCODE_LCTRL))
+		m_position -= m_verticalAxis * m_speed;
+
+    m_target = m_orientation;
 }
 
 // Defines the camera's target

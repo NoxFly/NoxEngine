@@ -10,7 +10,7 @@
 #include "Input.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Cube.h"
+#include "Block.h"
 #include "MatricesMVP.h"
 
 class Application {
@@ -39,7 +39,7 @@ class Application {
         ResourceHolder<Shader, std::string> m_shaders;
         ResourceHolder<Texture, std::string> m_textures;
         MatricesMVP m_mvp;
-        Cube m_shape; // tmp
+        Block m_shape; // tmp
 };
 
 #endif // APPLICATION_H

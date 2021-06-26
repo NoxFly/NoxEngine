@@ -1,5 +1,5 @@
-in vec3 in_Vertex;
-in vec2 in_TexCoord0;
+layout (location = 0) in vec3 in_Vertex;
+layout (location = 2) in vec2 in_TexCoord0;
 
 uniform mat4 MVP;
 

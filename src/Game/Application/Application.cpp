@@ -25,12 +25,14 @@ Application::Application(IniSet& config, std::string basePath):
         100.0f
     ),
     // tmp
-    m_shape(0, 0, 0, 1)
+    m_shape()
 {
     Application::appBasePath = basePath;
 
     Shader::setShadersPath(Application::getPath(config.getValue("PATH", "shaders")));
+
     Drawable::setShadersBank(m_shaders);
+    Drawable::setTexturesBank(m_textures);
 
     m_scene.bindMatrices(m_mvp);
     m_input.setCurrentWindow(*m_scene.getVideo());
@@ -48,7 +50,7 @@ void Application::start() {
     compileShaders();
     loadTextures();
 
-    m_shape.setShader("color3D");
+    m_shape = Block(0, 0, 0, "grass_bottom");
 
     // capture the mouse
     m_scene.getVideo()->setMouseFocus(true);
