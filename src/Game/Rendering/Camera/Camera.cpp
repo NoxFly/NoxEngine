@@ -10,7 +10,6 @@ Camera::Camera():
     m_lateralDisplacement(), m_position(), m_target(),
     m_sensivity(1), m_maxSpeed(0.05), m_speed(0.3), m_velocity(0.01)
 {
-
 }
 
 Camera::~Camera() {
@@ -26,6 +25,7 @@ void Camera::orientate(const glm::vec2& dir) {
     float thetaRadian = m_theta * M_PI / 180;
 
     // vertical axis = horizontal axis
+
     if(m_verticalAxis.x == 1.0f) {
         m_orientation.x = sin(phiRadian);
         m_orientation.y = cos(phiRadian) * cos(thetaRadian);
@@ -44,40 +44,42 @@ void Camera::orientate(const glm::vec2& dir) {
         m_orientation.z = sin(phiRadian);
     }
 
-    m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
-    m_target = m_position + m_orientation;
+    m_orientation = glm::normalize( m_orientation );
+    m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation ) );
+    m_target = m_orientation;
 }
 
 // Updates the camera position and look
 void Camera::update(const Input& input) {
     if(input.isMouseMoving())
 		orientate(input.getMouseDir());
-    
+
     if(input.isKeyDown(SDL_SCANCODE_W)) {
         m_position = m_position + m_orientation * m_speed;
-        m_target = m_position + m_orientation;
+        m_target = m_orientation;
     }
 
     if(input.isKeyDown(SDL_SCANCODE_S)) {
         m_position = m_position - m_orientation * m_speed;
-        m_target = m_position + m_orientation;
+        m_target = m_orientation;
     }
 
     if(input.isKeyDown(SDL_SCANCODE_A)) {
         m_position = m_position + m_lateralDisplacement * m_speed;
-        m_target = m_position + m_orientation;
+        m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
+        m_target = m_orientation;
     }
 
     if(input.isKeyDown(SDL_SCANCODE_D)) {
         m_position = m_position - m_lateralDisplacement * m_speed;
-        m_target = m_position + m_orientation;
+        m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
+        m_target = m_orientation;
     }
 }
 
 // Defines the camera's target
 void Camera::setTarget(const glm::vec3& target) {
-    m_orientation = target - m_position;
-    m_orientation = glm::normalize(m_orientation);
+    m_orientation = glm::normalize( target - m_position );
 
     if(m_verticalAxis.x == 1.0) {
         m_phi = asin(m_orientation.x);
@@ -111,21 +113,21 @@ void Camera::setTarget(const glm::vec3& target) {
 // Defines the camera's position
 void Camera::setPosition(const glm::vec3& position) {
     this->m_position = position;
-    m_target = position + m_orientation;
 }
 
 
 // Updates the view matrix. Normally called every update loop
 void Camera::lookAt(glm::mat4& view) {
-    view = glm::lookAt(m_position, m_target, m_verticalAxis);
+    view = glm::lookAt(m_position, m_position + m_target, m_verticalAxis);
 }
 
 
 // Set's the camera's look at. The view matrix will be upated in the loop
 void Camera::lookAt(const glm::vec3 eye, const glm::vec3 center, const glm::vec3 up) {
     m_position = eye;
-    m_target = center;
     m_verticalAxis = up;
+    setTarget( center );
+    m_target = glm::normalize( center - eye );
 }
 
 
