@@ -3,28 +3,29 @@
 
 #include <glm/glm.hpp>
 
+#include "geometry.h"
 #include "Drawable.h"
 
 class Cube: public Drawable {
 	public:
-		Cube(int x, int y, int z, float size);
-        Cube(glm::vec3 position, float size);
+		Cube(Geometry& geometry, Material& material);
 		~Cube();
 
         Cube& operator=(Cube const &copy);
 
-        glm::vec3 getPosition() const;
+        void setSize(const float size);
         void setPosition(const glm::vec3 position);
+        void setPosition(const int x, const int y, const int z);
 
         float getSize() const;
-        void setSize(const float size);
+        glm::vec3 getPosition() const;
 
-        Cube();
     protected:
-        Cube(glm::vec3 position, float size, bool addColors);
+        Cube();
+        Cube(Geometry& geometry, Material& material, bool hasToLoad);
+        Cube(bool hasToLoad);
 
-        void load();
-        void load(bool addColors);
+        void load(Geometry& geometry, Material& material);
 
         glm::vec3 m_position;
         float m_size;

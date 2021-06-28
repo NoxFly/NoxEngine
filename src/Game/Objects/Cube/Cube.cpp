@@ -1,5 +1,7 @@
 #include "Cube.h"
 
+#include <vector>
+
 Cube::Cube():
     Drawable(),
     m_position(0, 0, 0),
@@ -8,25 +10,31 @@ Cube::Cube():
 
 }
 
-Cube::Cube(int x, int y, int z, float size):
-    m_position(x, y, z),
-    m_size(size)
+Cube::Cube(Geometry& geometry, Material& material):
+    Drawable(),
+    m_position(0, 0, 0),
+    m_size(0)
 {
-    load();
+    load(geometry, material);
 }
 
-Cube::Cube(glm::vec3 position, float size):
-    m_position(position),
-    m_size(size)
+
+Cube::Cube(Geometry& geometry, Material& material, bool hasToLoad):
+    Drawable(),
+    m_position(0, 0, 0),
+    m_size(0)
 {
-    load();
+    if(hasToLoad)
+        load(geometry, material);
 }
 
-Cube::Cube(glm::vec3 position, float size, bool addColors):
-    m_position(position),
-    m_size(size)
+Cube::Cube(bool hasToLoad):
+    Drawable(),
+    m_position(0, 0, 0),
+    m_size(0)
 {
-    load(addColors);
+    if(hasToLoad)
+        load(m_geometry, m_material);
 }
 
 Cube::~Cube() {
@@ -40,65 +48,38 @@ Cube& Cube::operator=(Cube const &copy) {
 
     Drawable::operator=(copy);
 
-    load(false);
+    load(m_geometry, m_material);
 
     return *this;
 }
 
+void Cube::load(Geometry& geometry, Material& material) {
+    float s = m_size / 2;
 
-void Cube::load() {
-    load(true);
-}
+    std::vector<float> vertices = {
+        -s, -s, -s,     s, -s, -s,      s, s, -s,
+        -s, -s, -s,     -s, s, -s,      s, s, -s,
 
-void Cube::load(bool addColors) {
-    float size = m_size / 2;
+        s, -s, s,       s, -s, -s,      s, s, -s,
+        s, -s, s,       s, s, s,        s, s, -s,
 
-    float vertices[] = {
-        -size, -size, -size,   size, -size, -size,   size, size, -size,
-        -size, -size, -size,   -size, size, -size,   size, size, -size,
+        -s, -s, s,      s, -s, s,       s, -s, -s,
+        -s, -s, s,      -s, -s, -s,     s, -s, -s,
 
-        size, -size, size,   size, -size, -size,   size, size, -size,
-        size, -size, size,   size, size, size,   size, size, -size,
+        -s, -s, s,      s, -s, s,       s, s, s,
+        -s, -s, s,      -s, s, s,       s, s, s,
 
-        -size, -size, size,   size, -size, size,   size, -size, -size,
-        -size, -size, size,   -size, -size, -size,   size, -size, -size,
+        -s, -s, -s,     -s, -s, s,      -s, s, s,
+        -s, -s, -s,     -s, s, -s,      -s, s, s,
 
-        -size, -size, size,   size, -size, size,   size, size, size,
-        -size, -size, size,   -size, size, size,   size, size, size,
-
-        -size, -size, -size,   -size, -size, size,   -size, size, size,
-        -size, -size, -size,   -size, size, -size,   -size, size, size,
-
-        -size, size, size,   size, size, size,   size, size, -size,
-        -size, size, size,   -size, size, -size,   size, size, -size
+        -s, s, s,       s, s, s,        s, s, -s,
+        -s, s, s,       -s, s, -s,      s, s, -s
     };
 
-    if(addColors) {
-        float colors[] = {
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+    m_geometry = geometry;
+    m_material = material;
 
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-            0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
-        };
-
-        m_geometry.colors = colors;
-    }
-
-    m_geometry.vertices = vertices;
-    m_geometry.verticesSize = 108;
+    m_geometry.vertices = { 108, vertices };
 
     Drawable::load();
 }

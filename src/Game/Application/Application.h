@@ -4,12 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "ResourceHolder.hpp"
 #include "IniSet.h"
 #include "Scene.h"
 #include "Input.h"
-#include "Shader.h"
-#include "Texture.h"
 #include "Block.h"
 #include "MatricesMVP.h"
 
@@ -36,8 +33,6 @@ class Application {
         int m_FPS;
         Scene m_scene;
         Input m_input;
-        ResourceHolder<Shader, std::string> m_shaders;
-        ResourceHolder<Texture, std::string> m_textures;
         MatricesMVP m_mvp;
         Block m_shape; // tmp
 };

@@ -5,6 +5,12 @@ void ResourceHolder<Resource, Identifier>::set(const Identifier id, const Resour
 }
 
 template <typename Resource, typename Identifier>
+void ResourceHolder<Resource, Identifier>::set(const Identifier id, std::unique_ptr<Resource> resource) {
+    if(!has(id))
+        insertResource(id, std::move(resource));
+}
+
+template <typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::remove(const Identifier id) {
     if(has(id))
         m_resourceMap.erase(id);

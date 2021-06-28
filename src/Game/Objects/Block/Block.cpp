@@ -1,5 +1,7 @@
 #include "Block.h"
 
+#include <vector>
+
 float Block::size = 1.0;
 
 Block::Block():
@@ -15,14 +17,12 @@ Block::Block(int x, int y, int z, const std::string& blockName):
 }
 
 Block::Block(glm::vec3 position, const std::string& blockName):
-    Cube(position, Block::size, false)
+    Cube(false)
 {
-    setTexture(blockName);
-    setShader("texture");
+    setSize(Block::size);
+    setPosition(position);
 
-    m_geometry.texturesSize = 72;
-
-    float textures[] = {
+    std::vector<float> textures = {
         0, 0,   1, 0,   1, 1,
         0, 0,   0, 1,   1, 1,
 
@@ -42,9 +42,38 @@ Block::Block(glm::vec3 position, const std::string& blockName):
         0, 0,   0, 1,   1, 1
     };
 
-    m_geometry.textures = textures;
+    // (void)blockName;
 
-    Cube::load();
+    // colors to debug new structure geometry / material
+    /* std::vector<float> colors = {
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+        0.93, 0.93, 0.93,   0.93, 0.93, 0.93,   0.93, 0.93, 0.93,
+    }; */
+
+    Geometry g;
+    // g.colors = { 108, colors };
+    g.textures = { 72, textures };
+
+    Material m;
+    m.setShader("texture");
+    m.setTextures(blockName);
+
+    Cube::load(g, m);
 }
 
 Block::~Block() {

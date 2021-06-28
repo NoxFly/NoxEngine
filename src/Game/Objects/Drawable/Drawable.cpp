@@ -4,39 +4,33 @@
 
 #include "Console.h"
 
-ResourceHolder<Shader, std::string>* Drawable::shadersBank = 0;
-ResourceHolder<Texture, std::string>* Drawable::texturesBank = 0;
-
-// defines the pointer of the shader's resource holder
-void Drawable::setShadersBank(ResourceHolder<Shader, std::string>& shadersBank) {
-    Drawable::shadersBank = &shadersBank;
-}
-
-// defines the pointer of the textures's resource holder
-void Drawable::setTexturesBank(ResourceHolder<Texture, std::string>& texturesBank) {
-    Drawable::texturesBank = &texturesBank;
-}
-
 
 // empty entity
 Drawable::Drawable():
     m_wireframe(false),
     m_geometry(),
-    m_shader(0),
+    m_material(),
     m_VBO(0), m_VAO(0),
     m_vertexNumber(0)
 {
 
 }
 
-Drawable::Drawable(Geometry& geometry):
+Drawable::Drawable(Geometry& geometry, Material& material):
+    Drawable(geometry, material, true)
+{
+
+}
+
+Drawable::Drawable(Geometry& geometry, Material& material, bool hasToLoad):
     m_wireframe(false),
     m_geometry(geometry),
-    m_shader(0),
+    m_material(material),
     m_VBO(0), m_VAO(0),
     m_vertexNumber(0)
 {
-    load();
+    if(hasToLoad)
+        load();
 }
 
 Drawable::~Drawable() {
@@ -46,32 +40,79 @@ Drawable::~Drawable() {
 
 Drawable& Drawable::operator=(Drawable const &copy) {
     m_geometry = copy.getGeometry();
-    m_shader = copy.getShader();
-    m_texture = copy.getTexture();
-
-    load();
+    m_material = copy.getMaterial();
 
     return *this;
 }
 
 Drawable::Drawable(Drawable const &copy) {
     m_geometry = copy.getGeometry();
-    m_shader = copy.getShader();
-    m_texture = copy.getTexture();
-
+    m_material = copy.getMaterial();
+    
     load();
 }
 
+
+// defines the shader of the entity
+void Drawable::setShader(const std::string& shaderName) {
+    m_material.setShader(shaderName);
+}
+
+
+void Drawable::setTexture(const std::string& texName) {
+    m_material.setTextures(texName);
+}
+
+Shader* Drawable::getShader() const {
+    return m_material.getShader();
+}
+
+Texture* Drawable::getTexture() const {
+    if(m_material.getTextures().size() > 0)
+        return m_material.getTextures()[0];
+    
+    return nullptr;
+}
+
+Geometry& Drawable::getGeometry() {
+    return m_geometry;
+}
+
+Material& Drawable::getMaterial() {
+    return m_material;
+}
+
+Geometry Drawable::getGeometry() const {
+    return m_geometry;
+}
+
+Material Drawable::getMaterial() const {
+    return m_material;
+}
+
+// enables or disables the wireframe mode
+void Drawable::setWireframe(const bool wireframeState) {
+    m_wireframe = wireframeState;
+}
+
+bool Drawable::isWireframed() const {
+    return m_wireframe;
+}
+
+
 // loads the vertices, colors and textures of the entity in the memory
 void Drawable::load() {
-    if(m_geometry.verticesSize % 3 != 0 || m_geometry.vertices == 0)
+    // it needs some vertices and each vertex is 3D (x,y,z)
+    if(m_geometry.vertices.array.size() == 0 || m_geometry.vertices.size % 3 != 0)
         return;
 
-    size_t sizeVertices = sizeof(float) * m_geometry.verticesSize;
-    size_t sizeColors = (m_geometry.colors != 0)? sizeVertices : 0;
-    size_t sizeTex = (m_geometry.textures != 0)? m_geometry.texturesSize : 0;
+    size_t fsize = sizeof(float);
 
-    m_vertexNumber = m_geometry.verticesSize / 3;
+    size_t sizeVertices =   fsize * m_geometry.vertices.size;
+    size_t sizeColors =     (m_geometry.colors.array.size() > 0)? fsize * m_geometry.colors.size : 0;
+    size_t sizeTex =        (m_geometry.textures.array.size() > 0 && m_material.hasTexture())? fsize * m_geometry.textures.size : 0;
+
+    m_vertexNumber = sizeVertices / fsize / 3;
     
     // delete possibly existing older VBO & VAO
     if(glIsBuffer(m_VBO) == GL_TRUE)
@@ -93,15 +134,15 @@ void Drawable::load() {
             glBufferData(GL_ARRAY_BUFFER, sizeVertices + sizeColors + sizeTex, 0, GL_STATIC_DRAW);
 
             // transfert data for vertices
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeVertices, m_geometry.vertices);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeVertices, m_geometry.vertices.array.data());
 
             // transfert data for colors
             if(sizeColors > 0)
-                glBufferSubData(GL_ARRAY_BUFFER, sizeVertices, sizeColors, m_geometry.colors);
+                glBufferSubData(GL_ARRAY_BUFFER, sizeVertices, sizeColors, m_geometry.colors.array.data());
 
             // transfert data for textures
             if(sizeTex > 0)
-                glBufferSubData(GL_ARRAY_BUFFER, sizeVertices + sizeColors, sizeTex, m_geometry.textures);
+                glBufferSubData(GL_ARRAY_BUFFER, sizeVertices + sizeColors, sizeTex, m_geometry.textures.array.data());
 
             // access to coords in the memory and lock these
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
@@ -123,67 +164,34 @@ void Drawable::load() {
 }
 
 
-// defines the shader of the entity
-void Drawable::setShader(const std::string& shaderName) {
-    if(Drawable::shadersBank != 0 && Drawable::shadersBank->has(shaderName)) {
-        this->m_shader = &Drawable::shadersBank->get(shaderName);
-    }
-}
-
-
-void Drawable::setTexture(const std::string& texName) {
-    if(Drawable::texturesBank != 0 && Drawable::texturesBank->has(texName)) {
-        this->m_texture = &Drawable::texturesBank->get(texName);
-    }
-}
-
-
-// enables or disables the wireframe mode
-void Drawable::setWireframe(const bool wireframeState) {
-    m_wireframe = wireframeState;
-}
-
-bool Drawable::isWireframed() const {
-    return m_wireframe;
-}
-
-Geometry Drawable::getGeometry() const {
-    return m_geometry;
-}
-
-Shader* Drawable::getShader() const {
-    return m_shader;
-}
-
-Texture* Drawable::getTexture() const {
-    return m_texture;
-}
-
-
 // draw the entity on given MVP
 void Drawable::draw(glm::mat4& MVP) {
+    Shader* shader = m_material.getShader();
+
     // can't draw if the entity has not a shader
-    if(!m_shader)
+    if(!shader)
         return;
+
+    bool hasTexture = m_material.hasTexture();
     
     // wireframe mode
     glPolygonMode(GL_FRONT_AND_BACK, isWireframed()? GL_LINE : GL_FILL);
 
     // lock shader
-    m_shader->use();
+    shader->use();
         // lock VAO
         glBindVertexArray(m_VAO);
 
             // sends the matrices
-            glUniformMatrix4fv(glGetUniformLocation(m_shader->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+            glUniformMatrix4fv(glGetUniformLocation(shader->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 
-            if(m_geometry.texturesSize > 0 && m_texture != 0)
-                glBindTexture(GL_TEXTURE_2D, m_texture->getID());
+            if(hasTexture)
+                glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());
 
             // renders
             glDrawArrays(GL_TRIANGLES, 0, m_vertexNumber);
 
-            if(m_geometry.texturesSize > 0 && m_texture != 0)
+            if(hasTexture)
                 glBindTexture(GL_TEXTURE_2D, 0);
 
         // unlock VAO

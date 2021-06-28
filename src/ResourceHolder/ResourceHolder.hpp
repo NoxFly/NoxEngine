@@ -8,6 +8,7 @@ template <typename Resource, typename Identifier>
 class ResourceHolder {
     public:
         void set(const Identifier id, const Resource& resource);
+        void set(const Identifier id, std::unique_ptr<Resource> resource);
         void remove(const Identifier id);
         Resource& get(const Identifier id);
         const Resource& get(const Identifier id) const;

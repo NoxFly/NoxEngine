@@ -4,12 +4,17 @@
 #include <filesystem>
 
 #include "Shader.h"
+#include "Texture.h"
+#include "resourceBank.h"
 #include "Console.h"
 
 namespace fs = std::filesystem;
 
 
 std::string Application::appBasePath = "./";
+
+ResourceHolder<Shader, std::string> shadersBank;
+ResourceHolder<Texture, std::string> texturesBank;
 
 
 Application::Application(IniSet& config, std::string basePath):
@@ -30,9 +35,6 @@ Application::Application(IniSet& config, std::string basePath):
     Application::appBasePath = basePath;
 
     Shader::setShadersPath(Application::getPath(config.getValue("PATH", "shaders")));
-
-    Drawable::setShadersBank(m_shaders);
-    Drawable::setTexturesBank(m_textures);
 
     m_scene.bindMatrices(m_mvp);
     m_input.setCurrentWindow(*m_scene.getVideo());
@@ -152,11 +154,11 @@ void Application::compileShaders() {
     for(auto const& [key, val] : shadersName) {
         // if complete shader
         if(val.first && val.second) {
-            Shader shader(key, m_scene.getCompactGLversion());
+            std::unique_ptr<Shader> shader = std::make_unique<Shader>(key, m_scene.getCompactGLversion());
 
             // try to compile it
-            if(shader.load())
-                m_shaders.set(key, shader);
+            if(shader->load())
+                shadersBank.set(key, std::move(shader));
 #ifdef DEBUG
             else
                 Console::error("Failed to compile shader '" + key + "'");
@@ -179,10 +181,10 @@ void Application::loadTextures() {
                 std::string name = fullname.substr(0, extPos);
 
                 if(ext == "png" || ext == "jpg") {
-                    Texture tex(texDir + fullname, name);
+                    std::unique_ptr<Texture> tex = std::make_unique<Texture>(texDir + fullname, name);
 
-                    if(tex.load())
-                        m_textures.set(name, tex);
+                    if(tex->load())
+                        texturesBank.set(name, std::move(tex));
 #ifdef DEBUG
                     else
                         Console::info("Failed to load texture " + name);
