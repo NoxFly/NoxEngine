@@ -165,7 +165,7 @@ void Drawable::load() {
 
 
 // draw the entity on given MVP
-void Drawable::draw(glm::mat4& MVP) {
+void Drawable::draw(MatricesMVP& MVP) {
     Shader* shader = m_material.getShader();
 
     // can't draw if the entity has not a shader
@@ -183,7 +183,7 @@ void Drawable::draw(glm::mat4& MVP) {
         glBindVertexArray(m_VAO);
 
             // sends the matrices
-            glUniformMatrix4fv(glGetUniformLocation(shader->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+            glUniformMatrix4fv(glGetUniformLocation(shader->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP.getMVP()));
 
             if(hasTexture)
                 glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());

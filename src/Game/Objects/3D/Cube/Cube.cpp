@@ -100,3 +100,13 @@ float Cube::getSize() const {
 void Cube::setSize(const float size) {
     m_size = size;
 }
+
+void Cube::draw(MatricesMVP& MVP) {
+    if(!m_material.hasShader())
+        return;
+
+    MVP.push();
+        MVP.translate(m_position);
+        Drawable::draw(MVP);
+    MVP.pop();
+}

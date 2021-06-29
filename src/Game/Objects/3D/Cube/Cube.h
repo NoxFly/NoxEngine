@@ -5,6 +5,7 @@
 
 #include "geometry.h"
 #include "Drawable.h"
+#include "MatricesMVP.h"
 
 class Cube: public Drawable {
 	public:
@@ -12,6 +13,8 @@ class Cube: public Drawable {
 		~Cube();
 
         Cube& operator=(Cube const &copy);
+
+        void draw(MatricesMVP& MVP);
 
         void setSize(const float size);
         void setPosition(const glm::vec3 position);

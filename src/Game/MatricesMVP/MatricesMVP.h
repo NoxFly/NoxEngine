@@ -30,6 +30,7 @@ class MatricesMVP {
         glm::mat4 m_projection, m_model, m_view;
         glm::mat4 m_MVP;
         std::vector<glm::mat4> m_saves;
+        bool operationDone; // in getMVP, updates MVP is any operation has been done before
 };
 
 #endif // MATRICESMVP_H

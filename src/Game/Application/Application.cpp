@@ -29,8 +29,7 @@ Application::Application(IniSet& config, std::string basePath):
         0.1f,
         100.0f
     ),
-    // tmp
-    m_shape()
+    m_world()
 {
     Application::appBasePath = basePath;
 
@@ -52,14 +51,14 @@ void Application::start() {
     compileShaders();
     loadTextures();
 
-    m_shape = Block(0, 0, 0, "grass_bottom");
+    m_world.load();
 
     // capture the mouse
     m_scene.getVideo()->setMouseFocus(true);
 
     // tell the scene what's to draw
     m_scene.setDrawFunction([this]() {
-        m_shape.draw(m_mvp.getMVP());
+        m_world.render(m_mvp);
     });
 
     // and start the main loop
@@ -111,12 +110,10 @@ void Application::update() {
         }
 
         // update game's controls only if the mouse is captured
-        if(m_scene.getVideo()->isMouseFocused())
+        if(m_scene.getVideo()->isMouseFocused()) {
             m_scene.updatePlayerControls(m_input);
-
-
-        // update MVP matrix
-        m_mvp.updateMVP();
+            m_world.update(m_mvp);
+        }
     }
 }
 

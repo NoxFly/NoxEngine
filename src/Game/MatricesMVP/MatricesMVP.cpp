@@ -4,7 +4,8 @@ MatricesMVP::MatricesMVP(double fovy, double aspect, double near, double far):
     m_projection(glm::perspective(fovy, aspect, near, far)),
     m_model(1.0f),
     m_view(glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0))),
-    m_saves{}
+    m_saves{},
+    operationDone(true)
 {
 
 }
@@ -15,6 +16,7 @@ MatricesMVP::~MatricesMVP() {
 
 void MatricesMVP::updateMVP() {
     m_MVP = m_projection * m_view * m_model;
+    operationDone = false;
 }
 
 glm::mat4& MatricesMVP::getProjection() {
@@ -30,6 +32,8 @@ glm::mat4& MatricesMVP::getView() {
 }
 
 glm::mat4& MatricesMVP::getMVP() {
+    if(operationDone)
+        updateMVP();
     return m_MVP;
 }
 
@@ -42,8 +46,10 @@ void MatricesMVP::push() {
 }
 
 void MatricesMVP::pop() {
-    if(m_saves.size() > 0)
+    if(m_saves.size() > 0) {
         m_view = m_saves.erase(m_saves.begin())[0];
+        operationDone = true;
+    }
 }
 
 void MatricesMVP::translate(int x, int y, int z) {
@@ -56,4 +62,5 @@ void MatricesMVP::translate(float x, float y, float z) {
 
 void MatricesMVP::translate(glm::vec3 translation) {
     m_view = glm::translate(m_view, translation);
+    operationDone = true;
 }

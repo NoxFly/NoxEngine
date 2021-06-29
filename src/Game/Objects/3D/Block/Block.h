@@ -18,6 +18,8 @@ class Block: public Cube {
 
     protected:
         static float size;
+
+        glm::vec3 blockPosition;
 };
 
 #endif // BLOCK_H

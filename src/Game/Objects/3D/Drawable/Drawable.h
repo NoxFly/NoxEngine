@@ -9,16 +9,18 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
 
+#include "Object.h"
 #include "geometry.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "ResourceHolder.hpp"
+#include "MatricesMVP.h"
 
 #ifndef BUFFER_OFFSET
     #define BUFFER_OFFSET(offset) ((char*)NULL + (offset))
 #endif
 
-class Drawable {
+class Drawable: public Object {
     public:
         Drawable();
         Drawable(Drawable const &copy);
@@ -27,7 +29,7 @@ class Drawable {
 
         Drawable& operator=(Drawable const &copy);
 
-        virtual void draw(glm::mat4& MVP);
+        virtual void draw(MatricesMVP& MVP);
         void setShader(const std::string& shaderName);
         void setTexture(const std::string& texName);
         void setWireframe(const bool wireframeState);

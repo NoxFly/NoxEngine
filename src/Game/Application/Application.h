@@ -9,6 +9,7 @@
 #include "Input.h"
 #include "Block.h"
 #include "MatricesMVP.h"
+#include "World.h"
 
 class Application {
 	public:
@@ -34,7 +35,7 @@ class Application {
         Scene m_scene;
         Input m_input;
         MatricesMVP m_mvp;
-        Block m_shape; // tmp
+        World m_world;
 };
 
 #endif // APPLICATION_H

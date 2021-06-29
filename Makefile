@@ -111,7 +111,7 @@ else # RELEASE
 $(TARGET):
 	@mkdir -p $(TARGETDIR)
 	@echo "Linking $(TARGET)..."
-	@$(CC) $(INC) -o $(TARGET) $(SOURCES) $(LIBS) $(LDFLAGS)
+	@$(CC) $(INC) -o $(TARGET) $(SOURCES) $(LDFLAGS) $(LIBS)
 
 endif #debug / release targets
 
