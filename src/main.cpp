@@ -1,3 +1,7 @@
+#ifdef MEMORYCHECK
+#include "LeakDetector.h"
+#endif
+
 #include <iostream>
 
 #include <SDL2/SDL.h>

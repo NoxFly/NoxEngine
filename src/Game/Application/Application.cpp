@@ -29,7 +29,7 @@ Application::Application(IniSet& config, std::string basePath):
         0.1f,
         100.0f
     ),
-    m_world()
+    m_world(&config)
 {
     Application::appBasePath = basePath;
 
@@ -37,7 +37,7 @@ Application::Application(IniSet& config, std::string basePath):
 
     m_scene.bindMatrices(m_mvp);
     m_input.setCurrentWindow(*m_scene.getVideo());
-    m_scene.getCamera().lookAt(glm::vec3(2, 2, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    m_scene.getCamera().lookAt(glm::vec3(22, 18, -16), glm::vec3(22, 5, 0), glm::vec3(0, 1, 0));
 }
 
 Application::~Application() {

@@ -33,6 +33,8 @@ class Camera {
 
         float getSensivity() const;
         float getSpeed() const;
+        glm::vec3 getPosition() const;
+        glm::vec3 getTarget() const;
 
     private:
         float m_phi, m_theta;

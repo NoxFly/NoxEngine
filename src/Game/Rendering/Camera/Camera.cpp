@@ -204,3 +204,11 @@ void Camera::setSensivity(const float sensivity) {
 void Camera::setSpeed(const float speed) {
     this->m_speed = speed;
 }
+
+glm::vec3 Camera::getPosition() const {
+    return m_position;
+}
+
+glm::vec3 Camera::getTarget() const {
+    return m_target;
+}
