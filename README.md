@@ -1,4 +1,4 @@
-# Minecraft in C++
+# C++ 3D Engine
 
 SDL2, SDL2_image, SDL2_ttf, glew
 
@@ -15,16 +15,38 @@ The executable is in the `out/` folder.
 
 I've intentionally added the SDL2, Glew and GLM libraries in the project's folder, so you can directly compile the project.
 
-## Next steps
+# How to use the engine
 
-1. [ ] Create a player class so this entity moves and the camera moves depending on it. Transfert the input's managment about the camera's displacement.
-1. [ ] Do the chunk's memory management when the camera moves.
-1. [ ] Create a folder where each block is registered in a file with its properties and ID, so we can use TileData.blockType.
-1. [ ] Create a test folder, add some unit tests, update the Makefile consequently.
-1. [ ] Look for memory leaks and performances issues.
-1. [ ] Improve the Drawable parts to support multi-textures on an object.
-1. [ ] Improve shaders to support lights and shadows.
-1. [ ] Implement 2D GUI.
+```cpp
+#include "IniSet.h" // to load .ini config
+#include "Renderer.h" // manages video and input with SDL2
+#include "Scene.h" // stocks entities informations that have to be rendered
+#include "PerspectiveCamera.h" // Inherits from Camera Base class
+
+int main() {
+    IniSet config;
+    
+    if(!config.loadFromFile('./path/to/config.ini')) {
+        std::cout << "Unable to load config" << std::endl;
+        return 1;
+    }
+
+    Renderer renderer(config);
+    Scene scene();
+    PerspectiveCamera camera(75.0, renderer.getAspect(), 0.1, 100.0);
+
+
+    while(!renderer.shouldClose()) {
+        renderer.updateInput();
+
+        // do stuff
+
+        renderer.render(scene, camera);
+    }
+
+    return 0;
+}
+```
 
 ## Licence
 

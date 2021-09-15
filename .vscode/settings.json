@@ -1,11 +1,14 @@
 {
     "discord.enabled": true,
     "files.associations": {
-        "*.am": "makefile",
+        "*.lex": "c",
+        "*.y": "c",
+        ".htaccess": "bat",
         ".env": "ignore",
+        "*.pgsql": "sql",
+        "*.am": "makefile",
         ".project": "xml",
         ".classpath": "xml",
-        ".htaccess": "bat",
         "array": "cpp",
         "atomic": "cpp",
         "*.tcc": "cpp",
@@ -66,6 +69,20 @@
         "numeric": "cpp",
         "random": "cpp",
         "iomanip": "cpp",
-        "stop_token": "cpp"
-    }
+        "stop_token": "cpp",
+        "variant": "cpp"
+    },
+    "files.exclude": {
+        ".gitignore": true,
+        ".vscode/": true,
+        "**/*.dll": true,
+        "bin/": true,
+        "build/": true,
+        "libs/": true,
+        "LICENCE": true,
+        "Makefile": true,
+        "README.md": true,
+        "run.sh": true
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

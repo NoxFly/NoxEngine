@@ -5,7 +5,7 @@ LIBS 		:= -lopengl32 -lglew32 -lSDL2main -lSDL2 -lSDL2_image
 # type of source files
 # c or cpp (make sure to not have space after)
 SRCEXT 		?= cpp
-CVERSION	?= 11
+CVERSION	?= 17
 CPPVERSION	?= 17
 
 OSX ?= linux

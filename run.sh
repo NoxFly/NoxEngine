@@ -17,7 +17,7 @@ binDir="./bin"
 outDir="./out"
 buildDir="./build"
 cppVersion=17 # 98, 03, 11, 17, 20
-cVersion=11 # 89, 99, 11, 17
+cVersion=17 # 89, 99, 11, 17
 
 os=linux
 

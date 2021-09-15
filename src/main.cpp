@@ -1,42 +1,40 @@
-#ifdef MEMORYCHECK
-#include "LeakDetector.h"
-#endif
-
 #include <iostream>
-
-#include <SDL2/SDL.h>
-#include <GL/glew.h>
-#include <filesystem>
 
 #include "IniSet.h"
 #include "Console.h"
-#include "Application.h"
-
+#include "Scene.h"
+#include "Renderer.h"
+#include "PerspectiveCamera.h"
+#include "utils.h"
+#include "Object.h"
 
 int main(int argc, char** argv) {
-    // get executable absolute path
-    std::string argv0 = argv[0];
     (void)argc;
+    (void)argv;
 
-    size_t posLastDir = argv0.find_last_of('/');
-
-    if(posLastDir == std::string::npos)
-        posLastDir = argv0.find_last_of('\\');
-
-    std::string exePath = argv0.substr(0, posLastDir);
-    //
-
-    // load application's config - REQUIRED
     IniSet ini;
 
-    if(!ini.loadFromFile(exePath + "/config/config.ini")) {
+    if(!ini.loadFromFile("./config/config.ini")) {
         Console::error("Failed to load the configuration.\nExiting.");
         return 1;
     }
 
-    Application app(ini, exePath);
 
-    app.start();
-    
+    const int winWidth = ini.getIntValue("WINDOW", "width", 640);
+    const int winHeight = ini.getIntValue("WINDOW", "height", 480);
+
+
+    // Scene scene;
+    Renderer renderer(ini);
+    PerspectiveCamera camera(70.0f, winWidth / winHeight, 0.1f, 100.0f);
+    Scene scene;
+
+    while(!renderer.shouldClose()) {
+        // do app stuff
+        renderer.updateInput();
+
+        renderer.render(scene, camera);
+    }
+
     return 0;
 }
