@@ -7,20 +7,21 @@
 
 
 Renderer::Renderer(IniSet& config):
+    m_config(config),
     m_input(),
     m_window(0),
     m_glContext(0),
     m_isInit(false),
     m_shouldClose(false),
     m_FPS(30), m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
-    m_clearColor{0,0,0}
+    m_clearColor{}
 {
-    if(config.hasKey("WINDOW", "background"))
-        m_clearColor = getColorFromString(config.getValue("WINDOW", "background"));
+    if(m_config.hasKey("WINDOW", "background"))
+        m_clearColor = getColorFromString(m_config.getValue("WINDOW", "background"));
     else
         m_clearColor = Color(0, 0, 0);
 
-    if(InitSDL(config) && InitGL())
+    if(InitSDL() && InitGL())
         m_isInit = true;
 }
 
@@ -29,7 +30,7 @@ Renderer::~Renderer() {
 }
 
 
-bool Renderer::InitSDL(IniSet& config) {
+bool Renderer::InitSDL() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::string err = SDL_GetError();
 		Console::error("Renderer::InitSDL", "Failed to init SDL : " + err);
@@ -37,12 +38,12 @@ bool Renderer::InitSDL(IniSet& config) {
 		return false;
 	}
 
-    int sdl_maj_v = config.getIntValue("WINDOW", "OPENGL_MAJOR_VERSION", 1);
-    int sdl_min_v = config.getIntValue("WINDOW", "OPENGL_MINOR_VERSION", 1);
+    int sdl_maj_v = m_config.getIntValue("WINDOW", "OPENGL_MAJOR_VERSION", 1);
+    int sdl_min_v = m_config.getIntValue("WINDOW", "OPENGL_MINOR_VERSION", 1);
 
-    std::string title = config.getValue("WINDOW", "title");
+    std::string title = m_config.getValue("WINDOW", "title");
 
-    int fullscreenMode = config.getIntValue("WINDOW", "fullscreen", 0);
+    int fullscreenMode = m_config.getIntValue("WINDOW", "fullscreen", 0);
     int windowWidth = 0, windowHeight = 0;
 
     // fullscreen config :
@@ -52,8 +53,8 @@ bool Renderer::InitSDL(IniSet& config) {
 
     // not fullscreen : default size
     if(fullscreenMode == 0) {
-        windowWidth = config.getIntValue("WINDOW", "width", 640);
-        windowHeight = config.getIntValue("WINDOW", "height", 480);
+        windowWidth = m_config.getIntValue("WINDOW", "width", 640);
+        windowHeight = m_config.getIntValue("WINDOW", "height", 480);
     }
     // fullscreen borderless
     else if(fullscreenMode == 2) {
@@ -81,8 +82,8 @@ bool Renderer::InitSDL(IniSet& config) {
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     // multi-sampling
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config.getIntValue("WINDOW", "multisampling_buffer", 1));
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config.getIntValue("WINDOW", "multisampling_amples", 16));
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_config.getIntValue("WINDOW", "multisampling_buffer", 1));
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_config.getIntValue("WINDOW", "multisampling_amples", 16));
 
 	m_window = SDL_CreateWindow(
         title.c_str(),
@@ -102,8 +103,9 @@ bool Renderer::InitSDL(IniSet& config) {
         SDL_SetWindowFullscreen(m_window, SDL_TRUE);
 
 	// set window's icon
-    if(config.hasKey("WINDOW", "icon")) {
-        std::string iconPath = "." + config.getValue("PATH", "images") + config.getValue("WINDOW", "icon");
+    if(m_config.hasKey("WINDOW", "icon")) {
+        std::string imgPath = m_config.getValue("PATH", "images");
+        std::string iconPath = ((imgPath[0] == '/')? "." : "") + imgPath + m_config.getValue("WINDOW", "icon");
         SDL_Surface* icon = IMG_Load(iconPath.c_str());
 
         if(icon != NULL) {
@@ -116,7 +118,7 @@ bool Renderer::InitSDL(IniSet& config) {
         }
     }
 
-    if(!config.getBoolValue("WINDOW", "hidden", false))
+    if(!m_config.getBoolValue("WINDOW", "hidden", false))
         show();
 
     return true;
@@ -165,6 +167,21 @@ void Renderer::destroy() {
         SDL_DestroyWindow(m_window);
     
     SDL_Quit();
+}
+
+// returns the opengl version as a string : for example, for version 1.1, returns "11"
+GLuint Renderer::getCompactGLversion() const {
+    GLuint major = m_config.getIntValue("WINDOW", "OPENGL_MAJOR_VERSION", 1);
+    GLuint minor = m_config.getIntValue("WINDOW", "OPENGL_MINOR_VERSION", 1);
+
+    return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
+}
+
+GLuint Renderer::getCompactGLversion() {
+    GLuint major = m_config.getIntValue("WINDOW", "OPENGL_MAJOR_VERSION", 1);
+    GLuint minor = m_config.getIntValue("WINDOW", "OPENGL_MINOR_VERSION", 1);
+
+    return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
 }
 
 void Renderer::updateInput() {
@@ -262,8 +279,12 @@ void Renderer::render(Scene& scene, Camera& camera) {
     clear(m_clearColor);
 
     // render the scene through camera
-    (void)scene;
-    (void)camera;
+
+    const std::vector<Object*> objects = scene.getObjects();
+
+    for(auto& o : objects)
+        o->render(camera.getMVP());
+        
 
     swapWindow();
 

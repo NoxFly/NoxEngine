@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include "Camera.h"
-#include "MatricesMVP.h"
 
 
 class PerspectiveCamera: public Camera {
@@ -18,17 +17,14 @@ class PerspectiveCamera: public Camera {
 
         void orientate(const glm::vec2& dir);
 
+        void setPosition(const float x, const float y, const float z);
         void setPosition(const glm::vec3& position);
 
 
     private:
-        double m_fov, m_aspect, m_near, m_far;
         float m_phi, m_theta;
-        glm::vec3 m_orientation;
-        glm::vec3 m_verticalAxis, m_lateralDisplacement;
-        glm::vec3 m_position, m_target;
+        glm::vec3 m_orientation, m_lateralDisplacement, m_target;
         float m_sensivity;
-        MatricesMVP m_mvp;
 
         void updatelookAt();
 };

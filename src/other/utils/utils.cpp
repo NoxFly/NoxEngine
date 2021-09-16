@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <sstream>
 
+using namespace std;
+
+
 bool endsWith(string_view str, string_view suffix) {
     return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
 }
@@ -42,10 +45,6 @@ string replace(const string& str, const string& find, const string& replace) {
     result.append(str, from, string::npos);
     
     return result;
-}
-
-int inInterval(int min, int val, int max) {
-    return std::max(min, std::min(val, max));
 }
 
 vector<string> split(string sequence, string separator) {

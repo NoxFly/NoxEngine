@@ -10,6 +10,10 @@ Scene::~Scene() {
     
 }
 
-void Scene::add(const Object& object) {
+void Scene::add(Object* object) {
     m_objects.push_back(object);
+}
+
+std::vector<Object*> Scene::getObjects() const {
+    return m_objects;
 }

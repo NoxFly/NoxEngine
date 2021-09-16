@@ -7,7 +7,7 @@
 
 #include "Input.h"
 #include "IniSet.h"
-#include "utils.h"
+#include "Color.h"
 #include "Scene.h"
 #include "Camera.h"
 
@@ -34,6 +34,8 @@ class Renderer {
         bool isMouseGrabbed() const;
         bool isMouseFocused() const;
 
+        GLuint getCompactGLversion() const;
+        GLuint getCompactGLversion();
         glm::vec2 getSize() const;
         float getAspect() const;
 
@@ -41,10 +43,11 @@ class Renderer {
         void clear(Color clearColor);
         void swapWindow();
 
-        bool InitSDL(IniSet& config);
+        bool InitSDL();
         bool InitGL();
         void destroy();
 
+        IniSet m_config;
         Input m_input;
         SDL_Window* m_window;
         SDL_GLContext m_glContext;

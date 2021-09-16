@@ -5,6 +5,9 @@
 
 #include "utils.h"
 
+using namespace std;
+
+
 string IniSet::pairSeparator = "=";
 
 IniSet::IniSet():
@@ -202,70 +205,70 @@ vector<string> IniSet::getValues(const string& section) const {
     return values;
 }
 
-string IniSet::getValue(const string& section, const string& key) {
+string IniSet::getValue(const string& section, const string& key) const {
     return getPairValue(section, key).second;
 }
 
-pair<string, string> IniSet::getPairValue(const string& section, const string& key) {
-    return hasKey(section, key)? m_iniMap[section][key] : pair("", "");
+pair<string, string> IniSet::getPairValue(const string& section, const string& key) const {
+    return hasKey(section, key)? m_iniMap.at(section).at(key) : pair("", "");
 }
 
-int IniSet::getIntValue(const string& section, const string& key, int defaultValue) {
+int IniSet::getIntValue(const string& section, const string& key, int defaultValue) const {
     pair<string, string> value = getPairValue(section, key);
     return (value.second == "" || value.first != "number")? defaultValue : stoi(value.second);
 }
 
-float IniSet::getFloatValue(const string& section, const string& key, float defaultValue) {
+float IniSet::getFloatValue(const string& section, const string& key, float defaultValue) const {
     pair<string, string> value = getPairValue(section, key);
     return (value.second == "" || value.first != "number")? defaultValue : stof(value.second);
 }
 
-bool IniSet::getBoolValue(const string& section, const string& key, bool defaultValue) {
+bool IniSet::getBoolValue(const string& section, const string& key, bool defaultValue) const {
     pair<string, string> value = getPairValue(section, key);
     return (value.second == "" || value.first != "boolean")? defaultValue : value.second == "true";
 }
 
-string IniSet::getValue(const string& key) {
+string IniSet::getValue(const string& key) const {
     return getPairValue(key).second;
 }
 
-string IniSet::getType(const string &section, const string &key) {
-    return hasKey(section, key)? m_iniMap[section][key].first : "string";
+string IniSet::getType(const string &section, const string &key) const {
+    return hasKey(section, key)? m_iniMap.at(section).at(key).first : "string";
 }
 
-pair<string, string> IniSet::getPairValue(const string& key) {
-    return hasKey(key)? m_rootMap[key] : pair("", "");
+pair<string, string> IniSet::getPairValue(const string& key) const {
+    return hasKey(key)? m_rootMap.at(key) : pair("", "");
 }
 
-int IniSet::getIntValue(const string& key, int defaultValue) {
+int IniSet::getIntValue(const string& key, int defaultValue) const {
     pair<string, string> value = getPairValue(key);
     return (value.second == "" || value.first != "number")? defaultValue : stoi(value.second);
 }
 
-float IniSet::getFloatValue(const string& key, float defaultValue) {
+float IniSet::getFloatValue(const string& key, float defaultValue) const {
     pair<string, string> value = getPairValue(key);
     return (value.second == "" || value.first != "number")? defaultValue : stof(value.second);
 }
 
-bool IniSet::getBoolValue(const string& key, bool defaultValue) {
+bool IniSet::getBoolValue(const string& key, bool defaultValue) const {
     pair<string, string> value = getPairValue(key);
     return (value.second == "" || value.first != "boolean")? defaultValue : value.second == "true";
 }
 
-bool IniSet::hasSection(const string& section) {
+bool IniSet::hasSection(const string& section) const {
     return m_iniMap.count(section) > 0;
 }
 
-bool IniSet::hasKey(const string& key) {
+bool IniSet::hasKey(const string& key) const {
     return m_rootMap.count(key) > 0;
 }
 
-bool IniSet::hasKey(const string& section, const string& key) {
-    return hasSection(section) && m_iniMap[section].count(key) > 0;
+bool IniSet::hasKey(const string& section, const string& key) const {
+    return hasSection(section) && m_iniMap.at(section).count(key) > 0;
 }
 
-string IniSet::getType(const string &key) {
-    return hasKey(key)? m_rootMap[key].first : "string";
+string IniSet::getType(const string &key) const {
+    return hasKey(key)? m_rootMap.at(key).first : "string";
 }
 
 

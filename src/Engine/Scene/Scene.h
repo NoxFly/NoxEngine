@@ -10,10 +10,11 @@ class Scene {
         Scene();
         ~Scene();
 
-        void add(const Object& object);
+        void add(Object* object);
+        std::vector<Object*> getObjects() const;
 
     private:
-        std::vector<Object> m_objects;
+        std::vector<Object*> m_objects;
 };
 
 #endif // SCENE_H

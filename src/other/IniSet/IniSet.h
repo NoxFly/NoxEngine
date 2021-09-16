@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 
-using namespace std;
 
 class IniSet {
 	public:
@@ -18,61 +17,61 @@ class IniSet {
          * @param filepath The file to read its configuration
          * @return Either it has successfully read the file and loaded the configuration
          */
-        bool loadFromFile(const string& filepath);
+        bool loadFromFile(const std::string& filepath);
         
         /**
          * Returns the configuration in a string format. Written like a .ini file.
          * @return The configuration in a string format
          */
-        string toString() const;
+        std::string toString() const;
 
         /**
          * Returns the configuration in a json format, as a string.
          * @return The configuration in a json string format
          */
-        string toJSONString() const;
+        std::string toJSONString() const;
         
-        friend ostream& operator<<(ostream& os, const IniSet& ini);
+        friend std::ostream& operator<<(std::ostream& os, const IniSet& ini);
 
 
-        vector<string> getSections() const;
-        map<string, pair<string, string>> getEntries() const;
-        map<string, pair<string, string>> getEntries(const string& section) const;
+        std::vector<std::string> getSections() const;
+        std::map<std::string, std::pair<std::string, std::string>> getEntries() const;
+        std::map<std::string, std::pair<std::string, std::string>> getEntries(const std::string& section) const;
 
-        vector<string> getKeys() const;
-        vector<string> getKeys(const string& section) const;
+        std::vector<std::string> getKeys() const;
+        std::vector<std::string> getKeys(const std::string& section) const;
 
-        vector<string> getValues() const;
-        vector<string> getValues(const string& section) const;
+        std::vector<std::string> getValues() const;
+        std::vector<std::string> getValues(const std::string& section) const;
 
-        string getValue(const string& section, const string& key);
-        pair<string, string> getPairValue(const string& section, const string& key);
-        int getIntValue(const string& section, const string& key, int defaultValue);
-        float getFloatValue(const string& section, const string& key, float defaultValue);
-        bool getBoolValue(const string& section, const string& key, bool defaultValue);
-        string getType(const string &section, const string &key);
+        std::string getValue(const std::string& section, const std::string& key) const;
+        std::pair<std::string, std::string> getPairValue(const std::string& section, const std::string& key) const;
+        int getIntValue(const std::string& section, const std::string& key, int defaultValue) const;
+        float getFloatValue(const std::string& section, const std::string& key, float defaultValue) const;
+        bool getBoolValue(const std::string& section, const std::string& key, bool defaultValue) const;
+        std::string getType(const std::string &section, const std::string &key) const;
 
-        string getValue(const string& key);
-        pair<string, string> getPairValue(const string& key);
-        int getIntValue(const string& key, int defaultValue);
-        float getFloatValue(const string& key, float defaultValue);
-        bool getBoolValue(const string& key, bool defaultValue);
-        string getType(const string &key);
+        std::string getValue(const std::string& key) const;
+        std::pair<std::string, std::string> getPairValue(const std::string& key) const;
+        int getIntValue(const std::string& key, int defaultValue) const;
+        float getFloatValue(const std::string& key, float defaultValue) const;
+        bool getBoolValue(const std::string& key, bool defaultValue) const;
+        std::string getType(const std::string &key) const;
 
-        bool hasSection(const string& section);
-        bool hasKey(const string& key);
-        bool hasKey(const string& section, const string& key);
+        bool hasSection(const std::string& section) const;
+        bool hasKey(const std::string& key) const;
+        bool hasKey(const std::string& section, const std::string& key) const;
 
     private:
-        static string pairSeparator;
+        static std::string pairSeparator;
 
-        int stringIsValidPair(const string& str) const;
-        void assignFromRawString(const string& section, const string& str);
+        int stringIsValidPair(const std::string& str) const;
+        void assignFromRawString(const std::string& section, const std::string& str);
 
         // { section: { key: { type, value } } }
-        map<string, map<string, pair<string, string>>> m_iniMap;
+        std::map<std::string, std::map<std::string, std::pair<std::string, std::string>>> m_iniMap;
         // { key: { type, value } }
-        map<string, pair<string, string>> m_rootMap;
+        std::map<std::string, std::pair<std::string, std::string>> m_rootMap;
         int m_sectionCount;
 };
 
