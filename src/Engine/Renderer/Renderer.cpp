@@ -271,7 +271,7 @@ void Renderer::setFPS(int fps) {
     m_FPS = fps;
 }
 
-void Renderer::render(Scene& scene, Camera& camera) {
+void Renderer::render(Scene* scene, Camera* camera) {
     Uint32 frameRate = 1000 / m_FPS;
     m_earlyLoop = SDL_GetTicks();
 
@@ -280,10 +280,10 @@ void Renderer::render(Scene& scene, Camera& camera) {
 
     // render the scene through camera
 
-    const std::vector<Object*> objects = scene.getObjects();
+    const std::vector<Object*> objects = scene->getObjects();
 
     for(auto& o : objects)
-        o->render(camera.getMVP());
+        o->render(camera->getMVP());
         
 
     swapWindow();

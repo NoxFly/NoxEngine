@@ -101,6 +101,10 @@ void PerspectiveCamera::lookAt(const glm::vec3 eye, const glm::vec3 center, cons
     updatelookAt();
 }
 
+void PerspectiveCamera::lookAt(const float x, const float y, const float z) {
+    lookAt(glm::vec3(x, y, z));
+}
+
 
 // Updates the view matrix. Normally called every update loop
 void PerspectiveCamera::updatelookAt() {

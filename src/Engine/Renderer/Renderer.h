@@ -19,7 +19,7 @@ class Renderer {
 
         void updateInput();
         Input* getInput();
-        void render(Scene& scene, Camera& camera);
+        void render(Scene* scene, Camera* camera);
 
         void show();
         void hide();

@@ -13,11 +13,12 @@
 
 class Mesh: public Object {
     public:
-        Mesh(Geometry& geometry, Material& material);
+        Mesh(const Geometry& geometry, const Material& material);
         ~Mesh();
 
-    protected:
         bool load();
+        
+    protected:
         void draw(MatricesMVP* mvp);
 };
 

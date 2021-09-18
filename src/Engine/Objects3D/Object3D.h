@@ -5,26 +5,23 @@
 
 class Object3D {
     public:
-        Object3D(): Object3D(0, 0, 0) {}
-        Object3D(float x, float y, float z): Object3D(glm::vec3(x, y, z)) {}
-        Object3D(glm::vec3& position): m_position(position) {}
-        Object3D(glm::vec3 position): m_position(position) {}
-        virtual ~Object3D() {};
+        Object3D();
+        Object3D(float x, float y, float z);
+        Object3D(glm::vec3& position);
+        Object3D(glm::vec3 position);
+        ~Object3D();
 
-        const glm::vec3& getPosition() const {
-            return m_position;
-        }
+        const glm::vec3& getPosition() const;
+        const glm::vec3& getRotation() const;
 
-        void setPosition(const float x, const float y, const float z) {
-            setPosition(glm::vec3(x, y, z));
-        }
-
-        void setPosition(const glm::vec3& position) {
-            m_position = position;
-        }
+        void setPosition(const float x, const float y, const float z);
+        void setPosition(const glm::vec3& position);
+        void setRotation(const float x, const float y, const float z);
+        void setRotation(const glm::vec3& rotation);
 
     protected:
-        glm::vec3 m_position;
+        glm::vec3 m_position,  m_rotation;
+        bool m_hasToTranslate, m_hasToRotate;
 };
 
 #endif // OBJECT_3D_H

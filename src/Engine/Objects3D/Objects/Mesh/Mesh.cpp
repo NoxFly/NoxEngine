@@ -1,7 +1,9 @@
 #include "Mesh.h"
 
+#include <iostream>
 
-Mesh::Mesh(Geometry& geometry, Material& material):
+
+Mesh::Mesh(const Geometry& geometry, const Material& material):
    Object(geometry, material)
 {
     if(!load())
@@ -13,31 +15,62 @@ Mesh::~Mesh() {
 }
 
 bool Mesh::load() {
-    if(m_material.getShader() == nullptr)
-        return false;
-
-    const int nV = m_geometry.getVertices().size();
+    const size_t nV = m_geometry.getVertices().size();
 
     if(nV == 0 || nV % 3 != 0)
         return false;
 
-    const int nC = m_geometry.getColors().size();
-    const int nT = m_geometry.getTextures().size();
+    const size_t nC = m_material.getColors().size();
+    const size_t nT = m_geometry.getTextures().size();
+
     
-    if((nC > 0 && nC % 3 != 0) || (nT > 0 && nT % 3 != 0))
+    if(nT > 0 && nT % 3 != 0)
         return false;
 
 
     // nC == 0 : no colors
     // nT : no textures
 
-    size_t fsize = sizeof(float);
+    const size_t fsize = sizeof(float);
 
-    size_t vSize = fsize * nV;
-    size_t cSize = fsize * nC;
-    size_t tSize = fsize * nT;
+    const size_t vSize = fsize * nV;
+    const size_t cSize = fsize * nC * 3; // cause size is number of Color, which's composed by r,g,b[,a]
+    const size_t tSize = fsize * nT;
 
     m_vertexNumber = nV / 3;
+
+
+
+    std::vector<Color> ccolors = m_material.getColors();
+    std::vector<float> colors = {};
+
+    if(nC > 0) {
+        const int d = (m_vertexNumber==nC)? nC : m_vertexNumber / nC;
+
+        for(int i=0; i < d; i++) {
+            const Color c = ccolors.at(i);
+            colors.push_back((float)c.r / 255.0);
+            colors.push_back((float)c.g / 255.0);
+            colors.push_back((float)c.b / 255.0);
+        }
+
+        const size_t n(colors.size());
+        printf("%lld\n", n);
+
+        // for(size_t i=0; i < n; i += 3) {
+        //     printf("%f, %f, %f", colors.at(i), colors.at(i+1), colors.at(i+2));
+
+        //     if(i < n-1)
+        //         printf(",");
+
+        //     if(i % 9 == 0)
+        //         printf("\n");
+        //     else
+        //         printf("   ");
+        // }
+        // std::cout << std::endl;
+    }
+
 
     // delete possibly existing older VBO & VAO
     if(glIsBuffer(m_VBO) == GL_TRUE)
@@ -51,6 +84,9 @@ bool Mesh::load() {
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
 
+    if(m_VBO == 0 || m_VAO == 0)
+        return false;
+
     // bind the VAO and the VBO
     glBindVertexArray(m_VAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -62,23 +98,23 @@ bool Mesh::load() {
             glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, m_geometry.getVertices().data());
 
             // transfert data for colors
-            if(cSize > 0)
-                glBufferSubData(GL_ARRAY_BUFFER, vSize, cSize, m_geometry.getColors().data());
+            if(nC > 0)
+                glBufferSubData(GL_ARRAY_BUFFER, vSize, cSize, colors.data());
 
             // transfert data for textures
-            if(tSize > 0)
+            if(nT > 0)
                 glBufferSubData(GL_ARRAY_BUFFER, vSize + cSize, tSize, m_geometry.getTextures().data());
 
             // access to coords in the memory and lock these
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
             glEnableVertexAttribArray(0);
 
-            if(cSize > 0) {
+            if(nC > 0) {
                 glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
                 glEnableVertexAttribArray(1);
             }
 
-            if(tSize > 0) {
+            if(nT > 0) {
                 glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize + cSize));
                 glEnableVertexAttribArray(2);
             }
@@ -86,7 +122,6 @@ bool Mesh::load() {
         // unlock VBO & VAO
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
 
     return true;
 }
