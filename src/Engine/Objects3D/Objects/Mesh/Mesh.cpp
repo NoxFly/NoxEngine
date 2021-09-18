@@ -40,35 +40,42 @@ bool Mesh::load() {
     m_vertexNumber = nV / 3;
 
 
-
     std::vector<Color> ccolors = m_material.getColors();
     std::vector<float> colors = {};
 
     if(nC > 0) {
-        const int d = (m_vertexNumber==nC)? nC : m_vertexNumber / nC;
+        const int d = m_vertexNumber / nC;
 
-        for(int i=0; i < d; i++) {
-            const Color c = ccolors.at(i);
-            colors.push_back((float)c.r / 255.0);
-            colors.push_back((float)c.g / 255.0);
-            colors.push_back((float)c.b / 255.0);
+        //std::cout << ccolors.at(0) << std::endl;
+
+        // for each color
+        size_t k = 0;
+        for(size_t i=0; i < nC; i++) {
+            // color a % of the geometry
+            int j = 0;
+            while(++k <= m_vertexNumber && ++j <= d) {
+                Color c = ccolors.at(i);
+                colors.push_back((float)c.r / 255.0);
+                colors.push_back((float)c.g / 255.0);
+                colors.push_back((float)c.b / 255.0);
+            }
         }
 
-        const size_t n(colors.size());
+        /* const size_t n(colors.size());
         printf("%lld\n", n);
 
-        // for(size_t i=0; i < n; i += 3) {
-        //     printf("%f, %f, %f", colors.at(i), colors.at(i+1), colors.at(i+2));
+        for(size_t i=0; i < n; i += 3) {
+            printf("%f, %f, %f", colors.at(i), colors.at(i+1), colors.at(i+2));
 
-        //     if(i < n-1)
-        //         printf(",");
+            if(i < n-1)
+                printf(",");
 
-        //     if(i % 9 == 0)
-        //         printf("\n");
-        //     else
-        //         printf("   ");
-        // }
-        // std::cout << std::endl;
+            if(i % 9 == 0)
+                printf("\n");
+            else
+                printf("   ");
+        }
+        std::cout << std::endl; */
     }
 
 

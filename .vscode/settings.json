@@ -81,7 +81,6 @@
         "libs/": true,
         "LICENCE": true,
         "Makefile": true,
-        "README.md": true,
         "run.sh": true
     },
     "C_Cpp.errorSquiggles": "Disabled"
