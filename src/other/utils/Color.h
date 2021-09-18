@@ -9,7 +9,7 @@
  * @struct A basic RGBA struct
  */
 struct Color {
-    int r, g, b, a=255;
+    unsigned char r, g, b, a=255;
 
     Color() {
         Color(0, 0, 0, 0);

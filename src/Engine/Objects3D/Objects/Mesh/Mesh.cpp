@@ -46,8 +46,6 @@ bool Mesh::load() {
     if(nC > 0) {
         const int d = m_vertexNumber / nC;
 
-        //std::cout << ccolors.at(0) << std::endl;
-
         // for each color
         size_t k = 0;
         for(size_t i=0; i < nC; i++) {
@@ -60,22 +58,6 @@ bool Mesh::load() {
                 colors.push_back((float)c.b / 255.0);
             }
         }
-
-        /* const size_t n(colors.size());
-        printf("%lld\n", n);
-
-        for(size_t i=0; i < n; i += 3) {
-            printf("%f, %f, %f", colors.at(i), colors.at(i+1), colors.at(i+2));
-
-            if(i < n-1)
-                printf(",");
-
-            if(i % 9 == 0)
-                printf("\n");
-            else
-                printf("   ");
-        }
-        std::cout << std::endl; */
     }
 
 
