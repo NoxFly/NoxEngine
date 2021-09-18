@@ -31,12 +31,6 @@ bool Mesh::load() {
     // nC == 0 : no colors
     // nT : no textures
 
-    const size_t fsize = sizeof(float);
-
-    const size_t vSize = fsize * nV;
-    const size_t cSize = fsize * nC * 3; // cause size is number of Color, which's composed by r,g,b[,a]
-    const size_t tSize = fsize * nT;
-
     m_vertexNumber = nV / 3;
 
 
@@ -59,6 +53,12 @@ bool Mesh::load() {
             }
         }
     }
+
+    const size_t fsize = sizeof(float);
+
+    const size_t vSize = fsize * nV;
+    const size_t cSize = fsize * colors.size(); // cause size is number of Color, which's composed by r,g,b[,a]
+    const size_t tSize = fsize * nT;
 
 
     // delete possibly existing older VBO & VAO
