@@ -191,6 +191,11 @@ void Renderer::updateInput() {
         close();
 }
 
+Input* Renderer::getInput() {
+    return &m_input;
+}
+
+
 
 void Renderer::show() {
     SDL_ShowWindow(m_window);

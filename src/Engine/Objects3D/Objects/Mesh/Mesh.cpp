@@ -123,6 +123,7 @@ void Mesh::draw(MatricesMVP* mvp) {
     
     // wireframe mode
     glPolygonMode(GL_FRONT_AND_BACK, m_material.isWireframed()? GL_LINE : GL_FILL);
+    glCullFace(m_cullFace);
 
     (void)mvp;
     (void)hasTexture;

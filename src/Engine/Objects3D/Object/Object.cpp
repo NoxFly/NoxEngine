@@ -2,7 +2,10 @@
 
 Object::Object(const Geometry& geometry, const Material& material):
     Object3D(0, 0, 0),
-    m_geometry(geometry), m_material(material), m_VBO(0), m_VAO(0), m_vertexNumber(0)
+    m_geometry(geometry), m_material(material),
+    m_VBO(0), m_VAO(0),
+    m_cullFace(GL_FRONT_AND_BACK),
+    m_vertexNumber(0)
 {
 
 }
@@ -21,7 +24,12 @@ Geometry* Object::getGeometry() {
 
 Material* Object::getMaterial() {
     return &m_material;
-};
+}
+
+void Object::setCullFace(const GLenum cullFace) {
+    m_cullFace = cullFace;
+}
+
 
 bool Object::load() {
     return false;

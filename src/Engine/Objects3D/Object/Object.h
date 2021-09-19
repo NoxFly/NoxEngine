@@ -19,6 +19,8 @@ class Object: public Object3D {
 
         Geometry* getGeometry();
         Material* getMaterial();
+        
+        void setCullFace(const GLenum cullFace);
 
         virtual bool load();
         void render(MatricesMVP* mvp);
@@ -28,6 +30,7 @@ class Object: public Object3D {
         Geometry m_geometry;
         Material m_material;
         GLuint m_VBO, m_VAO;
+        GLenum m_cullFace;
         size_t m_vertexNumber;
         glm::vec3 m_rotation;
 
