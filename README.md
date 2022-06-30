@@ -2,8 +2,6 @@
 
 SDL2, SDL2_image, SDL2_ttf, glew
 
-tested on Windows 10 with Mingw64.
-
 build project :
 ```
 ./run.sh -v
@@ -12,8 +10,6 @@ build project :
 Add the `-f` option to remove the object file if you encounter compilation's errors.
 
 The executable is in the `out/` folder.
-
-I've intentionally added the SDL2, Glew and GLM libraries in the project's folder, so you can directly compile the project.
 
 # How to use the engine
 
