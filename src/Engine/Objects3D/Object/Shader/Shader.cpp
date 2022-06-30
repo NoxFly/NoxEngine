@@ -1,11 +1,11 @@
-#include "Shader.h"
+#include "Shader.hpp"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <mutex>
 
-#include "Console.h"
+#include "Console.hpp"
 
 std::mutex shaderMutex;
 

@@ -1,4 +1,4 @@
-#include "Object.h"
+#include "Object.hpp"
 
 Object::Object(const Geometry& geometry, const Material& material):
     Object3D(0, 0, 0),

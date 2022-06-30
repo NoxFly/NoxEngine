@@ -1,5 +1,5 @@
-#ifndef RESOURCE_HOLDER_H
-#define RESOURCE_HOLDER_H
+#ifndef RESOURCE_HPPOLDER_HPP
+#define RESOURCE_HPPOLDER_HPP
 
 #include <map>
 #include <memory>
@@ -22,4 +22,4 @@ class ResourceHolder {
 
 #include "ResourceHolder.inl"
 
-#endif // RESOURCE_HOLDER_H
+#endif // RESOURCE_HPPOLDER_HPP

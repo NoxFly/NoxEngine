@@ -1,9 +1,9 @@
-#include "Renderer.h"
+#include "Renderer.hpp"
 
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
-#include "Console.h"
+#include "Console.hpp"
 
 
 Renderer::Renderer(IniSet& config):

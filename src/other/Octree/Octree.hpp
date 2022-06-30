@@ -1,5 +1,5 @@
-#ifndef OCTREE_H
-#define OCTREE_H
+#ifndef OCTREE_HPP
+#define OCTREE_HPP
 
 #include <vector>
 #include <memory>
@@ -82,4 +82,4 @@ class Octree {
 
 #include "Octree.inl"
 
-#endif // OCTREE_H
+#endif // OCTREE_HPP

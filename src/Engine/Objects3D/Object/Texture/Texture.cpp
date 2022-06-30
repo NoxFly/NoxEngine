@@ -1,8 +1,8 @@
-#include "Texture.h"
+#include "Texture.hpp"
 
 #include <memory>
 
-#include "Console.h"
+#include "Console.hpp"
 
 
 std::string Texture::texturesPath = "./";

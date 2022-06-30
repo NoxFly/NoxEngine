@@ -73,15 +73,8 @@
         "variant": "cpp"
     },
     "files.exclude": {
-        ".gitignore": true,
-        ".vscode/": true,
         "**/*.dll": true,
-        "bin/": true,
-        "build/": true,
-        "libs/": true,
-        "LICENCE": true,
-        "Makefile": true,
-        "run.sh": true
+        "libs/": true
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

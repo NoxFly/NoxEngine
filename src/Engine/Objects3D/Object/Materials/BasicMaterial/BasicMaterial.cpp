@@ -1,7 +1,7 @@
-#include "BasicMaterial.h"
+#include "BasicMaterial.hpp"
 
-#include "Shader.h"
-#include "Texture.h"
+#include "Shader.hpp"
+#include "Texture.hpp"
 
 BasicMaterial::BasicMaterial():
     Material(Shader::get("color3D"))

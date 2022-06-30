@@ -1,4 +1,4 @@
-#include "PerspectiveCamera.h"
+#include "PerspectiveCamera.hpp"
 
 #include <glm/gtx/transform.hpp>
 #include <algorithm>

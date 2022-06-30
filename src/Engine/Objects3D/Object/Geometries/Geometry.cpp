@@ -1,4 +1,4 @@
-#include "Geometry.h"
+#include "Geometry.hpp"
 
 Geometry::Geometry():
     m_vertices{}, m_colors{}, m_textures{}

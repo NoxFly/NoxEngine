@@ -18,10 +18,10 @@ I've intentionally added the SDL2, Glew and GLM libraries in the project's folde
 # How to use the engine
 
 ```cpp
-#include "IniSet.h" // to load .ini config
-#include "Renderer.h" // manages video and input with SDL2
-#include "Scene.h" // stocks entities informations that have to be rendered
-#include "PerspectiveCamera.h" // Inherits from Camera Base class
+#include "IniSet.hpp" // to load .ini config
+#include "Renderer.hpp" // manages video and input with SDL2
+#include "Scene.hpp" // stocks entities informations that have to be rendered
+#include "PerspectiveCamera.hpp" // Inherits from Camera Base class
 
 int main() {
     IniSet config;

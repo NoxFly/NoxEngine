@@ -1,9 +1,9 @@
-#include "Cube.h"
+#include "Cube.hpp"
 
-#include "BasicMaterial.h"
-#include "BoxGeometry.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "BasicMaterial.hpp"
+#include "BoxGeometry.hpp"
+#include "Shader.hpp"
+#include "Texture.hpp"
 
 Cube::Cube(const float size):
     Mesh(BoxGeometry(size, size, size), BasicMaterial())

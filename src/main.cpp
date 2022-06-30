@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "IniSet.h"
-#include "Console.h"
-#include "Scene.h"
-#include "Renderer.h"
-#include "PerspectiveCamera.h"
-#include "Shader.h"
-#include "Cube.h"
+#include "IniSet.hpp"
+#include "Console.hpp"
+#include "Scene.hpp"
+#include "Renderer.hpp"
+#include "PerspectiveCamera.hpp"
+#include "Shader.hpp"
+#include "Cube.hpp"
 
 int main(int argc, char** argv) {
     (void)argc;
@@ -31,17 +31,14 @@ int main(int argc, char** argv) {
     Shader::load("color3D", renderer.getCompactGLversion());
 
 
-    Cube cube(10, Color(135, 71, 38));
+    Cube cube(50, Color(150, 150, 150));
 
     scene.add(&cube);
 
     renderer.setMouseFocus(true);
 
-    // camera.setPosition(0, 0, 5);
-    // camera.lookAt(0, 0, 0);
-
-    double rx = 0.0;
-    double rz = 0.0;
+    camera.setPosition(0, 0, 5);
+    camera.lookAt(0, 0, 0);
 
 
     while(!renderer.shouldClose()) {
@@ -62,18 +59,6 @@ int main(int argc, char** argv) {
                 renderer.setMouseFocus(true);
         }
         //
-
-
-
-
-
-        // o.setRotation(rx, 0, rz);
-
-        rx += 0.1;
-        rz += 0.1;
-
-        if(rx >= 360.0) rx -= 360.0;
-        if(rz >= 360.0) rz -= 360.0;
 
         renderer.render(&scene, &camera);
     }

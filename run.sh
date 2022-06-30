@@ -1,31 +1,40 @@
 #!/bin/bash
 
 # Author : NoxFly
-# Copyrights 2021
-version=0.4.5
+# Copyrights 2021-2022
+
+# PUBLIC
+# --------------------------------------
+# YOU CAN CHANGE THESE CONFIG VARIABLES
+
+# adapt these pathes for your project
+# don't forget to do execute 'updateMakefile' after any modification.
+# If you don't do it, it's not dangerous, because the script will always
+# pass these variables as arguments to the makefile.
+# But if you pass to the makefile directly, it'll not be updated.
+srcDir="./src"
+incDir="./include" # availible only on projectMode = 0
+outDir="./bin"
+buildDir="./build"
+cppVersion=20 # 98, 03, 11, 17, 20, 23
+cVersion=17 # 89, 99, 11, 17
+# --------------------------------------
+
+# PRIVATE
+# --------------------------------------
+# DO NOT CHANGE THESE CONFIG VARIABLES
+# > PASS THROUGH THE COMMAND
+
+version=0.0.4
+
+srcFileExt="cpp"
+hdrFileExt="hpp"
+guard="ifndef" # ifndef | pragma
 
 # PROJECT MODE :
-# 0: src/ClassName.cpp include/ClassName.h
-# 1: src/ClassDir/ClassName.cpp src/ClassDir/ClassName.h
+# 0: src/ClassName.cpp include/ClassName.hpp
+# 1: src/ClassDir/ClassName.cpp src/ClassDir/ClassName.hpp
 projectMode=1
-
-# adapt these 3 lines for your project
-fileExt="cpp"
-srcDir="./src"
-incDir="./include" # availible only on projectMode=1
-binDir="./bin"
-outDir="./out"
-buildDir="./build"
-cppVersion=17 # 98, 03, 11, 17, 20
-cVersion=17 # 89, 99, 11, 17
-
-os=linux
-
-if [ "$OSTYPE" == "darwin"* ]; then
-    os=mac
-elif [ "$OSTYPE" == "cygwin" -o "$OSTYPE" == "msys" -o "$OSTYPE" == "win32" ]; then
-    os=windows
-fi
 
 # if any mode is precised, then release is the default one
 mode="dev"
@@ -33,75 +42,94 @@ mode="dev"
 pgname=${PWD##*/}
 
 #
-updateUrl="https://gist.githubusercontent.com/NoxFly/69a73c1a9b31058c04217b9cebee2478/raw/run.sh"
+updateUrl="https://raw.githubusercontent.com/NoxFly/c-cpp-project-script/main/run.sh"
 
 # declare -a optionsList
-optionsList=(
-	"-h;--help;Show the command's version and its basic usage."
-	"-V;--version;Show the command's version."
-    "--patch;Download latest online version."
-	"-g;--generate;Generates project's structure with a main file. Re-create missing folders."
-    "--swap-mode;Swap between the two structure modes. Reorganize files."
-	"-c [ClassName];Create class files (header and source) with basic constructor and destructor."
-	"-d;--debug;Compile code and run it in debug mode."
-	"-r;--release;Compile code and run it in release mode. If no mode precised, this is the default one."
-    "-f;--force;Make clean before compiling again."
-    "-v;--verbose;Add this option to have details of current process."
-    "--no-run;Tells the script to only compile the project. Useful if the script is integrated in IDE's task."
-)
+helpMessage="
+C/C++ run script v$version
+Usage : $(basename -- $0) [OPTION]
+        $(basename -- $0) -g to generate project's structure.
+        $(basename -- $0) [--dev|-d|-r] to compile and run the program in [dev(default)|debug|release] mode.
+All added options not handled by the script will be executable's options.
 
-repeat_spaces()
-{
-    for ((ii=0; ii < $1; ii++)); do
-        echo -n " "
-    done
-}
+\033[1;21mOPTIONS:\033[0m\n
+[]: mandatory parameter
+(): optional parameter
 
-getMakefileCode()
+--help              -h                  Show the command's version and its basic usage.
+--version           -V                  Show the command's version.
+--patch                                 Download latest online version.
+
+--generate          -g                  Generates project's structure with a main file. Re-create missing folders.
+--update-makefile                       Updates some Makefile's variables, like file extensions and c/c++ versions.
+
+--swap-mode                             Swap between the two structure modes. Reorganize files.
+--set-language      -l [c|cpp]          Set the current used language for further file creation (0=c, 1=cpp).
+                    -c [ClassName]      Create class files (header and source) with basic constructor and destructor.
+--set-guard         [ifndef|pragma]      Defines either it has to be #ifndef FILENAME_H or #pragma once on header
+                                        file creation.
+
+--dev                                   Compile code and run it in dev mode. It's debug mode with modified options.
+--debug             -d                  Compile code and run it in debug mode.
+--release           -r                  Compile code and run it in release mode. If no mode precised, this is the
+                                        default one.
+
+--force             -f                  Make clean before compiling again.
+--verbose           -v                  Add this option to have details of current process."
+
+makefileCode="IyBNT0RJRklBQkxFCkNGTEFHUyAJCTo9IC1XZXJyb3IgLVdhbGwgLVdleHRyYQpMREZMQUdTCQk6PQpMSUJTIAkJOj0KCiMgTk9UIE
+1PRElGSUFCTEUKIyBhbGwgd2hhdCdzIGJlbG93IG11c3Qgbm90IGJlIG1vZGlmaWVkCiMgdGhlIHJ1bi5zaCBpcyBwYXNzaW5nIGFsbCB0aGUgbmVlZG
+VkIGFyZ3VtZW50cwojIHlvdSBoYXZlIHRvIGRvIHRoZSBjb25maWd1cmF0aW9uIHRocm91Z2ggdGhlIHJ1bi5zaAoKIyB0eXBlIG9mIHNvdXJjZSBmaW
+xlcwojIGMgb3IgY3BwIChtYWtlIHN1cmUgdG8gbm90IGhhdmUgc3BhY2UgYWZ0ZXIpClNSQ0VYVAkJPz0gY3BwCkhEUkVYVAkJPz0gaHBwCkNWRVJTSU
+9OCT89IDE3CkNQUFZFUlNJT04JPz0gMTcKCiMgZGV0ZWN0IGlmIGNvbXBpbGVyIGlzIGdjYyBpbnN0ZWFkIG9mIGNsYW5nLiBOb3Qgdmlld2luZyBmb3
+Igb3RoZXIgY29tcGlsZXIKIyBDCmlmZXEgKCQoU1JDRVhUKSwgYykKCWlmZXEgKCQoQ0MpLCBnY2MpCgkJQ0MgOj0gZ2NjCgllbHNlCgkJQ0MgOj0gY2
+xhbmcKCWVuZGlmICMgQyA6IGNsYW5nIG9yIGdjYwoJQ0ZMQUdTICs9IC1zdGQ9YyQoQ1ZFUlNJT04pCiMgQysrCmVsc2UKCWlmZXEgKCQoQ1hYKSwgZy
+srKQoJCUNDIDo9IGcrKwoJZWxzZQoJCUNDIDo9IGNsYW5nKysKCWVuZGlmICMgQysrIDogY2xhbmcrKyBvciBnKysKCUNGTEFHUyArPSAtc3RkPWMrKy
+QoQ1BQVkVSU0lPTikKZW5kaWYKCiMgZXhlY3V0YWJsZSBuYW1lCmlmZGVmIFBHTkFNRQoJRVhFQ1VUQUJMRSA9ICQoUEdOQU1FKQplbHNlCglFWEVDVV
+RBQkxFIAk6PSBwcm9ncmFtCmVuZGlmICMgcGduYW1lCgojIHByb2dyYW0gbmFtZSBsb2NhdGlvbgpPVVQJCQk/PSAuL2JpbgoKIyBjb21waWxhdGlvbi
+Btb2RlCmlmZGVmIERFQlVHCglUQVJHRVRESVIgPSAkKE9VVCkvZGVidWcKZWxzZQoJVEFSR0VURElSID0gJChPVVQpL3JlbGVhc2UKZW5kaWYgIyBkZW
+J1ZwoKIyBmaW5hbCBmdWxsIGV4ZWN1dGFibGUgbG9jYXRpb24KVEFSR0VUIAkJOj0gJChUQVJHRVRESVIpLyQoRVhFQ1VUQUJMRSkKIyAubyBsb2NhdG
+lvbgpCVUlMRERJUgk/PSAuL2J1aWxkCiMgc291cmNlIGZpbGVzIGxvY2F0aW9uClNSQ0RJUgkJPz0gLi9zcmMKIyBoZWFkZXIgZmlsZXMgbG9jYXRpb2
+4KSU5DRElSCQk/PSAuL2luY2x1ZGUKClNPVVJDRVMgCTo9ICQoc2hlbGwgZmluZCAkKFNSQ0RJUikvKiogLXR5cGUgZiAtbmFtZSAqLiQoU1JDRVhUKS
+kKCklOQ0RJUlMJCTo9CklOQ0xJU1QJCTo9CkJVSUxETElTVAk6PQpJTkMJCQk6PSAtSSAkKElOQ0RJUikKCgppZm5lcSAoLCAkKGZpcnN0d29yZCAkKH
+dpbGRjYXJkICQoSU5DRElSKS8qKSkpCglJTkNESVJTIAk6PSAkKHNoZWxsIGZpbmQgJChJTkNESVIpLyovKiogLW5hbWUgJyouJChIRFJFWFQpJyAtZX
+hlYyBkaXJuYW1lIHt9IFw7IHwgc29ydCB8IHVuaXEpCglJTkNMSVNUIAk6PSAkKHBhdHN1YnN0ICQoSU5DRElSKS8lLCAtSSAkKElOQ0RJUikvJSwgJC
+hJTkNESVJTKSkKCUJVSUxETElTVCAJOj0gJChwYXRzdWJzdCAkKElOQ0RJUikvJSwgJChCVUlMRERJUikvJSwgJChJTkNESVJTKSkKCUlOQyAJCSs9IC
+QoSU5DTElTVCkKZW5kaWYgIyBpbmNkaXIKCgppZmRlZiBERUJVRwpPQkpFQ1RTIAk6PSAkKHBhdHN1YnN0ICQoU1JDRElSKS8lLCAkKEJVSUxERElSKS
+8lLCAkKFNPVVJDRVM6LiQoU1JDRVhUKT0ubykpCgokKFRBUkdFVCk6ICQoT0JKRUNUUykKCUBta2RpciAtcCAkKFRBUkdFVERJUikKCUBlY2hvICJMaW
+5raW5nLi4uIgoJQGVjaG8gIiAgTGlua2luZyAkKFRBUkdFVCkiCgkkKENDKSAtZyAtbyAkKFRBUkdFVCkgJF4gJChMSUJTKSAkKExERkxBR1MpCgokKE
+JVSUxERElSKS8lLm86ICQoU1JDRElSKS8lLiQoU1JDRVhUKQoJQG1rZGlyIC1wICQoQlVJTERESVIpCmlmZGVmIEJVSUxETElTVAoJQG1rZGlyIC1wIC
+QoQlVJTERMSVNUKQplbmRpZgoJQGVjaG8gIkNvbXBpbGluZyAkPC4uLiI7CgkkKENDKSAkKENGTEFHUykgJChJTkMpIC1jICQ8IC1vICRACgplbHNlIC
+MgUkVMRUFTRQoKJChUQVJHRVQpOgoJQG1rZGlyIC1wICQoVEFSR0VURElSKQoJQGVjaG8gIkxpbmtpbmcuLi4iCgkkKENDKSAkKElOQykgLW8gJChUQV
+JHRVQpICQoU09VUkNFUykgJChMSUJTKSAkKExERkxBR1MpCgplbmRpZiAjZGVidWcgLyByZWxlYXNlIHRhcmdldHMKCgpjbGVhbjoKCXJtIC1mIC1yIC
+QoQlVJTERESVIpLyoqCglAZWNobyAiQWxsIG9iamVjdHMgcmVtb3ZlZCIKCmNsZWFyOiBjbGVhbgoJcm0gLWYgLXIgICQoT1VUKS8qKgoJQGVjaG8gIi
+QoT1VUKSBmb2xkZXIgY2xlYXJlZCIKCi5QSE9OWTogY2xlYW4gY2xlYXI="
+
+# --------------------------------------
+
+
+updateMakefile()
 {
-    echo -e "IyBtb2RpZnkgdGhlc2UgMyBsaW5lcyBkZXBlbmRpbmcgb2Ygd2hhdCB5b3Ugd2FudApDRkxBR1MgCQk6PSAtV25vLXVudXNlZC1jb21tYW5kLWxpbmUtYXJndW1lbnQjIC1XZXJyb3IgLVdhbGwgLVdleHRyYQpMREZMQUdTCQk6PQpMSUJTIAkJOj0KIyB0eXBlIG9mIHNvdXJjZSBmaWxlcwojIGMgb3IgY3BwIChtYWtlIHN1cmUgdG8gbm90IGhhdmUgc3BhY2UgYWZ0ZXIpClNSQ0VYVCAJCT89IGNwcApDVkVSU0lPTgk/PSAxMQpDUFBWRVJTSU9OCT89IDE0CgojIGRldGVjdCBpZiBjb21waWxlciBpcyBnY2MgaW5zdGVhZCBvZiBjbGFuZy4gTm90IHZpZXdpbmcgZm9yIG90aGVyIGNvbXBpbGVyCiMgQwppZmVxICgkKFNSQ0VYVCksIGMpCglpZmVxICgkKENDKSwgZ2NjKQoJCUNDIDo9IGdjYwoJZWxzZQoJCUNDIDo9IGNsYW5nCgllbmRpZiAjIEMgOiBjbGFuZyBvciBnY2MKCUNGTEFHUyArPSAtc3RkPWMkKENWRVJTSU9OKQojIEMrKwplbHNlCglpZmVxICgkKENYWCksIGcrKykKCQlDQyA6PSBnKysKCWVsc2UKCQlDQyA6PSBjbGFuZysrCgllbmRpZiAjIEMrKyA6IGNsYW5nKysgb3IgZysrCglDRkxBR1MgKz0gLXN0ZD1jKyskKENQUFZFUlNJT04pCmVuZGlmCgojIGV4ZWN1dGFibGUgbmFtZQppZmRlZiBQR05BTUUKCUVYRUNVVEFCTEUgPSAkKFBHTkFNRSkKZWxzZQoJRVhFQ1VUQUJMRSAJOj0gcHJvZ3JhbQplbmRpZiAjIHBnbmFtZQoKIyBwcm9ncmFtIG5hbWUgbG9jYXRpb24KT1VUIAkJPz0gLi9iaW4KCiMgY29tcGlsYXRpb24gbW9kZQppZmRlZiBERUJVRwoJVEFSR0VURElSID0gJChPVVQpL2RlYnVnCmVsc2UKCVRBUkdFVERJUiA9ICQoT1VUKS9yZWxlYXNlCmVuZGlmICMgZGVidWcKCiMgZmluYWwgZnVsbCBleGVjdXRhYmxlIGxvY2F0aW9uClRBUkdFVCAJCTo9ICQoVEFSR0VURElSKS8kKEVYRUNVVEFCTEUpCiMgLm8gbG9jYXRpb24KQlVJTERESVIgCT89IC4vYnVpbGQKIyBzb3VyY2UgZmlsZXMgbG9jYXRpb24KU1JDRElSIAkJPz0gLi9zcmMKIyBoZWFkZXIgZmlsZXMgbG9jYXRpb24KSU5DRElSIAkJPz0gLi9pbmNsdWRlCgpTT1VSQ0VTIAk6PSAkKHNoZWxsIGZpbmQgJChTUkNESVIpLyoqIC10eXBlIGYgLW5hbWUgKi4kKFNSQ0VYVCkpCgpJTkNESVJTCQk6PQpJTkNMSVNUCQk6PQpCVUlMRExJU1QJOj0KSU5DCQkJOj0KCmlmbmVxICgsICQoZmlyc3R3b3JkICQod2lsZGNhcmQgJChJTkNESVIpLyopKSkKCUlOQ0RJUlMgCTo9ICQoc2hlbGwgZmluZCAkKElOQ0RJUikvKiogLW5hbWUgJyouaCcgLWV4ZWMgZGlybmFtZSB7fSBcOyB8IHNvcnQgfCB1bmlxKQoJSU5DTElTVCAJOj0gJChwYXRzdWJzdCAkKElOQ0RJUikvJSwgLUkgJChJTkNESVIpLyUsICQoSU5DRElSUykpCglCVUlMRExJU1QgCTo9ICQocGF0c3Vic3QgJChJTkNESVIpLyUsICQoQlVJTERESVIpLyUsICQoSU5DRElSUykpCglJTkMgCQk6PSAkKElOQ0xJU1QpCmVuZGlmICMgaW5jZGlyCgppZm5lcSAoJChTUkNESVIpLCAkKElOQ0RJUikpCglJTkMgKz0gLUkgJChJTkNESVIpCmVuZGlmCgoKaWZkZWYgREVCVUcKT0JKRUNUUyAJOj0gJChwYXRzdWJzdCAkKFNSQ0RJUikvJSwgJChCVUlMRERJUikvJSwgJChTT1VSQ0VTOi4kKFNSQ0VYVCk9Lm8pKQoKJChUQVJHRVQpOiAkKE9CSkVDVFMpCglAbWtkaXIgLXAgJChUQVJHRVRESVIpCglAZWNobyAiTGlua2luZy4uLiIKCUBlY2hvICIgIExpbmtpbmcgJChUQVJHRVQpIgoJJChDQykgLWcgLW8gJChUQVJHRVQpICReICQoTElCUykgJChMREZMQUdTKQoKJChCVUlMRERJUikvJS5vOiAkKFNSQ0RJUikvJS4kKFNSQ0VYVCkKCUBta2RpciAtcCAkKEJVSUxERElSKQppZmRlZiBCVUlMRExJU1QKCUBta2RpciAtcCAkKEJVSUxETElTVCkKZW5kaWYKCUBlY2hvICJDb21waWxpbmcgJDwuLi4iOwoJJChDQykgJChDRkxBR1MpICQoSU5DKSAtYyAkPCAtbyAkQAoKZWxzZSAjIFJFTEVBU0UKCiQoVEFSR0VUKToKCUBta2RpciAtcCAkKFRBUkdFVERJUikKCUBlY2hvICJMaW5raW5nLi4uIgoJJChDQykgJChJTkMpIC1vICQoVEFSR0VUKSAkKFNPVVJDRVMpICQoTElCUykgJChMREZMQUdTKQoKZW5kaWYgI2RlYnVnIC8gcmVsZWFzZSB0YXJnZXRzCgoKY2xlYW46CglybSAtZiAtciAkKEJVSUxERElSKS8qKgoJQGVjaG8gIkFsbCBvYmplY3RzIHJlbW92ZWQiCgpjbGVhcjogY2xlYW4KCXJtIC1mIC1yICAkKE9VVCkvKioKCUBlY2hvICIkKE9VVCkgZm9sZGVyIGNsZWFyZWQiCgouUEhPTlk6IGNsZWFuIGNsZWFy" | base64 --decode
+    if [[ ! -f './Makefile' ]]; then
+        return
+    fi
+
+    # update makefile depending on current settings
+    sed -i -e "s/^SRCEXT\t*?=\s[a-z]\+/SRCEXT\t\t?= $srcFileExt/" './Makefile' # src ext
+    sed -i -e "s/^HDREXT\t*?=\s[a-z]\+/HDREXT\t\t?= $hdrFileExt/" './Makefile' # hdr exxt
+    sed -i -e "s/^CVERSION\t*?=\s[0-9]\+/CVERSION\t?= $cVersion/" './Makefile' # c version
+    sed -i -e "s/^CPPVERSION\t*?=\s[0-9]\+/CPPVERSION\t?= $cppVersion/" './Makefile' # cpp version
+    sed -i -e "s@^OUT\t*?=\s.*@OUT\t\t\t?= $outDir@" './Makefile' # out path
+    sed -i -e "s@^BUILDDIR\t*?=\s.*@BUILDDIR\t?= $buildDir@" './Makefile' # build path
+    sed -i -e "s@^SRCDIR\t*?=\s.*@SRCDIR\t\t?= $srcDir@" './Makefile' # src path
+    sed -i -e "s@^INCDIR\t*?=\s.*@INCDIR\t\t?= $incDir@" './Makefile' # inc path
+
+    echo "Makefile updated."
 }
 
 getHelp()
 {
-    echo "C/C++ run script v$version"
-    echo -e "Usage : $0 [OPTION]"
-	echo -e "\t$0 -g to generate project's structure."
-	echo -e "\t$0 [-dev|-d|-r] to compile and run the program in [dev(default)|debug|release] mode."
-    echo -e "All added options not handled by the script will be executable's options."
-	echo -e "\n\033[1;21mOPTIONS:\033[0m"
-
-    for i in ${!optionsList[@]}; do
-        # get current command line as array (split ;)
-        IFS=';' read -a option <<<"${optionsList[$i]}"
-        # length of the array - 1
-        n=$((${#option[@]}-1))
-        # the description of the command is the last element of the array
-        description=${option[$n]}
-
-        # make a tabulation
-        echo -n -e "\t"
-
-        j=0
-        l=0
-        # add keyword usages
-        while (($j < n)); do
-            echo -e -n "${option[$j]}"
-            # add its length on total length (number of charaters)
-            sl=$(echo -n ${option[$j]} | wc -m)
-            ((l=l+sl))
-            k=$((n-1))
-            # if it's not the last usage, put a comma
-            if [ $j -lt $k ]; then
-                echo -n ", "
-                ((l=l+2))
-            fi
-            ((j=j+1))
-        done
-        # print spaces so every descriptions will be aligned
-        repeat_spaces $((20-l))
-        echo ${option[-1]}
-    done
+    echo -e "$helpMessage"
 }
 
 createClass()
@@ -117,13 +145,13 @@ createClass()
         fi
 
         if [ $projectMode -eq 0 ]; then
-            srcPath="$srcDir/$1.$fileExt"
-            incPath="$incDir/$1.h"
+            srcPath="$srcDir/$1.$srcFileExt"
+            incPath="$incDir/$1.$hdrFileExt"
         else
             folderPath="$srcDir/$1"
             mkdir -p $folderPath
-            srcPath="$folderPath/$1.$fileExt"
-            incPath="$folderPath/$1.h"
+            srcPath="$folderPath/$1.$srcFileExt"
+            incPath="$folderPath/$1.$hdrFileExt"
         fi
 
         if [ -f "$srcPath" ] || [ -f "$incPath" ]; then
@@ -154,9 +182,9 @@ createBaseProject() {
         ((i=i+1))
     fi
 
-    if [ ! -d "$binDir" ]; then
-        mkdir $binDir
-        [ $verbose -eq 1 -a $? -eq 0 ] && echo "Created $binDir folder"
+    if [ ! -d "$outDir" ]; then
+        mkdir $outDir
+        [ $verbose -eq 1 -a $? -eq 0 ] && echo "Created $outDir folder"
         ((i=i+1))
     fi
 
@@ -166,16 +194,17 @@ createBaseProject() {
         ((i=i+1))
     fi
     
-    if [ ! -f "$srcDir/main.$fileExt" ]; then
-        touch "$srcDir/main.$fileExt"
-        getMainCode > "$srcDir/main.$fileExt"
+    if [ ! -f "$srcDir/main.$srcFileExt" ]; then
+        touch "$srcDir/main.$srcFileExt"
+        getMainCode > "$srcDir/main.$srcFileExt"
         [ $verbose -eq 1 -a $? -eq 0 ] && echo "Created main file"
         ((i=i+1))
     fi
 
     if [ ! -f "Makefile" ]; then
         touch "Makefile"
-        getMakefileCode > "Makefile"
+        echo -e "$makefileCode"  | base64 --decode > "Makefile"
+        updateMakefile
         [ $verbose -eq 1 -a $? -eq 0 ] && echo "Created Makefile"
         ((i=i+1))
     fi
@@ -185,7 +214,7 @@ createBaseProject() {
 
 getSrcCode()
 {
-    if [ $fileExt == "c" ]; then
+    if [ $srcFileExt == "c" ]; then
         echo -e -n "#include \"$1.h\"\n\n"
     else
         echo -e -n "#include \"$1.h\"\n\n$1::$1() {\n\n}\n\n$1::~$1() {\n\n}"
@@ -194,17 +223,29 @@ getSrcCode()
 
 getHeaderCode()
 {
-    if [ $fileExt == "c" ]; then
-        echo -e -n "#ifndef ${1^^}_H\n#define ${1^^}_H\n\n\n#endif // ${1^^}_H"
+    [ $srcFileExt == "c" ] && pp='' || pp='PP'
+
+    if [ $guard == "ifndef" ]; then
+        guard_top="#ifndef ${1^^}_H$pp\n#define ${1^^}_H$pp\n\n"
+        guard_bottom="\n\n#endif // ${1^^}_H$pp"
     else
-        echo -e -n "#ifndef ${1^^}_H\n#define ${1^^}_H\n\nclass $1 {\n\tpublic:\n\t\t$1();\n\t\t~$1();\n};\n\n#endif // ${1^^}_H"
+        guard_top="#pragma once\n\n"
+        guard_bottom=""
     fi
+
+    echo -e -n "$guard_top"
+
+    if [ $srcFileExt == "cpp" ]; then
+        echo -e -n "class $1 {\n\tpublic:\n\t\t$1();\n\t\t~$1();\n};"
+    fi
+
+    echo -e -n "$guard_bottom"
 }
 
 getMainCode() {
-    if [ $fileExt == "cpp" ]; then
+    if [ $srcFileExt == "cpp" ]; then
         echo -e -n "#include <iostream>\n\nint main(int argc, char **argv) {\n\tstd::cout << \"Hello World\" << std::endl;\n\treturn 0;\n}"
-    elif [ $fileExt == "c" ]; then
+    elif [ $srcFileExt == "c" ]; then
         echo -e -n "#include <stdio.h>\n\nint main(int argc, char **argv) {\n\tprintf(\"Hello World \");\n\treturn 0;\n}"
     fi
 }
@@ -213,6 +254,44 @@ getMainCode() {
 setMode()
 {
     [ $1 -eq 0 -o $1 -eq 1 ] && sed -i -e "s/projectMode=[0-9]/projectMode=$1/g" $0 || echo "Unknown mode : $1"
+}
+
+setLang()
+{
+    srcExt=""
+    hdrExt=""
+    
+    case $1 in
+        c)
+            srcExt="c"
+            hdrExt="h";;
+        cpp)
+            srcExt="cpp"
+            hdrExt="hpp";;
+        *)
+            echo "Unknown language mode."
+            return;;
+    esac
+
+    sed -i -e 's/srcFileExt="'$srcFileExt'"/srcFileExt="'$srcExt'"/' $0
+    sed -i -e 's/hdrFileExt="'$hdrFileExt'"/hdrFileExt="'$hdrExt'"/' $0
+
+    echo "Files extensions set to .$srcExt/.$hdrExt"
+
+    srcFileExt="$srcExt"
+    hdrFileExt="$hdrExt"
+
+    updateMakefile
+}
+
+setGuard()
+{
+    if [ $1 == "ifndef" -o $1 == "pragma" ]; then
+        sed -i -e 's/guard="'$guard'"/guard="'$1'"/' $0
+        echo "Guard changed to $1."
+    else
+        echo "Unknown guard."
+    fi
 }
 
 moveRec()
@@ -245,7 +324,7 @@ moveRec()
         if [ -f $i ]; then
             ext=$(echo "$i" | sed 's/^.*\.//')
             # .h
-            if [ $ext == 'h' ]; then
+            if [ "$ext" == 'h' -o "$ext" == 'hpp' ]; then
                 # filename.ext
                 suffix="$(basename "$i")"
                 # left trim folders
@@ -314,7 +393,12 @@ swapMode()
 
 compile()
 {
-    make ${mode^^}=1 PGNAME=$pgname SRCEXT=$fileExt SRCDIR=$srcDir INCDIR=$includeDir OUT=$binDir BUILDDIR=$buildDir MODE=$projectMode CVERSION=$cVersion CPPVERSION=$cppVersion OSX=$os
+    make ${mode^^}=1 PGNAME=$pgname\
+        SRCEXT=$srcFileExt HDREXT=$hdrFileExt\
+        SRCDIR=$srcDir INCDIR=$includeDir\
+        OUT=$outDir BUILDDIR=$buildDir\
+        MODE=$projectMode\
+        CVERSION=$cVersion CPPVERSION=$cppVersion
 }
 
 launch()
@@ -327,16 +411,15 @@ launch()
     j=0
     verbose=0
 	pseudoMode=$mode
-    shouldRun=1
 
-    for i in 1 2 3 4; do
+    for i in 1 2 3; do
         if [ $i -le $# ]; then
             # release / debug mode / program name
             if [ $# -gt 0 ] && [ ${!i} == "-d" -o ${!i} == "-r" -o ${!i} == "--debug" -o ${!i} == "--release" ]; then
 				pseudoMode=$mode
-                if [[ ${!i} == "-d" || ${!i} == "--debug" || ${!i} == "-dev" ]]; then
+                if [[ ${!i} == "-d" || ${!i} == "--debug" || ${!i} == "--dev" ]]; then
 					mode="debug"
-					[ ${!i} == "-dev" ] && pseudoMode="dev" || pseudoMode="debug"
+					[ ${!i} == "--dev" ] && pseudoMode="dev" || pseudoMode="debug"
 				else
 					mode="release"
 				fi
@@ -352,10 +435,6 @@ launch()
                 verbose=1
                 ((j=j+1))
             fi
-
-            if [ ${!i} == "--no-run" ]; then
-                shouldRun=0
-            fi
         fi
     done
 
@@ -367,9 +446,9 @@ launch()
     done
 
     # detect os and adapt executable's extension
-    if [ "$os" == "mac" ]; then # mac OS
+    if [ "$OSTYPE" == "darwin"* ]; then # mac OS
         pgname=$pgname.app
-    elif [ "$os" == "windows" ]; then # windows
+    elif [ "$OSTYPE" == "cygwin" -o "$OSTYPE" == "msys" -o "$OSTYPE" == "win32" ]; then # windows
         pgname=$pgname.exe
     fi
 
@@ -377,7 +456,7 @@ launch()
     [[ $projectMode -eq 1 ]] && includeDir=$srcDir || includeDir=$incDir
 
     if [ $verbose -eq 1 ]; then
-        echo -e "\033[0;35mCompiling..."
+        echo -e "Compiling..."
     fi
 
 	echo -e -n "\033[0;90m"
@@ -390,20 +469,16 @@ launch()
 	echo -e "\033[0m"
 
     if [ $res -eq 0 ]; then
-        cp $binDir/$mode/$pgname $outDir/$pgname
+        cd "$outDir/"
 
         if [ $verbose -eq 1 ]; then
             echo -e "\n\033[0;32mCompilation succeed\033[0m\n"
             echo -e "----- Executing ${mode^^} mode -----\n\n"
         fi
-        
-        if [ $shouldRun -eq 1 ]; then
-            cd $outDir/
-            if [ $pseudoMode == "debug" ]; then
-                gdb ./$pgname $@
-            else
-                ./$pgname $@
-            fi
+        if [ $pseudoMode == "debug" ]; then
+            gdb ./$mode/$pgname $@
+        else
+            ./$mode/$pgname $@
         fi
     else
         echo -e "\n\033[0;31mCompilation failed\033[0m\n"
@@ -416,8 +491,10 @@ launch()
 patch()
 {
     wget -q -O "$0" "$updateUrl"
+    r=$?
     version=${version:-0.1}
-    if [ $? -eq 0 ]; then
+
+    if [ $r -eq 0 ]; then
         newVersion="$(echo $(grep version=[0-9]\.[0-9] $0) | sed -r 's/version=//')"
         
         if [ $version == $newVersion ]; then
@@ -432,41 +509,47 @@ patch()
     else
         echo -e "\033[0;31mFailed to update\033[0m"
     fi
+
     exit 0
 }
 
 ############
 
 if [ $# -gt 0 ]; then
-    # create class
-    if [ $1 == "-c" ]; then
-        [ $# -gt 1 ] && createClass $2 || echo "Error : no class name provided."
+    case $1 in
+        "-h" | "--help")
+            getHelp;;
 
-    # generate base project
-    elif [ $1 == "-g" -o $1 == "--generate" ]; then
-        [ $# -gt 1 ] && [ $2 == "-v" -o $2 == "--verbose" ]  && verbose=1 || verbose=0
-        createBaseProject $verbose
+        "-V" | "--version")
+            echo $version;;
 
-    # help
-    elif [ $1 == "-h" -o $1 == "--help" ]; then
-        getHelp
+        "--patch")
+            patch;;
 
-    # patch
-    elif [ $1 == "--patch" ]; then
-        patch
+        "-g" | "--generate")
+            [ $# -gt 1 ] && [ $2 == "-v" -o $2 == "--verbose" ]  && verbose=1 || verbose=0
+            createBaseProject $verbose;;
 
-    # version
-    elif [ $1 == "-V" -o $1 == "--version" ]; then
-        echo $version
+        "--update-makefile")
+            updateMakefile;;
 
-    # swap mode
-    elif [ $1 == "--swap-mode" ]; then
-        [ $# -gt 1 ] && [ $2 == "-v" -o $2 == "--verbose" ]  && verbose=1 || verbose=0
-        swapMode $((1 - $projectMode)) $verbose
+        "--swap-mode")
+            [ $# -gt 1 ] && [ $2 == "-v" -o $2 == "--verbose" ]  && verbose=1 || verbose=0
+            swapMode $((1 - $projectMode)) $verbose;;
 
-    else
-        launch $@
-    fi
+        "-l" | "--set-language")
+            setLang $2;;
+
+        "--set-guard")
+            setGuard $2;;
+
+        "-c")
+            [ $# -gt 1 ] && createClass $2 || echo "Error : no class name provided.";;
+
+        # compile and run project
+        *)
+            launch $@;;
+    esac
 else
     launch $@
 fi

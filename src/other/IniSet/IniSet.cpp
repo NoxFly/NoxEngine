@@ -1,9 +1,9 @@
-#include "IniSet.h"
+#include "IniSet.hpp"
 
 #include <fstream>
 #include <iostream>
 
-#include "utils.h"
+#include "utils.hpp"
 
 using namespace std;
 

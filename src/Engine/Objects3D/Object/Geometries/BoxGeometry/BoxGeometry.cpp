@@ -1,4 +1,4 @@
-#include "BoxGeometry.h"
+#include "BoxGeometry.hpp"
 
 BoxGeometry::BoxGeometry(const float width, const float height, const float depth):
     BoxGeometry(glm::vec3(width, height, depth))

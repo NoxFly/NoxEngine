@@ -1,4 +1,4 @@
-#include "MatricesMVP.h"
+#include "MatricesMVP.hpp"
 
 MatricesMVP::MatricesMVP(double fov, double aspect, double near, double far, const glm::vec3& position, const glm::vec3& verticalAxis):
     m_projection(glm::perspective(fov, aspect, near, far)),
