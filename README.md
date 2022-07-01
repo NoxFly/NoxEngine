@@ -1,17 +1,26 @@
 # C++ 3D Engine
 
-SDL2, SDL2_image, SDL2_ttf, glew
+SDL2, SDL2_image, SDL2_ttf, glew, opengl
 
+## Install dependencies
+```sh
+# sdl2
+sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+# glew, glm and opengl utils
+sudo apt-get install libglm-dev glew-utils mesa-utils
+```
+
+## run
 build project :
 ```
-./run.sh -v
+./run.sh -v [arguments for the executable]
 ```
 
 Add the `-f` option to remove the object file if you encounter compilation's errors.
 
 The executable is in the `out/` folder.
 
-# How to use the engine
+## How to use the engine
 
 ```cpp
 #include "IniSet.hpp" // to load .ini config
@@ -23,7 +32,7 @@ int main() {
     IniSet config;
     
     if(!config.loadFromFile('./path/to/config.ini')) {
-        std::cout << "Unable to load config" << std::endl;
+        Console::info("Unable to load config");
         return 1;
     }
 

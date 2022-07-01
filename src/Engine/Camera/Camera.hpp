@@ -12,6 +12,8 @@ class Camera: public Object3D {
             m_mvp(m_fov, m_aspect, m_near, m_far, m_position, m_verticalAxis) {}
         virtual ~Camera() {};
 
+        virtual void update() = 0;
+
         MatricesMVP* getMVP() {
             return &m_mvp;
         }

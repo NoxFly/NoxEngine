@@ -280,6 +280,8 @@ void Renderer::render(Scene* scene, Camera* camera) {
     Uint32 frameRate = 1000 / m_FPS;
     m_earlyLoop = SDL_GetTicks();
 
+    camera->update();
+
 
     clear(m_clearColor);
 

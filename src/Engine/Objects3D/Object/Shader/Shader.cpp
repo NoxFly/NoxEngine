@@ -7,7 +7,10 @@
 
 #include "Console.hpp"
 
-std::mutex shaderMutex;
+// std::mutex shaderMutex;
+
+// GLSL versions :
+// 1.10, 1.20, 1.30, 1.40, 1.50, 3.30, 4.00, 4.10, 4.20, 4.30, 4.40, 4.50, 4.60, 1.00 ES, 3.00 ES, 3.10 ES, and 3.20 ES
 
 std::string Shader::shadersPath = "./";
 ResourceHolder<Shader, std::string> Shader::m_bank;
@@ -108,7 +111,7 @@ void Shader::use() {
 
 
 bool Shader::load() {
-    std::lock_guard<std::mutex> guard(shaderMutex);
+    // std::lock_guard<std::mutex> guard(shaderMutex);
 
     // security : destruction of potential old shader
     destroyShader();

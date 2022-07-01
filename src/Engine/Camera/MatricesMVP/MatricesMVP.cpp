@@ -5,7 +5,7 @@ MatricesMVP::MatricesMVP(double fov, double aspect, double near, double far, con
     m_model(1.0f),
     m_view(glm::lookAt(position, glm::vec3(0, 0, 0), verticalAxis)),
     m_saves{},
-    operationDone(true)
+    m_operationDone(true)
 {
     updateMVP();
 }
@@ -15,8 +15,8 @@ MatricesMVP::~MatricesMVP() {
 }
 
 void MatricesMVP::updateMVP() {
-    m_MVP = m_projection * m_view * m_model;
-    operationDone = false;
+    m_MVP = m_model * m_projection * m_view;
+    m_operationDone = false;
 }
 
 glm::mat4& MatricesMVP::getProjection() {
@@ -32,7 +32,7 @@ glm::mat4& MatricesMVP::getView() {
 }
 
 glm::mat4& MatricesMVP::getMVP() {
-    if(operationDone)
+    if(m_operationDone)
         updateMVP();
     return m_MVP;
 }
@@ -48,29 +48,23 @@ void MatricesMVP::push() {
 void MatricesMVP::pop() {
     if(m_saves.size() > 0) {
         m_model = m_saves.erase(m_saves.begin())[0];
-        operationDone = true;
+        m_operationDone = true;
     }
 }
 
-void MatricesMVP::translate(int x, int y, int z) {
-    translate(glm::vec3(x, y, z));
-}
-
-void MatricesMVP::translate(float x, float y, float z) {
+template <typename T, float, int>
+void MatricesMVP::translate(T x, T y, T z) {
     translate(glm::vec3(x, y, z));
 }
 
 void MatricesMVP::translate(const glm::vec3& translation) {
     m_model = glm::translate(m_model, translation);
-    operationDone = true;
+    m_operationDone = true;
 }
 
 
-void MatricesMVP::rotate(int x, int y, int z) {
-    rotate(glm::vec3(x, y, z));
-}
-
-void MatricesMVP::rotate(float x, float y, float z) {
+template <typename T, float, int>
+void MatricesMVP::rotate(T x, T y, T z) {
     rotate(glm::vec3(x, y, z));
 }
 
@@ -84,9 +78,10 @@ void MatricesMVP::rotate(const glm::vec3& rotation) {
     if(rotation.z != 0)
         m_model = glm::rotate(m_model, glm::radians(rotation.z), glm::vec3(1, 0, 0));
         
-    operationDone = true;
+    m_operationDone = true;
 }
 
 void MatricesMVP::setView(const glm::mat4& lookAt) {
     m_view = lookAt;
+    m_operationDone = true;
 }

@@ -70,7 +70,9 @@
         "random": "cpp",
         "iomanip": "cpp",
         "stop_token": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp"
     },
     "files.exclude": {
         "**/*.dll": true,

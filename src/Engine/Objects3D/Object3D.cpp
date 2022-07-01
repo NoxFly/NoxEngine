@@ -1,5 +1,7 @@
 #include "Object3D.hpp"
 
+#include <iostream>
+
 Object3D::Object3D():
     Object3D(0, 0, 0)
 {
@@ -15,16 +17,12 @@ Object3D::Object3D(float x, float y, float z):
 Object3D::Object3D(glm::vec3& position):
     m_position(position), m_rotation(0, 0, 0),
     m_hasToTranslate(false), m_hasToRotate(false)
-{
-
-}
+{}
 
 Object3D::Object3D(glm::vec3 position):
     m_position(position), m_rotation(0, 0, 0),
     m_hasToTranslate(false), m_hasToRotate(false)
-{
-
-}
+{}
 
 Object3D::~Object3D() {
 

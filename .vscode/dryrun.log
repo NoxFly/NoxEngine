@@ -1,0 +1,8 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/noxfly/codes/cpp/cpp-3D-engine'
+ 
+mkdir -p ./bin/release
+echo "Linking..."
+g++ -I./include -o ./bin/release/program ./src/Engine/Scene/Scene.cpp ./src/Engine/Renderer/Input/Input.cpp ./src/Engine/Renderer/Renderer.cpp ./src/Engine/Objects3D/Object3D.cpp ./src/Engine/Objects3D/Objects/Line/Line.cpp ./src/Engine/Objects3D/Objects/Mesh/Mesh.cpp ./src/Engine/Objects3D/Objects/Points/Points.cpp ./src/Engine/Objects3D/Shapes/Cube/Cube.cpp ./src/Engine/Objects3D/Shapes/Sphere/Sphere.cpp ./src/Engine/Objects3D/Object/Materials/Material.cpp ./src/Engine/Objects3D/Object/Materials/LambertMaterial/LambertMaterial.cpp ./src/Engine/Objects3D/Object/Materials/BasicMaterial/BasicMaterial.cpp ./src/Engine/Objects3D/Object/Materials/PhongMaterial/PhongMaterial.cpp ./src/Engine/Objects3D/Object/Object.cpp ./src/Engine/Objects3D/Object/Shader/Shader.cpp ./src/Engine/Objects3D/Object/Geometries/BoxGeometry/BoxGeometry.cpp ./src/Engine/Objects3D/Object/Geometries/CircleGeometry/CircleGeometry.cpp ./src/Engine/Objects3D/Object/Geometries/Geometry.cpp ./src/Engine/Objects3D/Object/Texture/Texture.cpp ./src/Engine/Camera/PerspectiveCamera/PerspectiveCamera.cpp ./src/Engine/Camera/MatricesMVP/MatricesMVP.cpp ./src/main.cpp ./src/other/IniSet/IniSet.cpp ./src/other/Console/Console.cpp ./src/other/utils/utils.cpp -lGL -lGLEW -lSDL2main -lSDL2 -lSDL2_image 
+make: Leaving directory '/home/noxfly/codes/cpp/cpp-3D-engine'
+ 

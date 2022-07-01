@@ -1,119 +1,83 @@
 #include "Material.hpp"
 
+#include "Console.hpp"
+
 Material::Material():
     Material(0, 0)
-{
-
-}
+{}
 
 Material::Material(Shader* shader):
     Material(shader, 0)
-{
-
-}
+{}
 
 Material::Material(Shader* shader, Texture* texture):
     Material(shader, texture, std::vector<Color>{})
-{
-
-}
+{}
 
 Material::Material(Shader* shader, Texture* texture, const Color& color):
     Material(shader, texture, std::vector<Color>{ color })
-{
-
-}
+{}
 
 Material::Material(Shader* shader, Texture* texture, const std::vector<Color> colors):
     Material(shader, std::vector<Texture*>{ texture }, std::vector<Color>{ colors })
-{
-
-}
+{}
 
 Material::Material(Shader* shader, const Color& color):
-    Material(shader, {}, color)
-{
-
-}
+    Material(shader, std::vector<Texture*>{}, std::vector<Color>{ color })
+{}
 
 Material::Material(Shader* shader, const std::vector<Color> colors):
-    Material(shader, {}, colors)
-{
-
-}
+    Material(shader, std::vector<Texture*>{}, colors)
+{}
 
 Material::Material(Shader* shader, const std::vector<Texture*> textures):
     Material(shader, textures, std::vector<Color>{})
-{
-
-}
+{}
 
 Material::Material(Shader* shader, const std::vector<Texture*> textures, const Color& color):
     Material(shader, textures, std::vector<Color>{ color })
-{
-
-}
+{}
 
 Material::Material(Shader* shader, const std::vector<Texture*> textures, const std::vector<Color> colors):
     m_shader(shader), m_textures{ textures }, m_colors{ colors }, m_wireframe(false)
-{
-
-}
+{}
 
 Material::Material(Texture* texture):
-    Material(0, texture, std::vector<Color>{})
-{
-
-}
+    Material(0, std::vector<Texture*>{ texture }, std::vector<Color>{})
+{}
 
 Material::Material(const std::vector<Texture*> textures):
     Material(0, textures, std::vector<Color>{})
-{
-
-}
+{}
 
 Material::Material(const Color& color):
-    Material(0, {}, color)
-{
-
-}
+    Material(0, std::vector<Texture*>{}, std::vector<Color>{ color })
+{}
 
 Material::Material(const std::vector<Color> colors):
-    Material(0, {}, colors)
-{
-
-}
+    Material(0, std::vector<Texture*>{}, colors)
+{}
 
 Material::Material(Texture* texture, const Color& color):
-    Material(0, texture, color)
-{
-
-}
+    Material(0, std::vector<Texture*>{ texture }, std::vector<Color>{ color })
+{}
 
 Material::Material(Texture* texture, const std::vector<Color> colors):
-    Material(0, texture, colors)
-{
-
-}
+    Material(0, std::vector<Texture*>{ texture }, colors)
+{}
 
 Material::Material(const std::vector<Texture*> textures, const Color& color):
-    Material(0, textures, color)
-{
-
-}
+    Material(0, textures, std::vector<Color>{ color })
+{}
 
 Material::Material(const std::vector<Texture*> textures, const std::vector<Color> colors):
     Material(0, textures, colors)
-{
-
-}
+{}
 
 
 
 
-Material::~Material() {
-
-}
+Material::~Material() {}
 
 
 

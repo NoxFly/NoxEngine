@@ -13,7 +13,7 @@ LIBS 		:= -lGL -lGLEW -lSDL2main -lSDL2 -lSDL2_image
 SRCEXT		?= cpp
 HDREXT		?= hpp
 CVERSION	?= 17
-CPPVERSION	?= 17
+CPPVERSION	?= 20
 
 # detect if compiler is gcc instead of clang. Not viewing for other compiler
 # C
@@ -65,12 +65,16 @@ SOURCES 	:= $(shell find $(SRCDIR)/** -type f -name *.$(SRCEXT))
 INCDIRS		:=
 INCLIST		:=
 BUILDLIST	:=
-INC			:= -I $(INCDIR)
+INC			:= -I$(INCDIR)
+
+ifdef MACRO
+	CFLAGS		+= $(MACRO)
+endif
 
 
 ifneq (, $(firstword $(wildcard $(INCDIR)/*)))
 	INCDIRS 	:= $(shell find $(INCDIR)/*/** -name '*.$(HDREXT)' -exec dirname {} \; | sort | uniq)
-	INCLIST 	:= $(patsubst $(INCDIR)/%, -I $(INCDIR)/%, $(INCDIRS))
+	INCLIST 	:= $(patsubst $(INCDIR)/%, -I$(INCDIR)/%, $(INCDIRS))
 	BUILDLIST 	:= $(patsubst $(INCDIR)/%, $(BUILDDIR)/%, $(INCDIRS))
 	INC 		+= $(INCLIST)
 endif # incdir
@@ -83,7 +87,7 @@ $(TARGET): $(OBJECTS)
 	@mkdir -p $(TARGETDIR)
 	@echo "Linking..."
 	@echo "  Linking $(TARGET)"
-	$(CC) -g -o $(TARGET) $^ $(LIBS) $(LDFLAGS)
+	@$(CC) -g -o $(TARGET) $^ $(LIBS) $(LDFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDDIR)
@@ -91,14 +95,14 @@ ifdef BUILDLIST
 	@mkdir -p $(BUILDLIST)
 endif
 	@echo "Compiling $<...";
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 else # RELEASE
 
 $(TARGET):
 	@mkdir -p $(TARGETDIR)
 	@echo "Linking..."
-	$(CC) $(INC) -o $(TARGET) $(SOURCES) $(LIBS) $(LDFLAGS)
+	@$(CC) $(INC) -o $(TARGET) $(SOURCES) $(LIBS) $(LDFLAGS)
 
 endif #debug / release targets
 

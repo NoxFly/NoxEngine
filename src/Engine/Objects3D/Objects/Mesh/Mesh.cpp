@@ -1,13 +1,13 @@
 #include "Mesh.hpp"
 
-#include <iostream>
+#include "Console.hpp"
 
 
 Mesh::Mesh(const Geometry& geometry, const Material& material):
    Object(geometry, material)
 {
     if(!load())
-        std::cout << "Failed to load Mesh" << std::endl;
+        Console::error("Failed to load Mesh");
 }
 
 Mesh::~Mesh() {
@@ -29,12 +29,14 @@ bool Mesh::load() {
 
 
     // nC == 0 : no colors
-    // nT : no textures
+    // nT == 0 : no textures
 
     m_vertexNumber = nV / 3;
 
 
+    std::vector<float> vertices = m_geometry.getVertices();
     std::vector<Color> ccolors = m_material.getColors();
+    std::vector<float> textures = m_geometry.getTextures();
     std::vector<float> colors = {};
 
     if(nC > 0) {
@@ -84,7 +86,7 @@ bool Mesh::load() {
             glBufferData(GL_ARRAY_BUFFER, vSize + cSize + tSize, 0, GL_STATIC_DRAW);
 
             // transfert data for vertices
-            glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, m_geometry.getVertices().data());
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices.data());
 
             // transfert data for colors
             if(nC > 0)
@@ -136,14 +138,14 @@ void Mesh::draw(MatricesMVP* mvp) {
             // sends the matrices
             glUniformMatrix4fv(glGetUniformLocation(m_material.getShader()->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(mvp->getMVP()));
 
-            // if(hasTexture)
-            //     glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());
+            if(hasTexture)
+                glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());
 
             // renders
             glDrawArrays(GL_TRIANGLES, 0, m_vertexNumber);
 
-            // if(hasTexture)
-            //     glBindTexture(GL_TEXTURE_2D, 0);
+            if(hasTexture)
+                glBindTexture(GL_TEXTURE_2D, 0);
 
         // unlock VAO
         glBindVertexArray(0);

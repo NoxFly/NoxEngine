@@ -17,11 +17,11 @@ class MatricesMVP {
         void updateMVP();
         void push();
         void pop();
-        void translate(int x, int y, int z);
-        void translate(float x, float y, float z);
+        template <typename T, float, int>
+        void translate(T x, T y, T z);
         void translate(const glm::vec3& translation);
-        void rotate(int x, int y, int z);
-        void rotate(float x, float y, float z);
+        template <typename T, float, int>
+        void rotate(T x, T y, T z);
         void rotate(const glm::vec3& rotation);
 
         glm::mat4& getProjection();
@@ -36,7 +36,7 @@ class MatricesMVP {
         glm::mat4 m_projection, m_model, m_view;
         glm::mat4 m_MVP;
         std::vector<glm::mat4> m_saves;
-        bool operationDone; // in getMVP, updates MVP is any operation has been done before
+        bool m_operationDone; // in getMVP, updates MVP is any operation has been done before
 };
 
 #endif // MATRICES_MVP_HPP

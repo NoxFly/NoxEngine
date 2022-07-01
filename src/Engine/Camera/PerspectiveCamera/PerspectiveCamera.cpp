@@ -53,8 +53,6 @@ void PerspectiveCamera::orientate(const glm::vec2& dir) {
     m_orientation = glm::normalize(m_orientation);
     m_lateralDisplacement = glm::normalize(glm::cross(m_verticalAxis, m_orientation));
     m_target = m_orientation;
-
-    updatelookAt();
 }
 
 // Defines the camera's target
@@ -87,18 +85,17 @@ void PerspectiveCamera::lookAt(const glm::vec3& target) {
 
     m_phi *= 180 / PI;
     m_theta *= 180 / PI;
-
-    updatelookAt();
 }
 
 
 // Set's the camera's look at. The view matrix will be upated in the loop
-void PerspectiveCamera::lookAt(const glm::vec3 eye, const glm::vec3 center, const glm::vec3 up) {
-    setPosition(eye);
-    lookAt(center);
+void PerspectiveCamera::lookAt(const glm::vec3 eye, const glm::vec3 target, const glm::vec3 up) {
+    // setPosition(eye);
+    // lookAt(target);
+    // m_target = glm::normalize(m_target - eye);
+    m_position = eye;
+    m_target = target;
     m_verticalAxis = up;
-    m_target = glm::normalize(center - eye);
-    updatelookAt();
 }
 
 void PerspectiveCamera::lookAt(const float x, const float y, const float z) {
@@ -107,8 +104,8 @@ void PerspectiveCamera::lookAt(const float x, const float y, const float z) {
 
 
 // Updates the view matrix. Normally called every update loop
-void PerspectiveCamera::updatelookAt() {
-    m_mvp.setView(glm::lookAt(m_position, m_position + m_target, m_verticalAxis));
+void PerspectiveCamera::update() {
+    m_mvp.setView(glm::lookAt(m_position, m_target, m_verticalAxis));
 }
 
 
@@ -120,7 +117,6 @@ void PerspectiveCamera::setPosition(const float x, const float y, const float z)
 // Defines the camera's position
 void PerspectiveCamera::setPosition(const glm::vec3& position) {
     Object3D::setPosition(position);
-    updatelookAt();
 }
 
 
