@@ -3,12 +3,13 @@
         {
             "type": "shell",
             "label": "Build project",
-            "command": "./run.sh -v --no-run",
+            "command": "./run.sh",
+            "args": ["--no-run", "-v"],
+            "promptOnClose": true,
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "detail": "Custom task"
+            }
         }
     ],
     "version": "2.0.0"
