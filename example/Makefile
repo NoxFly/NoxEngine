@@ -60,7 +60,6 @@ $(EXECUTABLE): $(OBJECTS)
 	@echo "Linking and executing..."
 	@mkdir -p $(BINDIR)/debug
 	@$(CC) $(LIB_INC) $(LDFLAGS) -o $(EXECUTABLE) $^ $(LIBS)
-	cd $(BINDIR); ./debug/$(TARGET)
 
 $(BUILDDIR)/%.o: $(TARGET)/%.cpp
 	@echo "Compiling example $(TARGET): $<..."
@@ -69,9 +68,11 @@ $(BUILDDIR)/%.o: $(TARGET)/%.cpp
 
 2D:
 	@$(MAKE) -s TARGET=base_example_2D
+	@cd $(BINDIR); ./debug/base_example_2D
 
 3D:
 	@$(MAKE) -s TARGET=base_example_3D
+	@cd $(BINDIR); ./debug/base_example_3D
 
 clean:
 	rm -f $(BINDIR)/debug/*
