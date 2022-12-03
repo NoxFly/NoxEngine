@@ -7,4 +7,4 @@ bin/lib
 
 .old/
 
-.vscode
+.vscode/*.log

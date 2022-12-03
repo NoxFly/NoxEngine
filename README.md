@@ -7,7 +7,7 @@ SDL2, SDL2_image, SDL2_ttf, glew, opengl
 # sdl2
 sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 # glew, glm and opengl utils
-sudo apt-get install libglm-dev glew-utils mesa-utils
+sudo apt-get install libglm-dev libglew-dev glew-utils mesa-utils
 ```
 
 ## run

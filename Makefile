@@ -1,7 +1,7 @@
 # MODIFIABLE
 CFLAGS 		:= -Werror -Wall -Wextra
 LDFLAGS		:=
-LIBS 		:= -lGL -lGLEW -lSDL2main -lSDL2 -lSDL2_image
+LIBS 		:= GL GLEW SDL2main SDL2 SDL2_image
 
 # NOT MODIFIABLE
 # all what's below must not be modified
@@ -132,6 +132,17 @@ ifneq (, $(firstword $(wildcard $(INCDIR)/**/*)))
 	BUILDLIST 	:= $(patsubst $(INCDIR)/%, $(BUILDDIR)/%, $(INCDIRS))
 	INC 		+= $(INCLIST)
 endif # incdir
+
+# project specific
+# windows libs include
+ifeq ($(OS), WINDOWS)
+	INC += -I./libs/WIN32/include
+	LDFLAGS := -L./libs/WIN32/lib $(LDFLAGS)
+endif
+
+
+LIBS := $(patsubst %, -l%, $(LIBS))
+
 
 
 ifdef DEBUG

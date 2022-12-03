@@ -4,7 +4,7 @@
             "type": "shell",
             "label": "Build project",
             "command": "./run.sh",
-            "args": ["--no-run", "-v"],
+            "args": ["--shared", "-v"],
             "promptOnClose": true,
             "group": {
                 "kind": "build",

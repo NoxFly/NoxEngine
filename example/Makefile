@@ -1,13 +1,17 @@
-TARGET		:= ./$(TARGET)
+BINDIR		:= ./bin
+BUILDDIR	:= ./build/$(TARGET)
+
 SRC 		:= $(wildcard $(TARGET)/*.cpp)
-EXECUTABLE	:= $(TARGET)/$(TARGET)
+EXECUTABLE	:= $(BINDIR)/$(TARGET)
 
 ROOT_DIR	:=$(realpath $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))/..)
 LIB_DIR		:= $(ROOT_DIR)/bin/lib
 
-DFLAGS		?=
+CFLAGS		:= -std=c++20 $(DFLAGS)
 LDFLAGS		:= -std=c++20
-LIBS 		:= -lNoxEngine -lGL -lGLEW -lSDL2main -lSDL2 -lSDL2_image
+
+LIBS 		:= NoxEngine GL GLEW SDL2main SDL2 SDL2_image
+
 INC			:= -I$(LIB_DIR)/include/NoxEngine
 LIB_INC		:= -L$(LIB_DIR)
 
@@ -20,15 +24,26 @@ else
 	CC := clang++
 endif # C++ : clang++ or g++
 
-$(EXECUTABLE): clean
-	$(CC) $(LDFLAGS) -o $(TARGET)/$(TARGET) $(SRC) $(DFLAGS) $(INC) $(LIB_INC) $(LIBS)
+
+
+OBJECTS		:= $(patsubst $(TARGET)/%, $(BUILDDIR)/%, $(SRC:.cpp=.o))
+
+
+
+$(EXECUTABLE): $(OBJECTS)
+	@mkdir -p $(BINDIR)
+	@$(CC) $(LIB_INC) $(LDFLAGS) -o $(EXECUTABLE) $^ $(patsubst %, -l%, $(LIBS))
 	$(EXECUTABLE)
 
+$(BUILDDIR)/%.o: $(TARGET)/%.cpp
+	@mkdir -p $(BUILDDIR)
+	@$(CC) $(INC) $(LIB_INC) $(CFLAGS) -c -o $@ $<
+
 2D:
-	@$(MAKE) -s TARGET=base_example DFLAGS=-D__NOX_ENGINE_2D__
+	@$(MAKE) -s TARGET=base_example_2D
 
 3D:
-	@$(MAKE) -s TARGET=base_example DFLAGS=-D__NOX_ENGINE_3D__
+	@$(MAKE) -s TARGET=base_example_3D
 
 clean:
 	rm -f $(EXECUTABLE)
