@@ -45,7 +45,7 @@ struct OctRect {
 template <class T>
 class Octree {
 	public:
-		explicit Octree<T>(const OctRect& bounds, uint rootCapacity);
+		explicit Octree<T>(const OctRect& bounds, unsigned int rootCapacity);
         Octree(const Octree&) = delete;
 		~Octree<T>();
 
@@ -67,14 +67,14 @@ class Octree {
         bool isDivided() const;
         const std::vector<OctreeNode<T>>& getNodes() const;
         std::vector<OctreeNode<T>>& getNodes();
-        std::unique_ptr<Octree<T>> getChildren(uint i);
+        std::unique_ptr<Octree<T>> getChildren(unsigned int i);
 
     private:
         Octree<T>(const int capacity, const int x, const int y, const int z, const int w, const int h, const int d);
         
         bool subdivide();
 
-        uint m_capacity; // total nodes that can contains the tree
+        unsigned int m_capacity; // total nodes that can contains the tree
         OctRect m_bounds; // bounds of the tree
         std::vector<OctreeNode<T>> m_nodes; // elements contained in the node
         std::unique_ptr<Octree<T>> m_children[8]; // children nodes

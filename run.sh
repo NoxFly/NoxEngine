@@ -466,6 +466,8 @@ updateLibraryInclude()
 
     baseIncludePath="$outDir/lib/include/$pgname/"
 
+    mkdir -p $baseIncludePath
+
     rsync -avq --delete --prune-empty-dirs --include="*/" --include="*.$hdrFileExt" --include "*.inl" --exclude="*" "$includeDir/" "$baseIncludePath"
 
     # 1st scan :

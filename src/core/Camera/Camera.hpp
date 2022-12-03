@@ -40,8 +40,8 @@ namespace NoxEngine {
             
             virtual D getPosition() const = 0;
 
-            virtual void move(const D& offset, uint duration = 0) = 0;
-            virtual void moveTo(const D& position, uint duration = 0) = 0;
+            virtual void move(const D& offset, unsigned int duration = 0) = 0;
+            virtual void moveTo(const D& position, unsigned int duration = 0) = 0;
 
             Matrices<D>* getMatrices() {
                 return &m_matrix;

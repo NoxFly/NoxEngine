@@ -31,13 +31,13 @@ namespace NoxEngine {
         lookAt(V3D(x, y, z));
     }
 
-    void PerspectiveCamera::move(const V3D& offset, uint duration) {
+    void PerspectiveCamera::move(const V3D& offset, unsigned int duration) {
         if(duration == 0) {
             Camera3D::setPosition(m_position + offset);
         }
     }
 
-    void PerspectiveCamera::moveTo(const V3D& position, uint duration) {
+    void PerspectiveCamera::moveTo(const V3D& position, unsigned int duration) {
         if(duration == 0) {
             Camera3D::setPosition(position);
         }

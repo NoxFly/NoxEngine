@@ -52,7 +52,7 @@ namespace NoxEngine {
 
         protected:
             const std::string m_uuid;
-            const uint m_dimension;
+            const unsigned int m_dimension;
             const bool m_is3D;
 
             Geometry m_geometry;

@@ -25,28 +25,28 @@ namespace NoxEngine {
         Camera::_setPosition(position.x, position.y, m_position.z);
     }
 
-    void Camera2D::zoomIn(float zoom, uint duration) {
+    void Camera2D::zoomIn(float zoom, unsigned int duration) {
         Camera::_setPosition(m_position.x, m_position.y, m_position.z + zoom);
         (void)duration;
     }
 
-    void Camera2D::zoomOut(float zoom, uint duration) {
+    void Camera2D::zoomOut(float zoom, unsigned int duration) {
         Camera::_setPosition(m_position.x, m_position.y, m_position.z - zoom);
         (void)duration;
     }
 
-    void Camera2D::setZoom(float zoom, uint duration) {
+    void Camera2D::setZoom(float zoom, unsigned int duration) {
         Camera::_setPosition(m_position.x, m_position.y, zoom);
         (void)duration;
     }
 
-    void Camera2D::move(const V2D& offset, uint duration) {
+    void Camera2D::move(const V2D& offset, unsigned int duration) {
         if(duration == 0) {
             setPosition(offset);
         }
     }
 
-    void Camera2D::moveTo(const V2D& position, uint duration) {
+    void Camera2D::moveTo(const V2D& position, unsigned int duration) {
         if(duration == 0) {
             setPosition(position);
         }

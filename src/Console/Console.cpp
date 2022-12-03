@@ -23,7 +23,11 @@ void Console::error(const std::string& where, const std::string& message) {
 
 #ifdef DEBUG
 void Console::message(Console::method method, const std::string& where, const std::string& message) {
-    std::string name = Console::methodName(method);
+    (void)method;
+    (void)where;
+    (void)message;
+    std::cout << "ok" << std::endl;
+    /* std::string name = Console::methodName(method);
     std::ostream &stream = (name.compare("ERROR"))? std::cout : std::cerr;
 
     std::string spaces = " ";
@@ -38,10 +42,11 @@ void Console::message(Console::method method, const std::string& where, const st
     std::string sep = (where == "")? " " : " : ";
 
     std::lock_guard<std::mutex> guard(consoleMutex);
-    stream << sMethod << spaces << where << sep << message << std::endl;
+    stream << sMethod << spaces << where << sep << message << std::endl; */
 }
 #else
 void Console::message(Console::method method, const std::string& where, const std::string& message) {
+    std::cout << "Not output" << std::endl;
     (void)method;
     (void)where;
     (void)message;

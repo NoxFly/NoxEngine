@@ -2,7 +2,10 @@
 
 SDL2, SDL2_image, SDL2_ttf, glew, opengl
 
+
 ## Install dependencies
+
+### Linux
 ```sh
 # sdl2
 sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
@@ -10,24 +13,28 @@ sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 sudo apt-get install libglm-dev libglew-dev glew-utils mesa-utils
 ```
 
-## run
-build project :
-```
-./run.sh -v [arguments for the executable]
-```
+### Windows
 
-Add the `-f` option to remove the object file if you encounter compilation's errors.
-
-The executable is in the `bin/debug` or `bin/release` folder.
+1. Using [MingW64 (MSYS2)](https://www.msys2.org/).
+    1. Ensure you're up-to-date with MingW64 (`pacman -Suy` and `pacman -Syuu`)
+    1. Ensure you have `C:/msys64/usr/bin` in environment variables.
+    1. Ensure you have gcc, make and rsync installed
+        ```
+        pacman -S gcc rsync mingw-w64-i686-gcc mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+        ```
+    1. With an administrator command prompt, paste these instructions to be able to run `make` :
+        * Create a symlink of make : `mklink C:\msys64\mingw64\bin\make C:\msys64\mingw64\bin\mingw32-make.exe`
 
 
 ## Usage
 
 The goal is to use this engine as static or shared library.
 
+For now it's only usable as shared one.
+
 ## Shared library
 ```sh
-./run.sh -v -f --shared
+./run.sh --shared -v
 ```
 
 This will generate a :
@@ -39,6 +46,16 @@ Copy the `.so` to your project executable's folder, and move the `/bin/lib/inclu
 * any folder that you will link through your IDE on Windows.
 
 ## How to use the engine
+
+There're some basic examples in the `examples/` folder.
+
+to run these :
+
+```sh
+cd examples
+make 2D # to run 2D engine
+make 3D # same for 3D one
+```
 
 ### Minimal working example
 ```ini

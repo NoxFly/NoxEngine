@@ -5,7 +5,6 @@
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
-#include <thread>
 
 #include "Console.hpp"
 #include "utils.hpp"
@@ -69,7 +68,7 @@ namespace NoxEngine {
 
     void Shader::searchShadersRec(const std::string& folderPath, std::vector<std::string>& savedPaths) {
         for(const auto& entry: fs::directory_iterator(folderPath)) {
-            std::string entryPath = entry.path();
+            const std::string entryPath = entry.path().generic_string();
 
             if(entry.is_directory()) {
                 searchShadersRec(entryPath, savedPaths);
@@ -93,7 +92,7 @@ namespace NoxEngine {
         searchShadersRec(path, shaderPaths);
 
 #ifdef DEBUG
-        uint done = 0, total = shaderPaths.size();
+        unsigned int done = 0, total = shaderPaths.size();
 
         std::cout << "Loading shaders... " << done << "/" << total << std::flush;
 #endif

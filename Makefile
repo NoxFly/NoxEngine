@@ -1,7 +1,9 @@
 # MODIFIABLE
 CFLAGS 		:= -Werror -Wall -Wextra
 LDFLAGS		:=
-LIBS 		:= GL GLEW SDL2main SDL2 SDL2_image
+LIBS			:= SDL2main SDL2 SDL2_image
+UNIX_LIBS 		:= GL GLEW 
+WIN_LIBS 		:= mingw32 opengl32 glew32
 
 # NOT MODIFIABLE
 # all what's below must not be modified
@@ -67,7 +69,10 @@ endif # pgname
 # compilation mode
 ifdef LIB
 TARGETDIR := $(OUTLIB)
+
+ifneq ($(OS), WINDOWS)
 EXECUTABLE := lib$(EXECUTABLE)
+endif
 
 # shared
 	ifeq ($(LIB), SHARED)
@@ -138,6 +143,9 @@ endif # incdir
 ifeq ($(OS), WINDOWS)
 	INC += -I./libs/WIN32/include
 	LDFLAGS := -L./libs/WIN32/lib $(LDFLAGS)
+	LIBS := $(WIN_LIBS) $(LIBS)
+else
+	LIBS := $(UNIX_LIBS) $(LIBS)
 endif
 
 
@@ -163,7 +171,7 @@ endif
 ifeq ($(VERBOSE), 1)
 	@echo "Compiling $<...";
 endif
-	@$(CC) $(INC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(INC) $(CFLAGS) -c -o $@ $<
 
 else # RELEASE
 

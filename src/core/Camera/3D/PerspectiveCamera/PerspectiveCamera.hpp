@@ -20,8 +20,8 @@ namespace NoxEngine {
 
             void orientate(const V2D& dir);
 
-            void move(const V3D& offset, uint duration = 0);
-            void moveTo(const V3D& position, uint duration = 0);
+            void move(const V3D& offset, unsigned int duration = 0);
+            void moveTo(const V3D& position, unsigned int duration = 0);
 
         private:
             V3D m_target;

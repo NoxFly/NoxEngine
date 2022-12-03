@@ -2,7 +2,7 @@ BINDIR		:= ./bin
 BUILDDIR	:= ./build/$(TARGET)
 
 SRC 		:= $(wildcard $(TARGET)/*.cpp)
-EXECUTABLE	:= $(BINDIR)/$(TARGET)
+EXECUTABLE	:= $(BINDIR)/debug/$(TARGET)
 
 ROOT_DIR	:=$(realpath $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))/..)
 LIB_DIR		:= $(ROOT_DIR)/bin/lib
@@ -10,7 +10,9 @@ LIB_DIR		:= $(ROOT_DIR)/bin/lib
 CFLAGS		:= -std=c++20 $(DFLAGS)
 LDFLAGS		:= -std=c++20
 
-LIBS 		:= NoxEngine GL GLEW SDL2main SDL2 SDL2_image
+LIBS			:= NoxEngine SDL2main SDL2 SDL2_image
+UNIX_LIBS 		:= GL GLEW 
+WIN_LIBS 		:= mingw32 opengl32 glew32
 
 INC			:= -I$(LIB_DIR)/include/NoxEngine
 LIB_INC		:= -L$(LIB_DIR)
@@ -24,18 +26,44 @@ else
 	CC := clang++
 endif # C++ : clang++ or g++
 
+# OS DETECTION
+SYS := $(shell $(CC) -dumpmachine)
+OS	= WINDOWS
 
+ifneq (, $(findstring linux, $(SYS)))
+	OS := LINUX
+else ifneq (, $(findstring mingw, $(SYS)))
+	OS := WINDOWS
+else ifneq (, $(findstring cygwin, $(SYS)))
+	OS := MACOS
+endif
+
+
+# Add window's extra libs paths
+ifeq (WINDOWS, $(OS))
+	INC += -I$(ROOT_DIR)/libs/WIN32/include
+	LIB_INC += -L$(ROOT_DIR)/libs/WIN32/lib
+
+	LIBS := $(WIN_LIBS) $(LIBS)
+	EXECUTABLE := $(EXECUTABLE).exe
+else
+	LIBS := $(UNIX_LIBS) $(LIBS)
+endif
+
+LIBS		:= $(patsubst %, -l%, $(LIBS))
 
 OBJECTS		:= $(patsubst $(TARGET)/%, $(BUILDDIR)/%, $(SRC:.cpp=.o))
 
 
 
 $(EXECUTABLE): $(OBJECTS)
-	@mkdir -p $(BINDIR)
-	@$(CC) $(LIB_INC) $(LDFLAGS) -o $(EXECUTABLE) $^ $(patsubst %, -l%, $(LIBS))
-	$(EXECUTABLE)
+	@echo "Linking and executing..."
+	@mkdir -p $(BINDIR)/debug
+	@$(CC) $(LIB_INC) $(LDFLAGS) -o $(EXECUTABLE) $^ $(LIBS)
+	cd $(BINDIR); ./debug/$(TARGET)
 
 $(BUILDDIR)/%.o: $(TARGET)/%.cpp
+	@echo "Compiling example $(TARGET): $<..."
 	@mkdir -p $(BUILDDIR)
 	@$(CC) $(INC) $(LIB_INC) $(CFLAGS) -c -o $@ $<
 
@@ -46,7 +74,7 @@ $(BUILDDIR)/%.o: $(TARGET)/%.cpp
 	@$(MAKE) -s TARGET=base_example_3D
 
 clean:
-	rm -f $(EXECUTABLE)
+	rm -f $(BINDIR)/debug/*
 
 
 .PHONY: clean 2D 3D

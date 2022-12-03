@@ -34,8 +34,8 @@ namespace NoxEngine {
                 Camera::_setPosition(position);
             };
 
-            virtual void move(const V3D& offset, uint duration = 0) = 0;
-            virtual void moveTo(const V3D& position, uint duration = 0) = 0;
+            virtual void move(const V3D& offset, unsigned int duration = 0) = 0;
+            virtual void moveTo(const V3D& position, unsigned int duration = 0) = 0;
 
         protected:
             double m_fov, m_aspect, m_near, m_far;

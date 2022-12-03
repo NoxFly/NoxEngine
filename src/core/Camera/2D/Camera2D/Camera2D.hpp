@@ -20,12 +20,12 @@ namespace NoxEngine {
             void setPosition(const float x, const float y);
 			void setPosition(const V2D& position);
 
-			void zoomIn(float zoom, uint duration = 0);
-			void zoomOut(float zoom, uint duration = 0);
-			void setZoom(float zoom, uint duration = 0);
+			void zoomIn(float zoom, unsigned int duration = 0);
+			void zoomOut(float zoom, unsigned int duration = 0);
+			void setZoom(float zoom, unsigned int duration = 0);
 
-			void move(const V2D& offset, uint duration = 0);
-			void moveTo(const V2D& position, uint duration = 0);
+			void move(const V2D& offset, unsigned int duration = 0);
+			void moveTo(const V2D& position, unsigned int duration = 0);
 	};
 
 }

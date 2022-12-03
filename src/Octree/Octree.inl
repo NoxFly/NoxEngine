@@ -1,5 +1,5 @@
 template <class T>
-Octree<T>::Octree(const OctRect& bounds, uint rootCapacity):
+Octree<T>::Octree(const OctRect& bounds, unsigned int rootCapacity):
     m_capacity(rootCapacity),
     m_bounds(bounds),
     m_nodes{},
@@ -63,7 +63,7 @@ std::vector<OctreeNode<T>>& Octree<T>::getNodes() {
 }
 
 template <class T>
-std::unique_ptr<Octree<T>> Octree<T>::getChildren(uint i) {
+std::unique_ptr<Octree<T>> Octree<T>::getChildren(unsigned int i) {
     if(isDivided())
         return &m_children[i];
     
@@ -76,7 +76,7 @@ bool Octree<T>::subdivide() {
     if(isDivided())
         return false;
 
-    const uint cap = std::max((uint)1, m_capacity / 2);
+    const unsigned int cap = std::max((unsigned int)1, m_capacity / 2);
 
     const auto x = m_bounds.x,
         y = m_bounds.y,
@@ -110,7 +110,7 @@ bool Octree<T>::push(const glm::vec3& position, T* dataPtr) {
     if(!m_bounds.contains(position))
         return false;
 
-    uint ns = m_nodes.size();
+    unsigned int ns = m_nodes.size();
 
     if(ns < m_capacity) {
         m_nodes.push_back({ position, dataPtr });
