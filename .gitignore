@@ -1,5 +1,12 @@
-bin/
 build/
-.vscode/
-.vs/
+bin/debug
+bin/release
+bin/lib
+
 **/*.o
+
+.old/
+
+.vscode/*.log
+.vs/
+x64/

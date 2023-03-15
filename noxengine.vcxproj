@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{10da76d1-865c-4f64-a8ca-2061ec9ed2c8}</ProjectGuid>
+    <RootNamespace>openglengine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level2</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\codes\c++\3D_Engine\noxengine\engine\src;D:\codes\c++\.libs\SDL2-2.26.2\include;D:\codes\c++\.libs\glm-0.9.9\include;D:\codes\c++\.libs\glew-2.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\codes\c++\.libs\SDL2-2.26.2\VisualC\x64\Debug;D:\codes\c++\.libs\glew-2.2.0\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32d.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level2</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\codes\c++\3D_Engine\noxengine\engine\src;D:\codes\c++\.libs\SDL2-2.26.2\include;D:\codes\c++\.libs\glm-0.9.9\include;D:\codes\c++\.libs\glew-2.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\codes\c++\.libs\SDL2-2.26.2\VisualC\x64\Debug;D:\codes\c++\.libs\glew-2.2.0\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32d.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level2</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\engine;D:\codes\c++\.libs\SDL2-2.26.2\include;D:\codes\c++\.libs\glm-0.9.9\include;D:\codes\c++\.libs\glew-2.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\codes\c++\.libs\SDL2-2.26.2\VisualC\x64\Debug;D:\codes\c++\.libs\glew-2.2.0\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32d.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level2</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\codes\c++\3D_Engine\noxengine\engine\src;D:\codes\c++\.libs\SDL2-2.26.2\include;D:\codes\c++\.libs\glm-0.9.9\include;D:\codes\c++\.libs\glew-2.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\codes\c++\.libs\SDL2-2.26.2\VisualC\x64\Debug;D:\codes\c++\.libs\glew-2.2.0\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32d.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="src\engine\core\Actor\Actor.inl" />
+    <None Include="src\engine\core\MatricesMVP\Matrices.inl" />
+    <None Include="src\engine\core\Renderer\Renderer.inl" />
+    <None Include="src\engine\core\Scene\Scene.inl" />
+    <None Include="src\engine\Octree\Octree.inl" />
+    <None Include="src\engine\ResourceHolder\ResourceHolder.inl" />
+    <None Include="LICENCE" />
+    <None Include="out\config\config.ini" />
+    <None Include="out\glew32.dll" />
+    <None Include="out\glew32d.dll" />
+    <None Include="out\libmodplug-1.dll" />
+    <None Include="out\libogg-0.dll" />
+    <None Include="out\libopus-0.dll" />
+    <None Include="out\libopusfile-0.dll" />
+    <None Include="out\libtiff-5.dll" />
+    <None Include="out\libwebp-7.dll" />
+    <None Include="out\resources\shaders\basic.frag" />
+    <None Include="out\resources\shaders\basic.vert" />
+    <None Include="out\resources\shaders\color2D.frag" />
+    <None Include="out\resources\shaders\color2D.vert" />
+    <None Include="out\resources\shaders\color3D.frag" />
+    <None Include="out\resources\shaders\color3D.vert" />
+    <None Include="out\resources\shaders\texture.frag" />
+    <None Include="out\resources\shaders\texture.vert" />
+    <None Include="out\SDL2.dll" />
+    <None Include="out\SDL2_image.dll" />
+    <None Include="out\SDL2_mixer.dll" />
+    <None Include="out\SDL2_net.dll" />
+    <None Include="out\SDL2_ttf.dll" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\demos\minecraft\main.cpp" />
+    <ClCompile Include="src\engine\Console\Console.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Geometries\BoxGeometry\BoxGeometry.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Geometries\CircleGeometry\CircleGeometry.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Geometries\Geometry.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Materials\BasicMaterial\BasicMaterial.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Materials\Material.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Object2D\Circle\Circle.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Object2D\Object2D.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Object2D\Rectangle\Rectangle.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Objects3D\Cube\Cube.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Objects3D\Object3D.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Objects3D\Sphere\Sphere.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Shader\Shader.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Texture\Texture.cpp" />
+    <ClCompile Include="src\engine\core\Camera\2D\Camera2D\Camera2D.cpp" />
+    <ClCompile Include="src\engine\core\Camera\3D\PerspectiveCamera\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\engine\core\MatricesMVP\Matrices2D\Matrices2D.cpp" />
+    <ClCompile Include="src\engine\core\MatricesMVP\Matrices3D\Matrices3D.cpp" />
+    <ClCompile Include="src\engine\core\Renderer\Input\Input.cpp" />
+    <ClCompile Include="src\engine\core\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\engine\IniSet\IniSet.cpp" />
+    <ClCompile Include="src\engine\utils\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="out\resources\textures\stonebrick_cracked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\engine\Console\Console.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Actor.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Geometries\BoxGeometry\BoxGeometry.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Geometries\CircleGeometry\CircleGeometry.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Geometries\Geometry.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Materials\BasicMaterial\BasicMaterial.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Materials\Material.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Movable.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Object2D\Circle\Circle.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Object2D\Object2D.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Object2D\Rectangle\Rectangle.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Objects3D\Cube\Cube.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Objects3D\Object3D.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Objects3D\Sphere\Sphere.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Shader\Shader.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Texture\Texture.hpp" />
+    <ClInclude Include="src\engine\core\Camera\2D\Camera2D\Camera2D.hpp" />
+    <ClInclude Include="src\engine\core\Camera\3D\Camera3D.hpp" />
+    <ClInclude Include="src\engine\core\Camera\3D\PerspectiveCamera\PerspectiveCamera.hpp" />
+    <ClInclude Include="src\engine\core\Camera\Camera.hpp" />
+    <ClInclude Include="src\engine\core\engine.hpp" />
+    <ClInclude Include="src\engine\core\engine.typedef.hpp" />
+    <ClInclude Include="src\engine\core\MatricesMVP\Matrices.hpp" />
+    <ClInclude Include="src\engine\core\MatricesMVP\Matrices2D\Matrices2D.hpp" />
+    <ClInclude Include="src\engine\core\MatricesMVP\Matrices3D\Matrices3D.hpp" />
+    <ClInclude Include="src\engine\core\Renderer\Input\Input.hpp" />
+    <ClInclude Include="src\engine\core\Renderer\Renderer.hpp" />
+    <ClInclude Include="src\engine\core\Scene\Scene.hpp" />
+    <ClInclude Include="src\engine\IniSet\IniSet.hpp" />
+    <ClInclude Include="src\engine\Octree\Octree.hpp" />
+    <ClInclude Include="src\engine\ResourceHolder\ResourceHolder.hpp" />
+    <ClInclude Include="src\engine\utils\Color.hpp" />
+    <ClInclude Include="src\engine\utils\LeakDetector.hpp" />
+    <ClInclude Include="src\engine\utils\utils.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
