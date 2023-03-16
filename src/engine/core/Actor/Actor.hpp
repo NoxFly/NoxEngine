@@ -39,6 +39,9 @@ namespace NoxEngine {
             void setRotation(const float rx, const float ry) noexcept requires Is2D<D>;
             void setRotation(const float rx, const float ry, const float rz) noexcept requires Is3D<D>;
 
+            void rotate(const float x, const float y) noexcept requires Is2D<D>;
+            void rotate(const float x, const float y, const float z) noexcept requires Is3D<D>;
+
             void setCullFace(const GLenum cullFace) noexcept;
             void setPolygonMode(const GLenum polygonMode) noexcept;
 

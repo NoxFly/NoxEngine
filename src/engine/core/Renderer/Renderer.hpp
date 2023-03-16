@@ -24,7 +24,7 @@ namespace NoxEngine {
             Input* getInput();
 
             template <Dimension D>
-            void render(Scene<D>* scene, Camera<D>* camera);
+            void render(Scene<D>& scene, Camera<D>& camera);
 
             void show();
             void hide();

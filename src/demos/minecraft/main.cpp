@@ -35,7 +35,9 @@ int main(int argc, char** argv) {
 	camera.lookAt(0, 0, 0);
 
 	while (!renderer.shouldClose()) {
-		renderer.render(&scene, &camera);
+		renderer.render(scene, camera);
+
+		cube->rotate(0.1, 0, 0.05);
 
 		renderer.updateInput();
 	}

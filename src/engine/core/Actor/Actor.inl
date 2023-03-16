@@ -100,6 +100,21 @@ namespace NoxEngine {
     }
 
     template <Dimension D>
+    void Actor<D>::rotate(const float x, const float y) noexcept requires Is2D<D> {
+        m_rotation.x += x;
+        m_rotation.y += y;
+        m_hasToRotate = x != 0 || y != 0;
+    }
+
+    template <Dimension D>
+    void Actor<D>::rotate(const float x, const float y, const float z) noexcept requires Is3D<D> {
+        m_rotation.x += x;
+        m_rotation.y += y;
+        m_rotation.z += z;
+        m_hasToRotate = x != 0 || y != 0 || z != 0;
+    }
+
+    template <Dimension D>
     void Actor<D>::render(Matrices<D>& mvp) {
         if(!m_geometry.hasLoaded() || m_material.getShader() == nullptr)
             return;

@@ -188,9 +188,7 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\demos\minecraft\common.cpp" />
     <ClCompile Include="src\demos\minecraft\main.cpp" />
-    <ClCompile Include="src\demos\minecraft\debug.cpp" />
     <ClCompile Include="src\engine\Console\Console.cpp" />
     <ClCompile Include="src\engine\core\Actor\Geometries\3D\BoxGeometry\BoxGeometry.cpp" />
     <ClCompile Include="src\engine\core\Actor\Geometries\BufferGeometry\BufferGeometry.cpp" />
@@ -218,7 +216,6 @@
     <Image Include="out\resources\textures\stonebrick_cracked.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\demos\minecraft\common.hpp" />
     <ClInclude Include="src\engine\Console\Console.hpp" />
     <ClInclude Include="src\engine\core\Actor\Actor.hpp" />
     <ClInclude Include="src\engine\core\Actor\Geometries\3D\BoxGeometry\BoxGeometry.hpp" />
