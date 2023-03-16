@@ -2,7 +2,7 @@
 #define RECTANGLE_HPP
 
 #include "core/engine.typedef.hpp"
-#include "core/Actor/Object2D/Object2D.hpp"
+#include "core/Actor/Objects/Object2D/Object2D.hpp"
 
 
 namespace NoxEngine {

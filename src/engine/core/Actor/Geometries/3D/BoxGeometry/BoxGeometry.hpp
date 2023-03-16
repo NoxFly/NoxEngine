@@ -4,12 +4,12 @@
 #include <glm/glm.hpp>
 
 #include "core/engine.typedef.hpp"
-#include "core/Actor/Geometries/Geometry.hpp"
+#include "core/Actor/Geometries/BufferGeometry/BufferGeometry.hpp"
 
 
 namespace NoxEngine {
 
-    class BoxGeometry: public Geometry {
+    class BoxGeometry: public BufferGeometry {
         public:
             explicit BoxGeometry(const float width, const float height, const float depth);
             explicit BoxGeometry(const V3D& size);

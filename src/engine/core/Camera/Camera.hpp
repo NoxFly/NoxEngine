@@ -11,7 +11,7 @@
 
 namespace NoxEngine {
 
-    template <typename D>
+    template <Dimension D>
     class Camera: public Movable<V3D, false> {
         public:
             explicit Camera():
@@ -22,7 +22,7 @@ namespace NoxEngine {
                 m_needUpdate(true),
                 m_target(target),
                 m_verticalAxis(verticalAxis),
-                m_matrix(glm::lookAt(m_position, m_target, m_verticalAxis))
+                m_matrix()
             {
                 _setPosition(position);
             };
@@ -43,8 +43,8 @@ namespace NoxEngine {
             virtual void move(const D& offset, unsigned int duration = 0) = 0;
             virtual void moveTo(const D& position, unsigned int duration = 0) = 0;
 
-            Matrices<D>* getMatrices() {
-                return &m_matrix;
+            Matrices<D>& getMatrices() {
+                return m_matrix;
             }
 
         protected:

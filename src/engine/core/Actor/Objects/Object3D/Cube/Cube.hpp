@@ -4,7 +4,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "core/Actor/Objects3D/Object3D.hpp"
+#include "core/Actor/Objects/Object3D/Object3D.hpp"
 #include "utils/Color.hpp"
 
 

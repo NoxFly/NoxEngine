@@ -13,11 +13,6 @@
 
 
 
-#ifndef BUFFER_OFFSET
-    #define BUFFER_OFFSET(offset) ((char*)NULL + (offset))
-#endif
-
-
 namespace NoxEngine {
 
     template <Dimension D>
@@ -47,9 +42,7 @@ namespace NoxEngine {
             void setCullFace(const GLenum cullFace) noexcept;
             void setPolygonMode(const GLenum polygonMode) noexcept;
 
-            bool load();
-
-            void render(Matrices<D>* mvp);
+            void render(Matrices<D>& mvp);
 
         protected:
             const std::string m_uuid;
@@ -58,18 +51,10 @@ namespace NoxEngine {
 
             Geometry m_geometry;
             Material m_material;
-            GLuint m_VBO, m_VAO;
             GLenum m_cullFace, m_polygonMode;
-            size_t m_vertexNumber;
 
             D m_rotation;
             bool m_hasToTranslate, m_hasToRotate;
-
-        private:
-            void deleteVBO() noexcept;
-            void deleteVAO() noexcept;
-
-            bool m_isLoaded;
     };
 
 }

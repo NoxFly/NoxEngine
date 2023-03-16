@@ -27,6 +27,26 @@ std::string pathWithNoExt(std::string path) {
     return path.substr(0, path.find_last_of("."));
 }
 
+std::string repeat(char c, unsigned int n) {
+    std::string s = "";
+
+    for (unsigned int i = 0; i < n; i++) {
+        s += c;
+    }
+
+    return s;
+}
+
+std::string repeat(std::string c, unsigned int n) {
+    std::string s = "";
+
+    for (unsigned int i = 0; i < n; i++) {
+        s += c;
+    }
+
+    return s;
+}
+
 bool isInteger(const string& str) {
     for(char const &c : str) {
         if(isdigit(c) == 0)

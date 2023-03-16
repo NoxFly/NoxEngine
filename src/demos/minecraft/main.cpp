@@ -6,7 +6,9 @@
 #include "Console/Console.hpp"
 #include "IniSet/IniSet.hpp"
 
+
 using namespace NoxEngine;
+
 
 
 int main(int argc, char** argv) {

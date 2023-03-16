@@ -28,8 +28,7 @@ namespace NoxEngine {
 }
 
 #include "core/Camera/2D/Camera2D/Camera2D.hpp"
-#include "core/MatricesMVP/Matrices2D/Matrices2D.hpp"
-#include "core/Actor/Object2D/Rectangle/Rectangle.hpp"
+#include "core/Actor/Objects/Object2D/Rectangle/Rectangle.hpp"
 
 
 
@@ -54,8 +53,7 @@ namespace NoxEngine {
 }
 
 #include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
-#include "core/MatricesMVP/Matrices3D/Matrices3D.hpp"
-#include "core/Actor/Objects3D/Cube/Cube.hpp"
+#include "core/Actor/Objects/Object3D/Cube/Cube.hpp"
 
 
 
@@ -80,6 +78,7 @@ namespace NoxEngine {
 
 
 // postload : common to both engines
+#include "core/MatricesMVP/Matrices.hpp"
 #include "core/Renderer/Renderer.hpp"
 #include "core/Actor/Shader/Shader.hpp"
 #include "core/Actor/Texture/Texture.hpp"

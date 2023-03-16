@@ -36,6 +36,7 @@ namespace NoxEngine {
             Shader::loadFolder();
 
             Texture::setTexturesPath(m_config.getValue("PATH", "textures"));
+            Geometry::setObjectsPath(m_config.getValue("PATH", "models"));
         }
     }
 
@@ -258,7 +259,11 @@ namespace NoxEngine {
     void Renderer::setMouseFocus(const bool focus) {
         SDL_SetRelativeMouseMode(focus? SDL_TRUE : SDL_FALSE);
         V2D v = getSize();
-        SDL_WarpMouseInWindow(m_window, v.x / 2, v.y / 2);
+
+        v.x /= 2;
+        v.y /= 2;
+
+        SDL_WarpMouseInWindow(m_window, v.x, v.y);
     }
 
 

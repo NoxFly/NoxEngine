@@ -5,22 +5,25 @@
 
 #include "core/engine.typedef.hpp"
 #include "core/Camera/Camera.hpp"
-#include "core/Actor/Objects3D/Object3D.hpp"
-#include "core/MatricesMVP/Matrices3D/Matrices3D.hpp"
+#include "core/MatricesMVP/Matrices.hpp"
 
 
 namespace NoxEngine {
 
     class Camera3D: public Camera<V3D> {
         public:
-            Camera3D(double fov, double aspect, double near, double far):
+            Camera3D(double fov, double aspect, double near, double far) :
                 Camera(),
-                m_fov(glm::radians(fov)), m_aspect(aspect), m_near(near), m_far(far)
+                m_fov(fov), m_aspect(aspect), m_near(near), m_far(far)
             {
-                m_matrix = Matrices3D(m_fov, m_aspect, m_near, m_far, m_position, m_verticalAxis);
+                m_matrix = Matrices<V3D>(m_fov, m_aspect, m_near, m_far, m_position, m_verticalAxis);
             }
             
             virtual ~Camera3D() {};
+
+            Matrices<V3D>& getMatrices() {
+                return m_matrix;
+            }
 
             V3D getPosition() const {
                 return m_position;

@@ -174,6 +174,11 @@ namespace NoxEngine {
     }
 
     GLuint Shader::getGLSLversion() const {
+        if (m_glVersion < 33) {
+            return (m_glVersion - 19) * 10 + 100; // 110, 120, 130, 140, 150
+        }
+
+        // >= 330
         return m_glVersion * 10; // OpenGL 4.2 = 42 * 10 = GLSL 420
     }
 
@@ -223,8 +228,9 @@ namespace NoxEngine {
 
         // lock shader's entries
         glBindAttribLocation(m_programID, 0, "in_Vertex");
-        glBindAttribLocation(m_programID, 1, "in_Color");
-        glBindAttribLocation(m_programID, 2, "in_TexCoord0");
+        glBindAttribLocation(m_programID, 1, "in_Normal");
+        glBindAttribLocation(m_programID, 2, "in_Color");
+        glBindAttribLocation(m_programID, 3, "in_TexCoord0");
 
         glLinkProgram(m_programID);
 

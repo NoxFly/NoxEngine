@@ -8,7 +8,7 @@ namespace NoxEngine {
 
     PerspectiveCamera::PerspectiveCamera(double fov, double aspect, double near, double far):
         Camera3D(fov, aspect, near, far),
-        m_target()
+        m_target(0, 0, 0)
     {}
 
     PerspectiveCamera::~PerspectiveCamera()
