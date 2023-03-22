@@ -115,9 +115,13 @@ namespace NoxEngine {
     }
 
     template <Dimension D>
-    void Actor<D>::render(Matrices<D>& mvp) {
+    void Actor<D>::render(Scene<D>* scene, Camera<D>* camera) {
         if(!m_geometry.hasLoaded() || m_material.getShader() == nullptr)
             return;
+
+        auto shader = m_material.getShader();
+        
+        Matrices<D>& mvp = camera->getMatrices();
 
         const bool hasTexture = m_material.getTextures().size() > 0;
         const bool translateOrRotate = m_hasToTranslate || m_hasToRotate;
@@ -139,21 +143,24 @@ namespace NoxEngine {
         glCullFace(m_cullFace);
 
         // lock shader
-        m_material.getShader()->use();
+        shader->use();
             // lock VAO
             glBindVertexArray(m_geometry.getVAO());
 
-                // sends the matrices
-                glUniformMatrix4fv(glGetUniformLocation(m_material.getShader()->getId(), "MVP"), 1, GL_FALSE, glm::value_ptr(mvp.get()));
+                // TODO : fix this issue
+                m_material.transferUniforms(
+                    mvp.get(), mvp.getModel(), mvp.getView(), mvp.getProjection(),
+                    scene->getLights()
+                );
 
-                /*if(hasTexture)
-                    glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());*/
+                if(hasTexture)
+                    glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());
 
                 // renders
-                glDrawElements(GL_TRIANGLES, m_geometry.getElementCount(), GL_UNSIGNED_SHORT, 0);
+                glDrawElements(GL_TRIANGLES, m_geometry.getElementCount_v(), GL_UNSIGNED_SHORT, 0);
 
-                /*if(hasTexture)
-                    glBindTexture(GL_TEXTURE_2D, 0);*/
+                if(hasTexture)
+                    glBindTexture(GL_TEXTURE_2D, 0);
 
             // unlock VAO
             glBindVertexArray(0);

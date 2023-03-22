@@ -1,6 +1,8 @@
 #ifndef RECTANGLE_HPP
 #define RECTANGLE_HPP
 
+#include <memory>
+
 #include "core/engine.typedef.hpp"
 #include "core/Actor/Objects/Object2D/Object2D.hpp"
 

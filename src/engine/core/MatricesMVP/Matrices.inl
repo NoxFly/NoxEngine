@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Console/Console.hpp"
+#include "Matrices.hpp"
 
 
 namespace NoxEngine {
@@ -31,7 +32,14 @@ namespace NoxEngine {
     {}
 
     template <Dimension D>
-    Matrices<D>::Matrices(double fov, double aspect, double near, double far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
+    Matrices<D>::Matrices(float left, float right, float top, float bottom, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
+        Matrices(glm::lookAt(position, V3D(0, 0, 0), V3D(0, 1, 0)))
+    {
+        m_projection = glm::ortho(left, right, bottom, right, near, far);
+    }
+
+    template <Dimension D>
+    Matrices<D>::Matrices(float fov, float aspect, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
         Matrices(glm::lookAt(position, V3D(0, 0, 0), V3D(0, 1, 0)))
     {
             m_projection = glm::perspective(fov, aspect, near, far);

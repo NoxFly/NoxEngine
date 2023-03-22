@@ -53,6 +53,7 @@ namespace NoxEngine {
 }
 
 #include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "core/Camera/3D/OrthographicCamera/OrthographicCamera.hpp"
 #include "core/Actor/Objects/Object3D/Cube/Cube.hpp"
 
 
@@ -82,6 +83,8 @@ namespace NoxEngine {
 #include "core/Renderer/Renderer.hpp"
 #include "core/Actor/Shader/Shader.hpp"
 #include "core/Actor/Texture/Texture.hpp"
+
+#include "core/Actor/Light/AmbientLight/AmbientLight.hpp"
 
 
 #endif // ENGINE_HPP

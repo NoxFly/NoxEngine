@@ -9,7 +9,7 @@
 
 namespace NoxEngine {
 
-    class BoxGeometry: public BufferGeometry {
+    class BoxGeometry: public BufferGeometry<V3D> {
         public:
             explicit BoxGeometry(const float width, const float height, const float depth);
             explicit BoxGeometry(const V3D& size);

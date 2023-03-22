@@ -16,7 +16,8 @@ namespace NoxEngine {
             explicit Matrices(M4 view);
             explicit Matrices(M4 view, std::stack<M4> saves);
 
-            explicit Matrices(double fov, double aspect, double near, double far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
+            explicit Matrices(float left, float right, float top, float bottom, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
+            explicit Matrices(float fov, float aspect, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
 
             virtual ~Matrices() {};
 

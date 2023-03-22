@@ -1,5 +1,8 @@
 #include "Circle.hpp"
 
+#include "core/Actor/Geometries/2D/CircleGeometry/CircleGeometry.hpp"
+#include "core/Actor/Materials/PhongMaterial/PhongMaterial.hpp"
+
 namespace NoxEngine {
 
     Circle::Circle():
@@ -9,10 +12,10 @@ namespace NoxEngine {
     }
 
     Circle::Circle(float radius):
-        Object2D(),
+        Object2D(CircleGeometry(radius), PhongMaterial()),
         m_radius(radius)
     {
-        // load();
+        
     }
 
     Circle::~Circle() {

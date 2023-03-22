@@ -6,9 +6,8 @@
 
 namespace NoxEngine {
 
-    PerspectiveCamera::PerspectiveCamera(double fov, double aspect, double near, double far):
-        Camera3D(fov, aspect, near, far),
-        m_target(0, 0, 0)
+    PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float near, float far):
+        Camera3D(fov, aspect, near, far)
     {}
 
     PerspectiveCamera::~PerspectiveCamera()
@@ -24,7 +23,7 @@ namespace NoxEngine {
 
     void PerspectiveCamera::lookAt(const V3D& target) {
         m_target = target;
-        m_needUpdate = true;
+        m_needsUpdate = true;
     }
 
     void PerspectiveCamera::lookAt(const float x, const float y, const float z) {

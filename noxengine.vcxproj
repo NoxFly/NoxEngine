@@ -156,7 +156,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="out\resources\shaders\lightPhong3D.frag" />
+    <None Include="out\resources\shaders\lightPhong3D.vert" />
     <None Include="src\engine\core\Actor\Actor.inl" />
+    <None Include="src\engine\core\Actor\Geometries\BufferGeometry\BufferGeometry.inl" />
+    <None Include="src\engine\core\Actor\Materials\BasicMaterial\BasicMaterial.inl" />
+    <None Include="src\engine\core\Actor\Materials\PhongMaterial\PhongMaterial.inl" />
     <None Include="src\engine\core\MatricesMVP\Matrices.inl" />
     <None Include="src\engine\core\Renderer\Renderer.inl" />
     <None Include="src\engine\core\Scene\Scene.inl" />
@@ -190,12 +195,16 @@
   <ItemGroup>
     <ClCompile Include="src\demos\minecraft\main.cpp" />
     <ClCompile Include="src\engine\Console\Console.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Geometries\2D\RectangleGeometry\RectangleGeometry.cpp" />
     <ClCompile Include="src\engine\core\Actor\Geometries\3D\BoxGeometry\BoxGeometry.cpp" />
-    <ClCompile Include="src\engine\core\Actor\Geometries\BufferGeometry\BufferGeometry.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Geometries\3D\SphereGeometry\SphereGeometry.cpp" />
     <ClCompile Include="src\engine\core\Actor\Geometries\2D\CircleGeometry\CircleGeometry.cpp" />
     <ClCompile Include="src\engine\core\Actor\Geometries\Geometry.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Light\AmbientLight\AmbientLight.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Light\Light.cpp" />
     <ClCompile Include="src\engine\core\Actor\Materials\BasicMaterial\BasicMaterial.cpp" />
     <ClCompile Include="src\engine\core\Actor\Materials\Material.cpp" />
+    <ClCompile Include="src\engine\core\Actor\Materials\PhongMaterial\PhongMaterial.cpp" />
     <ClCompile Include="src\engine\core\Actor\Objects\Object2D\Circle\Circle.cpp" />
     <ClCompile Include="src\engine\core\Actor\Objects\Object2D\Object2D.cpp" />
     <ClCompile Include="src\engine\core\Actor\Objects\Object2D\Rectangle\Rectangle.cpp" />
@@ -218,12 +227,17 @@
   <ItemGroup>
     <ClInclude Include="src\engine\Console\Console.hpp" />
     <ClInclude Include="src\engine\core\Actor\Actor.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Geometries\2D\RectangleGeometry\RectangleGeometry.hpp" />
     <ClInclude Include="src\engine\core\Actor\Geometries\3D\BoxGeometry\BoxGeometry.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Geometries\3D\SphereGeometry\SphereGeometry.hpp" />
     <ClInclude Include="src\engine\core\Actor\Geometries\BufferGeometry\BufferGeometry.hpp" />
     <ClInclude Include="src\engine\core\Actor\Geometries\2D\CircleGeometry\CircleGeometry.hpp" />
     <ClInclude Include="src\engine\core\Actor\Geometries\Geometry.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Light\AmbientLight\AmbientLight.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Light\Light.hpp" />
     <ClInclude Include="src\engine\core\Actor\Materials\BasicMaterial\BasicMaterial.hpp" />
     <ClInclude Include="src\engine\core\Actor\Materials\Material.hpp" />
+    <ClInclude Include="src\engine\core\Actor\Materials\PhongMaterial\PhongMaterial.hpp" />
     <ClInclude Include="src\engine\core\Actor\Movable.hpp" />
     <ClInclude Include="src\engine\core\Actor\Objects\Object2D\Circle\Circle.hpp" />
     <ClInclude Include="src\engine\core\Actor\Objects\Object2D\Object2D.hpp" />

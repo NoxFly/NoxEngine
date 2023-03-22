@@ -2,6 +2,7 @@
 #define OBJECT_3D_HPP
 
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "core/engine.typedef.hpp"
 #include "core/Actor/Actor.hpp"

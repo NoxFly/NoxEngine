@@ -13,8 +13,10 @@ namespace NoxEngine {
         std::vector<GLfloat> normals;	// 2x2 or 3x3
         std::vector<GLfloat> colors;	// 3x3
         std::vector<GLfloat> uvs;		// 2x2
-        std::vector<GLushort> indices;
+        std::vector<GLushort> indices; // EBO
     };
+
+    
 
     class Geometry {
         public:
@@ -34,9 +36,9 @@ namespace NoxEngine {
             const GLuint getElementCount() const;
 
         protected:
-            static std::string objectsPath;
+            static std::string m_objectsPath;
 
-            virtual bool load();
+            virtual bool load(const GeometryData& data);
 
             void deleteVBO() noexcept;
             void deleteVAO() noexcept;
@@ -44,8 +46,7 @@ namespace NoxEngine {
 
             bool m_hasLoaded;
             GLuint m_VAO, m_VBO, m_EBO;
-            GeometryData m_data;
-            GLuint m_vertexCount, m_elementCount;
+            GLuint m_vertexCount, m_vElementCount;
     };
 
 }

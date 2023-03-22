@@ -15,7 +15,7 @@ namespace NoxEngine {
         const std::vector<std::shared_ptr<Actor<D>>> objects = scene.getActors();
 
         for (std::shared_ptr<Actor<D>> o : objects) {
-            o->render(camera.getMatrices());
+            o->render(&scene, &camera);
         }
 
 

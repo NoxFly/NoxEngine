@@ -1,5 +1,7 @@
 #include "Rectangle.hpp"
 
+#include "core/Actor/Geometries/2D/RectangleGeometry/RectangleGeometry.hpp"
+#include "core/Actor/Materials/PhongMaterial/PhongMaterial.hpp"
 
 namespace NoxEngine {
 
@@ -14,11 +16,9 @@ namespace NoxEngine {
     }
 
     Rectangle::Rectangle(float width, float height):
-        Object2D(),
+        Object2D(RectangleGeometry(width, height), PhongMaterial()),
         m_size(width, height)
-    {
-        // load();
-    }
+    {}
 
     Rectangle::~Rectangle() {
 

@@ -3,44 +3,39 @@
 
 namespace NoxEngine {
 
-    std::string Geometry::objectsPath = "./";
+    std::string Geometry::m_objectsPath = "./";
 
     void Geometry::setObjectsPath(const std::string& objectsPath) {
-        Geometry::objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
+        Geometry::m_objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
     }
 
 
     Geometry::Geometry():
         m_hasLoaded(false),
         m_VAO(0), m_VBO(0), m_EBO(0),
-        m_data{},
-        m_vertexCount(0), m_elementCount(0)
+        m_vertexCount(0), m_vElementCount(0)
     {}
 
     Geometry::Geometry(const Geometry& copy):
         Geometry()
     {
-        m_data = copy.m_data;
-
         m_VAO = copy.m_VAO;
         m_VBO = copy.m_VBO;
         m_EBO = copy.m_EBO;
 
         m_vertexCount = copy.m_vertexCount;
-        m_elementCount = copy.m_elementCount;
+        m_vElementCount = copy.m_vElementCount;
 
         m_hasLoaded = copy.m_hasLoaded;
     }
 
     const Geometry& Geometry::operator=(const Geometry& copy) {
-        m_data = copy.m_data;
-
         m_VAO = copy.m_VAO;
         m_VBO = copy.m_VBO;
         m_EBO = copy.m_EBO;
 
         m_vertexCount = copy.m_vertexCount;
-        m_elementCount = copy.m_elementCount;
+        m_vElementCount = copy.m_vElementCount;
 
         m_hasLoaded = copy.m_hasLoaded;
 
@@ -74,8 +69,8 @@ namespace NoxEngine {
         return m_vertexCount;
     }
 
-    const GLuint Geometry::getElementCount() const {
-        return m_elementCount;
+    const GLuint Geometry::getElementCount_v() const {
+        return m_vElementCount;
     }
 
     void Geometry::deleteVBO() noexcept
@@ -96,7 +91,8 @@ namespace NoxEngine {
             glDeleteBuffers(1, &m_EBO);
     }
 
-    bool Geometry::load() {
+    bool Geometry::load(const GeometryData& data) {
+        (void)data;
         return false;
     }
 

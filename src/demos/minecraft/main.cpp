@@ -19,25 +19,39 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
+
+
 	Renderer renderer(config);
 	Scene3D scene;
 	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
 
+
 	Texture::load("stone", "stonebrick_cracked.png");
 
-	auto cube = std::make_shared<Cube>(1,/*  "stone", */ Color(235, 164, 167));
 
-	cube->setPosition(0, 0, 0);
+
+	auto cube = std::make_shared<Cube>(1, "stone", Color(255, 255, 255));
+	cube->setPosition(0.f, 0.f, 0.f);
 
 	scene.add(cube);
 
-	camera.setPosition(3, 2, 3);
-	camera.lookAt(0, 0, 0);
+
+	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 50.f);
+	light->setPosition(5, 2, 2);
+
+	scene.add(light);
+
+
+
+	camera.setPosition(3.f, 2.f, 3.f);
+	camera.lookAt(0.f, 0.f, 0.f);
+
+
 
 	while (!renderer.shouldClose()) {
 		renderer.render(scene, camera);
 
-		cube->rotate(0.1, 0, 0.05);
+		cube->rotate(0.1f, 0.f, 0.05f);
 
 		renderer.updateInput();
 	}

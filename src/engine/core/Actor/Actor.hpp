@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <string>
+#include <memory>
 
 #include "core/engine.typedef.hpp"
 #include "Geometries/Geometry.hpp"
@@ -12,8 +14,12 @@
 #include "Movable.hpp"
 
 
-
 namespace NoxEngine {
+
+    template <Dimension D>
+    class Scene;
+    template <Dimension D>
+    class Camera;
 
     template <Dimension D>
     class Actor: public Movable<D> {
@@ -45,7 +51,7 @@ namespace NoxEngine {
             void setCullFace(const GLenum cullFace) noexcept;
             void setPolygonMode(const GLenum polygonMode) noexcept;
 
-            void render(Matrices<D>& mvp);
+            void render(Scene<D>* scene, Camera<D>* camera);
 
         protected:
             const std::string m_uuid;

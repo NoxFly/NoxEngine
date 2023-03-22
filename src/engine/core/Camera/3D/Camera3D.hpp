@@ -12,18 +12,21 @@ namespace NoxEngine {
 
     class Camera3D: public Camera<V3D> {
         public:
-            Camera3D(double fov, double aspect, double near, double far) :
+            Camera3D(float left, float right, float top, float bottom, float near, float far) :
                 Camera(),
-                m_fov(fov), m_aspect(aspect), m_near(near), m_far(far)
+                m_near(near), m_far(far)
             {
-                m_matrix = Matrices<V3D>(m_fov, m_aspect, m_near, m_far, m_position, m_verticalAxis);
+                m_matrix = Matrices<V3D>(left, right, top, bottom, m_near, m_far, m_position, m_verticalAxis);
+            }
+
+            Camera3D(float fov, float aspect, float near, float far) :
+                Camera(),
+                m_near(near), m_far(far)
+            {
+                m_matrix = Matrices<V3D>(fov, aspect, m_near, m_far, m_position, m_verticalAxis);
             }
             
             virtual ~Camera3D() {};
-
-            Matrices<V3D>& getMatrices() {
-                return m_matrix;
-            }
 
             V3D getPosition() const {
                 return m_position;
@@ -41,7 +44,7 @@ namespace NoxEngine {
             virtual void moveTo(const V3D& position, unsigned int duration = 0) = 0;
 
         protected:
-            double m_fov, m_aspect, m_near, m_far;
+            double m_near, m_far;
     };
 
 }

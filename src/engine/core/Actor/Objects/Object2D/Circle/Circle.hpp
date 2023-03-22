@@ -1,7 +1,9 @@
 #ifndef CIRCLE_HPP
 #define CIRCLE_HPP
 
-#include "core/Actor/Object2D/Object2D.hpp"
+#include <memory>
+
+#include "core/Actor/Objects/Object2D/Object2D.hpp"
 
 
 namespace NoxEngine {

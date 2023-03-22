@@ -3,6 +3,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "core/Actor/Objects/Object3D/Object3D.hpp"
 #include "utils/Color.hpp"

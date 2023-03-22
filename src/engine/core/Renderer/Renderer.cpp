@@ -1,3 +1,5 @@
+#pragma warning (disable: 4244)
+
 #include "./Renderer.hpp"
 
 #include <SDL2/SDL_image.h>

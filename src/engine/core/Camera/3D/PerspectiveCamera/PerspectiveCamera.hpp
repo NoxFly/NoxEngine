@@ -11,7 +11,7 @@ namespace NoxEngine {
 
     class PerspectiveCamera: public Camera3D {
         public:
-            PerspectiveCamera(double fov, double aspect, double near, double far);
+            PerspectiveCamera(float fov, float aspect, float near, float far);
             ~PerspectiveCamera();
 
             void lookAt(const V3D eye, const V3D target, const V3D up);
@@ -22,9 +22,6 @@ namespace NoxEngine {
 
             void move(const V3D& offset, unsigned int duration = 0);
             void moveTo(const V3D& position, unsigned int duration = 0);
-
-        private:
-            V3D m_target;
     };
 
 }

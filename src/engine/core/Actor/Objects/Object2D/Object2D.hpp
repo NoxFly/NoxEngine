@@ -1,6 +1,8 @@
 #ifndef OBJECT_2D_HPP
 #define OBJECT_2D_HPP
 
+#include <memory>
+
 #include "core/engine.typedef.hpp"
 #include "core/Actor/Actor.hpp"
 #include "core/Actor/Geometries/Geometry.hpp"

@@ -16,66 +16,65 @@ namespace NoxEngine {
         const float sh = size.y / 2.f;
         const float sd = size.z / 2.f;
 
-        m_data.vertices = {
+
+        GeometryData data;
+        GeometryIndexedData<V3D> indexedData;
+
+        indexedData.vertices = {
             // front
-            -sw, -sh,  sd,
-             sw, -sh,  sd,
-             sw,  sh,  sd,
-            -sw,  sh,  sd,
+            { -sw, -sh,  sd },
+            {  sw, -sh,  sd },
+            {  sw,  sh,  sd },
+            { -sw,  sh,  sd },
             // back
-            -sw, -sh, -sd,
-             sw, -sh, -sd,
-             sw,  sh, -sd,
-            -sw,  sh, -sd
+            { -sw, -sh, -sd },
+            {  sw, -sh, -sd },
+            {  sw,  sh, -sd },
+            { -sw,  sh, -sd }
         };
 
-        /*m_data.uvs = {
-            0, 0,   0, 1,   1, 1,
-            0, 0,   1, 0,   1, 1,
-
-            0, 0,   0, 1,   1, 1,
-            0, 0,   1, 0,   1, 1,
-
-            0, 0,   0, 1,   1, 1,
-            0, 0,   1, 0,   1, 1,
-
-            0, 0,   0, 1,   1, 1,
-            0, 0,   1, 0,   1, 1,
-
-            0, 0,   0, 1,   1, 1,
-            0, 0,   1, 0,   1, 1,
-
-            0, 0,   0, 1,   1, 1,
-            0, 0,   1, 0,   1, 1
-        };*/
-
-        m_data.colors = {
-            1.f, 0.f, 0.f
+        indexedData.uvs = {
+            { 0, 0 },
+            { 0, 1 },
+            { 1, 1 },
+            { 1, 0 }
         };
 
-        m_data.indices = {
+        indexedData.normals = {
+            {  0.0f,  1.0f,  0.0f },
+            {  0.0f,  0.0f,  1.0f },
+            { -1.0f,  0.0f,  0.0f },
+            {  0.0f, -1.0f,  0.0f },
+            {  1.0f,  0.0f,  0.0f },
+            {  0.0f,  0.0f, -1.0f }
+        };
+
+        // vertices, uvs, normals, colors
+        indexedData.indexes = {
             // front
-            0, 1, 2,
-            2, 3, 0,
+            { 1, 1, 1, 0 }, { 2, 2, 1, 0 }, { 3, 3, 1, 0 },
+            { 3, 1, 1, 0 }, { 4, 4, 1, 0 }, { 1, 3, 1, 0 },
             // right
-            1, 5, 6,
-            6, 2, 1,
+            { 2, 1, 2, 0 }, { 6, 2, 2, 0 }, { 7, 3, 2, 0 },
+            { 7, 1, 2, 0 }, { 3, 4, 2, 0 }, { 2, 3, 2, 0 },
             // back
-            7, 6, 5,
-            5, 4, 7,
+            { 8, 1, 3, 0 }, { 7, 2, 3, 0 }, { 6, 3, 3, 0 },
+            { 6, 1, 3, 0 }, { 5, 4, 3, 0 }, { 8, 3, 3, 0 },
             // left
-            4, 0, 3,
-            3, 7, 4,
+            { 5, 1, 4, 0 }, { 1, 2, 4, 0 }, { 4, 3, 4, 0 },
+            { 4, 1, 4, 0 }, { 8, 4, 4, 0 }, { 5, 3, 4, 0 },
             // bottom
-            4, 5, 1,
-            1, 0, 4,
+            { 5, 1, 5, 0 }, { 6, 2, 5, 0 }, { 2, 3, 5, 0 },
+            { 2, 1, 5, 0 }, { 1, 4, 5, 0 }, { 5, 3, 5, 0 },
             // top
-            3, 2, 6,
-            6, 7, 3
+            { 4, 1, 6, 0 }, { 3, 2, 6, 0 }, { 7, 3, 6, 0 },
+            { 7, 1, 6, 0 }, { 8, 4, 6, 0 }, { 4, 3, 6, 0 }
         };
 
-        load();
 
+        indexData(indexedData, data);
+
+        load(data);
     }
 
     BoxGeometry::~BoxGeometry() {
