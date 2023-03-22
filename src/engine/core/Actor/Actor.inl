@@ -157,7 +157,7 @@ namespace NoxEngine {
                     glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());
 
                 // renders
-                glDrawElements(GL_TRIANGLES, m_geometry.getElementCount_v(), GL_UNSIGNED_SHORT, 0);
+                glDrawElements(GL_TRIANGLES, m_geometry.getElementCount(), GL_UNSIGNED_SHORT, 0);
 
                 if(hasTexture)
                     glBindTexture(GL_TEXTURE_2D, 0);

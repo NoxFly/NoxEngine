@@ -69,7 +69,7 @@ namespace NoxEngine {
         return m_vertexCount;
     }
 
-    const GLuint Geometry::getElementCount_v() const {
+    const GLuint Geometry::getElementCount() const {
         return m_vElementCount;
     }
 
