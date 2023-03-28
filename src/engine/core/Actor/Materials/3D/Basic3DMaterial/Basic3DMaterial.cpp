@@ -1,4 +1,4 @@
-#include "BasicMaterial.hpp"
+#include "Basic3DMaterial.hpp"
 
 #include "core/Actor/Shader/Shader.hpp"
 #include "core/Actor/Texture/Texture.hpp"
@@ -7,22 +7,22 @@
 
 namespace NoxEngine {
 
-    BasicMaterial::BasicMaterial():
+    Basic3DMaterial::Basic3DMaterial():
         Material(Shader::get("color3D"))
     {}
 
-    BasicMaterial::BasicMaterial(const Color& color):
+    Basic3DMaterial::Basic3DMaterial(const Color& color):
         Material(Shader::get("color3D"), color)
     {}
 
-    BasicMaterial::BasicMaterial(const std::string& textureName):
+    Basic3DMaterial::Basic3DMaterial(const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName))
     {}
 
-    BasicMaterial::BasicMaterial(const Color& color, const std::string& textureName):
+    Basic3DMaterial::Basic3DMaterial(const Color& color, const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName), color)
     {}
 
-    BasicMaterial::~BasicMaterial() {}
+    Basic3DMaterial::~Basic3DMaterial() {}
 
 }

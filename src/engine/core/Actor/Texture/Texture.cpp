@@ -11,7 +11,7 @@ namespace NoxEngine {
     ResourceHolder<Texture, std::string> Texture::m_bank;
 
 
-    void Texture::setTexturesPath(const std::string& texturesPath) {
+    void Texture::setTexturesPath(const std::string& texturesPath) noexcept {
         Texture::texturesPath = ((texturesPath[0] == '/')? "." : "") + texturesPath;
     }
 
@@ -26,7 +26,7 @@ namespace NoxEngine {
         return false;
     }
 
-    Texture* Texture::get(const std::string& textureName) {
+    Texture* Texture::get(const std::string& textureName) noexcept {
         return &m_bank.get(textureName);
     }
 
@@ -58,15 +58,15 @@ namespace NoxEngine {
         return *this;
     }
 
-    GLuint Texture::getID() const {
+    GLuint Texture::getID() const noexcept {
         return m_id;
     }
 
-    std::string Texture::getName() const {
+    std::string Texture::getName() const noexcept {
         return m_name;
     }
 
-    std::string Texture::getPath() const {
+    std::string Texture::getPath() const noexcept {
         return m_path;
     }
 

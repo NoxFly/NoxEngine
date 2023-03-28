@@ -17,12 +17,12 @@ namespace NoxEngine {
     {}
 
     template <Dimension D>
-    Matrices<D>::Matrices(M4 view):
+    Matrices<D>::Matrices(const M4& view):
         Matrices(view, {})
     {}
 
     template <Dimension D>
-    Matrices<D>::Matrices(M4 view, std::stack<M4> saves):
+    Matrices<D>::Matrices(const M4& view, const std::stack<M4>& saves):
         m_needsUpdate(true),
         m_model(1.0f),
         m_view(view),
@@ -32,14 +32,14 @@ namespace NoxEngine {
     {}
 
     template <Dimension D>
-    Matrices<D>::Matrices(float left, float right, float top, float bottom, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
+    Matrices<D>::Matrices(const float left, const float right, const float top, const float bottom, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
         Matrices(glm::lookAt(position, V3D(0, 0, 0), V3D(0, 1, 0)))
     {
         m_projection = glm::ortho(left, right, bottom, right, near, far);
     }
 
     template <Dimension D>
-    Matrices<D>::Matrices(float fov, float aspect, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
+    Matrices<D>::Matrices(const float fov, const float aspect, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
         Matrices(glm::lookAt(position, V3D(0, 0, 0), V3D(0, 1, 0)))
     {
             m_projection = glm::perspective(fov, aspect, near, far);

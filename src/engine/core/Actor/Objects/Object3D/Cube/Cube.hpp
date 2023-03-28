@@ -18,9 +18,6 @@ namespace NoxEngine {
             explicit Cube(const float size, const std::string& textureName);
             explicit Cube(const float size, const std::string& textureName, const Color& color);
             ~Cube();
-
-        protected:
-
     };
 
 }

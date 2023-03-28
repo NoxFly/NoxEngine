@@ -12,7 +12,7 @@
 
 namespace NoxEngine {
 
-    Renderer::Renderer(IniSet& config):
+    Renderer::Renderer(const IniSet& config):
         m_config(config),
         m_input(),
         m_window(0),
@@ -187,56 +187,56 @@ namespace NoxEngine {
     }
 
     // returns the opengl version as a string : for example, for version 1.1, returns "11"
-    GLuint Renderer::getCompactGLversion() const {
+    GLuint Renderer::getCompactGLversion() const noexcept {
         GLuint major = m_config.getIntValue("ENGINE", "OPENGL_MAJOR_VERSION", 1);
         GLuint minor = m_config.getIntValue("ENGINE", "OPENGL_MINOR_VERSION", 1);
 
         return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
     }
 
-    GLuint Renderer::getCompactGLversion() {
+    GLuint Renderer::getCompactGLversion() noexcept {
         GLuint major = m_config.getIntValue("ENGINE", "OPENGL_MAJOR_VERSION", 1);
         GLuint minor = m_config.getIntValue("ENGINE", "OPENGL_MINOR_VERSION", 1);
 
         return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
     }
 
-    void Renderer::updateInput() {
+    void Renderer::updateInput() noexcept {
         m_input.updateEvents();
 
         if(m_input.shouldClose())
             close();
     }
 
-    Input* Renderer::getInput() {
+    Input* Renderer::getInput() noexcept {
         return &m_input;
     }
 
 
 
-    void Renderer::show() {
+    void Renderer::show() noexcept {
         SDL_ShowWindow(m_window);
     }
 
 
-    void Renderer::hide() {
+    void Renderer::hide() noexcept {
         SDL_HideWindow(m_window);
     }
 
-    void Renderer::close() {
+    void Renderer::close() noexcept {
         m_shouldClose = true;
     }
 
-    bool Renderer::shouldClose() const {
+    bool Renderer::shouldClose() const noexcept {
         return m_shouldClose;
     }
 
-    bool Renderer::isInitialized() const {
+    bool Renderer::isInitialized() const noexcept {
         return m_isInit;
     }
 
 
-    void Renderer::clear(Color clearColor) {
+    void Renderer::clear(Color clearColor) noexcept {
         float r = clearColor.r / 255.0f;
         float g = clearColor.g / 255.0f;
         float b = clearColor.b / 255.0f;
@@ -248,17 +248,17 @@ namespace NoxEngine {
     }
 
 
-    void Renderer::swapWindow() {
+    void Renderer::swapWindow() noexcept {
         SDL_GL_SwapWindow(m_window);
     }
 
 
-    void Renderer::setMouseGrab(const bool grabbed) {
+    void Renderer::setMouseGrab(const bool grabbed) noexcept {
         SDL_SetWindowGrab(m_window, grabbed? SDL_TRUE : SDL_FALSE);
     }
 
 
-    void Renderer::setMouseFocus(const bool focus) {
+    void Renderer::setMouseFocus(const bool focus) noexcept {
         SDL_SetRelativeMouseMode(focus? SDL_TRUE : SDL_FALSE);
         V2D v = getSize();
 
@@ -269,27 +269,27 @@ namespace NoxEngine {
     }
 
 
-    bool Renderer::isMouseGrabbed() const {
+    bool Renderer::isMouseGrabbed() const noexcept {
         return SDL_GetWindowGrab(m_window);
     }
 
 
-    bool Renderer::isMouseFocused() const {
+    bool Renderer::isMouseFocused() const noexcept {
         return SDL_GetRelativeMouseMode();
     }
 
-    V2D Renderer::getSize() const {
+    V2D Renderer::getSize() const noexcept {
         int w, h;
         SDL_GetWindowSize(m_window, &w, &h);
         return V2D(w, h);
     }
 
-    float Renderer::getAspect() const {
+    float Renderer::getAspect() const noexcept {
         V2D size = getSize();
         return size.x / size.y;
     }
 
-    void Renderer::setFPS(int fps) {
+    void Renderer::setFPS(int fps) noexcept {
         // fps no limit
         if(fps < 0)
             fps = -1;

@@ -25,7 +25,7 @@ namespace NoxEngine {
     }
 
 
-    void Input::updateEvents() {
+    void Input::updateEvents() noexcept {
         SDL_Event events;
 
         while(SDL_PollEvent(&events)) {
@@ -82,48 +82,48 @@ namespace NoxEngine {
     }
 
 
-    bool Input::isKeyDown(const SDL_Scancode key) const {
+    bool Input::isKeyDown(const SDL_Scancode key) const noexcept {
         return m_keys[key];
     }
 
-    bool Input::isMouseButtonDown(const Uint8 button) const {
+    bool Input::isMouseButtonDown(const Uint8 button) const noexcept {
         return m_mouseButtons[button];
     }
 
-    bool Input::isMouseMoving() const {
+    bool Input::isMouseMoving() const noexcept {
         V2D v = getMouseDir();
         return v.x != 0 && v.y != 0;
     }
 
-    int Input::getMouseX() const {
+    int Input::getMouseX() const noexcept {
         return m_mouseX;
     }
 
     // actual Y
-    int Input::getMouseY() const {
+    int Input::getMouseY() const noexcept {
         return m_mouseY;
     }
 
-    int Input::wheelScroll() const {
+    int Input::wheelScroll() const noexcept {
         return m_wheelEvent;
     }
 
-    V2D Input::getMouseDir() const {
+    V2D Input::getMouseDir() const noexcept {
         return mouseMotion;
     }
 
-    V2D Input::getMousePoint() const {
+    V2D Input::getMousePoint() const noexcept {
         return V2D(m_mouseX, m_mouseY);
     }
 
-    V2D Input::getMousePointFromCenter(SDL_Window* window) const {
+    V2D Input::getMousePointFromCenter(SDL_Window* window) const noexcept {
         int w, h;
         SDL_GetWindowSize(window, &w, &h);
         V2D v((float)m_mouseX - w / 2, (float)m_mouseY - h / 2);
         return v;
     }
 
-    bool Input::shouldClose() {
+    bool Input::shouldClose() noexcept {
         return m_shouldClose;
     }
 

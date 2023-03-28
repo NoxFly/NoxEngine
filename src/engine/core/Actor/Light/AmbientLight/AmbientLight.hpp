@@ -8,7 +8,7 @@ namespace NoxEngine {
 
 	class AmbientLight: public Light {
 		public:
-			AmbientLight(const Color color, const float intensity);
+			explicit AmbientLight(const Color color, const float intensity);
 			~AmbientLight();
 	};
 

@@ -22,17 +22,17 @@ namespace NoxEngine {
 
     // -------- STATIC --------
 
-    void Shader::setShadersPath(const std::string& path) {
+    void Shader::setShadersPath(const std::string& path) noexcept {
         m_shadersPath = ((path[0] == '/') ? "." : "") + path;
     }
 
-    void Shader::setDefaultGLSLversion(GLuint glVersion) {
+    void Shader::setDefaultGLSLversion(GLuint glVersion) noexcept {
         if (std::find(m_GLversions.begin(), m_GLversions.end(), glVersion) != std::end(m_GLversions)) {
             m_defaultGLversion = glVersion;
         }
     }
 
-    bool Shader::checkGLversion(GLuint& glVersion) {
+    bool Shader::checkGLversion(GLuint& glVersion) noexcept {
         if (glVersion == 0) {
             if (m_defaultGLversion == 0) {
                 Console::warn("Shader::loadFolder", "No default GLSL version specified. Shaders not loaded.");
@@ -116,7 +116,7 @@ namespace NoxEngine {
 #endif
     }
 
-    Shader* Shader::get(const std::string& shaderName) {
+    Shader* Shader::get(const std::string& shaderName) noexcept {
         return &m_bank.get(shaderName);
     }
 
@@ -132,7 +132,7 @@ namespace NoxEngine {
 
 
 
-    Shader::Shader() :
+    Shader::Shader():
         m_glVersion(20),
         m_vertexID(0),
         m_fragmentID(0),
@@ -143,7 +143,7 @@ namespace NoxEngine {
 
     }
 
-    Shader::Shader(GLuint glVersion, const std::string& shaderPath) :
+    Shader::Shader(GLuint glVersion, const std::string& shaderPath):
         Shader()
     {
         m_glVersion = glVersion;
@@ -171,11 +171,11 @@ namespace NoxEngine {
         destroyShader();
     }
 
-    GLuint Shader::getGLversion() const {
+    GLuint Shader::getGLversion() const noexcept {
         return m_glVersion;
     }
 
-    GLuint Shader::getGLSLversion() const {
+    GLuint Shader::getGLSLversion() const noexcept {
         if (m_glVersion < 33) {
             return (m_glVersion - 19) * 10 + 100; // 110, 120, 130, 140, 150
         }
@@ -185,17 +185,17 @@ namespace NoxEngine {
     }
 
 
-    const std::string& Shader::getName() {
+    const std::string& Shader::getName() noexcept {
         return m_shaderName;
     }
 
 
-    GLuint Shader::getID() const {
+    GLuint Shader::getID() const noexcept {
         return m_programID;
     }
 
 
-    void Shader::destroyShader() {
+    void Shader::destroyShader() noexcept {
         if (glIsShader(m_vertexID) == GL_TRUE)
             glDeleteShader(m_vertexID);
 
@@ -207,7 +207,7 @@ namespace NoxEngine {
     }
 
 
-    void Shader::use() {
+    void Shader::use() noexcept {
         glUseProgram(m_programID);
     }
 

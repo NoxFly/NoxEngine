@@ -13,11 +13,11 @@ namespace NoxEngine {
 
         public:
             explicit Matrices();
-            explicit Matrices(M4 view);
-            explicit Matrices(M4 view, std::stack<M4> saves);
+            explicit Matrices(const M4& view);
+            explicit Matrices(const M4& view, const std::stack<M4>& saves);
 
-            explicit Matrices(float left, float right, float top, float bottom, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
-            explicit Matrices(float fov, float aspect, float near, float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
+            explicit Matrices(const float left, const float right, const float top, const float bottom, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
+            explicit Matrices(const float fov, const float aspect, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
 
             virtual ~Matrices() {};
 

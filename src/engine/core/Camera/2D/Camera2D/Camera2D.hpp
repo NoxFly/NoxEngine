@@ -14,15 +14,15 @@ namespace NoxEngine {
 			explicit Camera2D();
 			~Camera2D();
 
-			V2D getPosition() const;
-			float getZoom() const;
+			V2D getPosition() const noexcept;
+			float getZoom() const noexcept;
 
-            void setPosition(const float x, const float y);
-			void setPosition(const V2D& position);
+            void setPosition(const float x, const float y) noexcept;
+			void setPosition(const V2D& position) noexcept;
 
-			void zoomIn(float zoom, unsigned int duration = 0);
-			void zoomOut(float zoom, unsigned int duration = 0);
-			void setZoom(float zoom, unsigned int duration = 0);
+			void zoomIn(const float zoom, const unsigned int duration = 0) noexcept;
+			void zoomOut(const float zoom, const unsigned int duration = 0) noexcept;
+			void setZoom(const float zoom, const unsigned int duration = 0) noexcept;
 
 			void move(const V2D& offset, unsigned int duration = 0);
 			void moveTo(const V2D& position, unsigned int duration = 0);

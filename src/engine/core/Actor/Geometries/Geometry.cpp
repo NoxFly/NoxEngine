@@ -5,7 +5,7 @@ namespace NoxEngine {
 
     std::string Geometry::m_objectsPath = "./";
 
-    void Geometry::setObjectsPath(const std::string& objectsPath) {
+    void Geometry::setObjectsPath(const std::string& objectsPath) noexcept {
         Geometry::m_objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
     }
 
@@ -50,7 +50,7 @@ namespace NoxEngine {
         deleteEBO();*/
     }
 
-    const bool Geometry::hasLoaded() const {
+    const bool Geometry::hasLoaded() const noexcept {
         return m_hasLoaded;
     }
 
@@ -65,11 +65,11 @@ namespace NoxEngine {
         return m_EBO;
     }
 
-    const GLuint Geometry::getVertexCount() const {
+    const GLuint Geometry::getVertexCount() const noexcept {
         return m_vertexCount;
     }
 
-    const GLuint Geometry::getElementCount() const {
+    const GLuint Geometry::getElementCount() const noexcept {
         return m_vElementCount;
     }
 

@@ -3,15 +3,15 @@
 
 #include <vector>
 
-#include "core/Actor/Materials/Material.hpp"
 #include "core/MatricesMVP/Matrices.hpp"
-#include "utils/Color.hpp"
+#include "core/Actor/Materials/Material.hpp"
 #include "core/Actor/Light/Light.hpp"
+#include "utils/Color.hpp"
 
 
 namespace NoxEngine {
 
-    class PhongMaterial : public Material {
+    class PhongMaterial : public Material<V3D> {
         public:
             explicit PhongMaterial();
             explicit PhongMaterial(const Color& color);
@@ -19,14 +19,11 @@ namespace NoxEngine {
             explicit PhongMaterial(const Color& color, const std::string& textureName);
             ~PhongMaterial();
 
-            void transferUniforms(
-                const M4& mvp, const M4& m, const M4& v, const M4& p,
-                const std::vector<std::shared_ptr<Light>>& lights
-            );
+            void transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) override;
 
-            float getSpecular() const;
+            float getSpecular() const noexcept;
 
-            void setSpecular(const float intensity);
+            void setSpecular(const float intensity) noexcept;
 
         protected:
             float m_specularIntensity;

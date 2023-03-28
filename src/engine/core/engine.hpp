@@ -29,7 +29,9 @@ namespace NoxEngine {
 
 #include "core/Camera/2D/Camera2D/Camera2D.hpp"
 #include "core/Actor/Objects/Object2D/Rectangle/Rectangle.hpp"
-
+#include "core/Actor/Geometries/2D/RectangleGeometry/RectangleGeometry.hpp"
+#include "core/Actor/Geometries/2D/CircleGeometry/CircleGeometry.hpp"
+#include "core/Actor/Materials/2D/Basic2DMaterial/Basic2DMaterial.hpp"
 
 
 
@@ -55,7 +57,11 @@ namespace NoxEngine {
 #include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
 #include "core/Camera/3D/OrthographicCamera/OrthographicCamera.hpp"
 #include "core/Actor/Objects/Object3D/Cube/Cube.hpp"
-
+#include "core/Actor/Geometries/3D/BoxGeometry/BoxGeometry.hpp"
+#include "core/Actor/Geometries/3D/SphereGeometry/SphereGeometry.hpp"
+#include "core/Actor/Light/AmbientLight/AmbientLight.hpp"
+#include "core/Actor/Materials/3D/Basic3DMaterial/Basic3DMaterial.hpp"
+#include "core/Actor/Materials/3D/PhongMaterial/PhongMaterial.hpp"
 
 
 

@@ -12,11 +12,11 @@ namespace NoxEngine {
 
 	}
 
-	float Light::getIntensity() const {
+	float Light::getIntensity() const noexcept {
 		return m_intensity;
 	}
 
-	Color Light::getColor() const {
+	Color Light::getColor() const noexcept {
 		return m_color;
 	}
 

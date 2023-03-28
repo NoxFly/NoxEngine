@@ -14,7 +14,7 @@ namespace NoxEngine {
 
 		public:
 			explicit Object2D();
-			explicit Object2D(const Geometry& geometry, const Material& material);
+			explicit Object2D(const Geometry& geometry, const Material<V2D>& material);
 			~Object2D();
 	};
 

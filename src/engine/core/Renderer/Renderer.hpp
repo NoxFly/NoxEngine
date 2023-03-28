@@ -17,36 +17,36 @@ namespace NoxEngine {
 
     class Renderer {
         public:
-            Renderer(IniSet& config);
+            explicit Renderer(const IniSet& config);
             ~Renderer();
 
-            void updateInput();
-            Input* getInput();
+            void updateInput() noexcept;
+            Input* getInput() noexcept;
 
             template <Dimension D>
             void render(Scene<D>& scene, Camera<D>& camera);
 
-            void show();
-            void hide();
-            void close();
-            bool shouldClose() const;
-            bool isInitialized() const;
+            void show() noexcept;
+            void hide() noexcept;
+            void close() noexcept;
+            bool shouldClose() const noexcept;
+            bool isInitialized() const noexcept;
 
-            void setFPS(int fps);
+            void setFPS(int fps) noexcept;
             
-            void setMouseGrab(const bool grabbed);
-            void setMouseFocus(const bool focus);
-            bool isMouseGrabbed() const;
-            bool isMouseFocused() const;
+            void setMouseGrab(const bool grabbed) noexcept;
+            void setMouseFocus(const bool focus) noexcept;
+            bool isMouseGrabbed() const noexcept;
+            bool isMouseFocused() const noexcept;
 
-            GLuint getCompactGLversion() const;
-            GLuint getCompactGLversion();
-            V2D getSize() const;
-            float getAspect() const;
+            GLuint getCompactGLversion() const noexcept;
+            GLuint getCompactGLversion() noexcept;
+            V2D getSize() const noexcept;
+            float getAspect() const noexcept;
 
         protected:
-            void clear(Color clearColor);
-            void swapWindow();
+            void clear(Color clearColor) noexcept;
+            void swapWindow() noexcept;
 
             bool InitSDL();
             bool InitGL();

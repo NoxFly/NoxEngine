@@ -12,14 +12,14 @@ namespace NoxEngine {
 
     class Camera3D: public Camera<V3D> {
         public:
-            Camera3D(float left, float right, float top, float bottom, float near, float far) :
+            explicit Camera3D(const float left, const float right, const float top, const float bottom, const float near, const float far):
                 Camera(),
                 m_near(near), m_far(far)
             {
                 m_matrix = Matrices<V3D>(left, right, top, bottom, m_near, m_far, m_position, m_verticalAxis);
             }
 
-            Camera3D(float fov, float aspect, float near, float far) :
+            explicit Camera3D(const float fov, const float aspect, const float near, const float far) :
                 Camera(),
                 m_near(near), m_far(far)
             {
@@ -28,20 +28,20 @@ namespace NoxEngine {
             
             virtual ~Camera3D() {};
 
-            V3D getPosition() const {
+            V3D getPosition() const noexcept {
                 return m_position;
             }
 
-            void setPosition(const float x, const float y, const float z) {
+            void setPosition(const float x, const float y, const float z) noexcept {
                 Camera::_setPosition(x, y, z);
             }
 
-            void setPosition(const V3D& position) {
+            void setPosition(const V3D& position) noexcept {
                 Camera::_setPosition(position);
             };
 
-            virtual void move(const V3D& offset, unsigned int duration = 0) = 0;
-            virtual void moveTo(const V3D& position, unsigned int duration = 0) = 0;
+            virtual void move(const V3D& offset, const unsigned int duration = 0) = 0;
+            virtual void moveTo(const V3D& position, const unsigned int duration = 0) = 0;
 
         protected:
             double m_near, m_far;

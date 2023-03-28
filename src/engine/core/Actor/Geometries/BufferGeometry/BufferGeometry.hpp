@@ -33,7 +33,7 @@ namespace NoxEngine {
 	};
 
 	template <Dimension D>
-	class BufferGeometry : public Geometry {
+	class BufferGeometry: public Geometry {
 		public:
 			explicit BufferGeometry();
 			~BufferGeometry();

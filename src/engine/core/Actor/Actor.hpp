@@ -24,18 +24,18 @@ namespace NoxEngine {
     template <Dimension D>
     class Actor: public Movable<D> {
         public:
-            Actor();
-            Actor(const Geometry& geometry, const Material& material);
+            explicit Actor();
+            explicit Actor(const Geometry& geometry, const Material<D>& material);
             // Actor(const Actor<D>& copy);
             // const Actor<D>& operator=(const Actor<D>& copy);
             virtual ~Actor();
 
-            const std::string& getUUID() const;
+            const std::string& getUUID() const noexcept;
 
-            Geometry* getGeometry();
-            Material* getMaterial();
+            Geometry* getGeometry() noexcept;
+            Material<D>* getMaterial() noexcept;
 
-            const D& getRotation() const;
+            const D& getRotation() const noexcept;
 
             void setPosition(const D& position) noexcept;
             void setRotation(const D& rotation) noexcept;
@@ -59,7 +59,7 @@ namespace NoxEngine {
             const bool m_is3D;
 
             Geometry m_geometry;
-            Material m_material;
+            Material<D> m_material;
             GLenum m_cullFace, m_polygonMode;
 
             D m_rotation;

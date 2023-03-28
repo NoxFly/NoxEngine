@@ -11,12 +11,12 @@ namespace NoxEngine {
 
     class OrthographicCamera : public Camera3D {
         public:
-            OrthographicCamera(float left, float right, float top, float bottom);
-            OrthographicCamera(float left, float right, float top, float bottom, float near, float far);
+            explicit OrthographicCamera(const float left, const float right, const float top, const float bottom);
+            explicit OrthographicCamera(const float left, const float right, const float top, const float bottom, const float near, const float far);
             ~OrthographicCamera();
 
-            void move(const V3D& offset, unsigned int duration = 0);
-            void moveTo(const V3D& position, unsigned int duration = 0);
+            void move(const V3D& offset, const unsigned int duration = 0);
+            void moveTo(const V3D& position, const unsigned int duration = 0);
     };
 
 }

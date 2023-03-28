@@ -9,11 +9,11 @@ namespace NoxEngine {
 	
 	class Light: public Movable<V3D> {
 		public:
-			Light(const Color color, const float intensity);
+			explicit Light(const Color color, const float intensity);
 			virtual ~Light();
 
-			float getIntensity() const;
-			Color getColor() const;
+			float getIntensity() const noexcept;
+			Color getColor() const noexcept;
 
 		protected:
 			float m_intensity;

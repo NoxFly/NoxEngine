@@ -20,11 +20,11 @@ namespace NoxEngine {
 
     class Shader {
         public:
-            static void setShadersPath(const std::string& shadersPath);
-            static void setDefaultGLSLversion(GLuint glVersion);
+            static void setShadersPath(const std::string& shadersPath) noexcept;
+            static void setDefaultGLSLversion(GLuint glVersion) noexcept;
             static bool load(const std::string& shaderName, GLuint glVersion = 0);
             static void loadFolder(GLuint glVersion = 0, const std::string& folderPath="");
-            static Shader* get(const std::string& shaderName);
+            static Shader* get(const std::string& shaderName) noexcept;
 
             explicit Shader();
             explicit Shader(GLuint glVersion, const std::string& shaderPath);
@@ -36,12 +36,12 @@ namespace NoxEngine {
             ~Shader();
 
             bool load();
-            void use();
+            void use() noexcept;
 
-            GLuint getID() const;
-            GLuint getGLSLversion() const;
-            GLuint getGLversion() const;
-            const std::string& getName();
+            GLuint getID() const noexcept;
+            GLuint getGLSLversion() const noexcept;
+            GLuint getGLversion() const noexcept;
+            const std::string& getName() noexcept;
 
             // utility uniform functions
             void setBool(const std::string& name, bool value) const;  
@@ -64,7 +64,7 @@ namespace NoxEngine {
 
             bool checkCompileErrors(GLuint& shader, const std::string& type);
             bool compileShader(GLuint& shader, const std::string& type, const std::string& filepath);
-            void destroyShader();
+            void destroyShader() noexcept;
 
             GLuint m_glVersion, m_vertexID, m_fragmentID, m_programID;
             std::string m_shaderPath, m_shaderName;
@@ -73,7 +73,7 @@ namespace NoxEngine {
             inline static std::array<GLuint, 13> m_GLversions = { 11, 12, 13, 14, 15, 33, 40, 41, 42, 43, 44, 45, 46 };
 
             static void searchShadersRec(const std::string& folderPath, std::vector<std::string>& savedPaths);
-            static bool checkGLversion(GLuint& glVersion);
+            static bool checkGLversion(GLuint& glVersion) noexcept;
             static bool _load(const std::string& shaderName, GLuint glVersion);
     };
 

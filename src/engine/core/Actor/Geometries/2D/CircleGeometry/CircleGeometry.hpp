@@ -9,10 +9,10 @@
 
 namespace NoxEngine {
 
-    class CircleGeometry : public BufferGeometry<V2D> {
-    public:
-        explicit CircleGeometry(const float radius, const unsigned short nbPoints=40);
-        ~CircleGeometry();
+    class CircleGeometry: public BufferGeometry<V2D> {
+        public:
+            explicit CircleGeometry(const float radius, const unsigned short nbPoints=40);
+            ~CircleGeometry();
     };
 
 }

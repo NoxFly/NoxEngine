@@ -8,11 +8,11 @@ namespace NoxEngine {
 
     template <Dimension D>
     Actor<D>::Actor():
-        Actor(Geometry(), Material())
+        Actor(Geometry(), Material<D>())
     {}
 
     template <Dimension D>
-    Actor<D>::Actor(const Geometry& geometry, const Material& material):
+    Actor<D>::Actor(const Geometry& geometry, const Material<D>& material):
         m_uuid(generateUUID()),
         m_dimension(Is2D<D>? 2 : 3), m_is3D(m_dimension == 3),
         m_geometry(geometry), m_material(material),
@@ -38,22 +38,22 @@ namespace NoxEngine {
     }
 
     template <Dimension D>
-    const std::string& Actor<D>::getUUID() const {
+    const std::string& Actor<D>::getUUID() const noexcept {
         return m_uuid;
     }
 
     template <Dimension D>
-    Geometry* Actor<D>::getGeometry() {
+    Geometry* Actor<D>::getGeometry() noexcept {
         return &m_geometry;
     }
 
     template <Dimension D>
-    Material* Actor<D>::getMaterial() {
+    Material<D>* Actor<D>::getMaterial() noexcept {
         return &m_material;
     }
 
     template <Dimension D>
-    const D& Actor<D>::getRotation() const {
+    const D& Actor<D>::getRotation() const noexcept {
         return m_rotation;
     }
 
@@ -148,10 +148,7 @@ namespace NoxEngine {
             glBindVertexArray(m_geometry.getVAO());
 
                 // TODO : fix this issue
-                m_material.transferUniforms(
-                    mvp.get(), mvp.getModel(), mvp.getView(), mvp.getProjection(),
-                    scene->getLights()
-                );
+                m_material.transferUniforms(mvp, scene);
 
                 if(hasTexture)
                     glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());

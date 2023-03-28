@@ -30,14 +30,14 @@ int main(int argc, char** argv) {
 
 
 
-	auto cube = std::make_shared<Cube>(1, "stone", Color(255, 255, 255));
+	auto cube = std::make_shared<Cube>(1.f, "stone", Color(255, 255, 255));
 	cube->setPosition(0.f, 0.f, 0.f);
 
 	scene.add(cube);
 
 
 	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 50.f);
-	light->setPosition(5, 2, 2);
+	light->setPosition(5.f, 2.f, 2.f);
 
 	scene.add(light);
 

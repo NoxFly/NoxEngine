@@ -1,13 +1,12 @@
 namespace NoxEngine {
     
-    void PhongMaterial::transferUniforms(
-        const M4& mvp, const M4& m, const M4& v, const M4& p,
-        const std::vector<std::shared_ptr<Light>>& lights
-    ) {
+    void PhongMaterial::transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) {
+        const auto lights = scene->getLights();
+
         // sends the matrices
-        m_shader->setMat4("MVP", mvp);
-        m_shader->setMat4("M", m);
-        m_shader->setMat4("V", v);
+        m_shader->setMat4("MVP", mvp.get());
+        m_shader->setMat4("M", mvp.getModel());
+        m_shader->setMat4("V", mvp.getView());
         m_shader->setVec3("objectColor", m_color.vec3());
         m_shader->setFloat("specularPower", m_specularIntensity);
 

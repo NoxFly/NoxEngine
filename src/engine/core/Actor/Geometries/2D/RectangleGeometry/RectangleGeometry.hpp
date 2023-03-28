@@ -10,10 +10,10 @@
 namespace NoxEngine {
 
     class RectangleGeometry : public BufferGeometry<V2D> {
-    public:
-        explicit RectangleGeometry(const float width, const float height);
-        explicit RectangleGeometry(const V2D& size);
-        ~RectangleGeometry();
+        public:
+            explicit RectangleGeometry(const float width, const float height);
+            explicit RectangleGeometry(const V2D& size);
+            ~RectangleGeometry();
     };
 
 }

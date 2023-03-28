@@ -13,9 +13,9 @@ namespace NoxEngine {
 
     class Texture {
         public:
-            static void setTexturesPath(const std::string& texturesPath);
+            static void setTexturesPath(const std::string& texturesPath) noexcept;
             static bool load(const std::string& texturePath, const std::string& textureName);
-            static Texture* get(const std::string& textureName);
+            static Texture* get(const std::string& textureName) noexcept;
 
             explicit Texture(const std::string& texturePath, const std::string& textureName);
             explicit Texture(Texture const& copy);
@@ -26,9 +26,9 @@ namespace NoxEngine {
 
             bool load();
 
-            GLuint getID() const;
-            std::string getName() const;
-            std::string getPath() const;
+            GLuint getID() const noexcept;
+            std::string getName() const noexcept;
+            std::string getPath() const noexcept;
 
         private:
             static std::string texturesPath;

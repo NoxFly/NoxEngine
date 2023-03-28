@@ -22,11 +22,11 @@ namespace NoxEngine {
 
             Scene<D>& operator=(const Scene<D>&) = delete;
 
-            void add(std::shared_ptr<Actor<D>> object);
-            void add(std::shared_ptr<Light> light);
+            void add(std::shared_ptr<Actor<D>> object) noexcept;
+            void add(std::shared_ptr<Light> light) noexcept;
 
-            std::vector<std::shared_ptr<Actor<D>>> getActors() const;
-            std::vector<std::shared_ptr<Light>> getLights() const;
+            std::vector<std::shared_ptr<Actor<D>>> getActors() const noexcept;
+            std::vector<std::shared_ptr<Light>> getLights() const noexcept;
 
         protected:
             std::vector<std::shared_ptr<Actor<D>>> m_objects;

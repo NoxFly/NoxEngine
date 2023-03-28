@@ -45,11 +45,11 @@ struct Color {
         return *this;
     }
 
-    glm::vec3 vec3() const {
+    glm::vec3 vec3() const noexcept {
         return glm::vec3(r, g, b);
     }
 
-    glm::vec4 vec4() const {
+    glm::vec4 vec4() const noexcept {
         return glm::vec4(r, g, b, a);
     }
 

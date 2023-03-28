@@ -11,12 +11,9 @@
 namespace NoxEngine {
 
     class Sphere : public Object3D {
-    public:
-        explicit Sphere(const float radius);
-        ~Sphere();
-
-    protected:
-
+        public:
+            explicit Sphere(const float radius);
+            ~Sphere();
     };
 
 }
