@@ -16,11 +16,11 @@ namespace NoxEngine {
             explicit Basic2DMaterial(const Color& color, const std::string& textureName);
             ~Basic2DMaterial();
 
-            void transferUniforms(Matrices<V2D>& mvp, const Scene<V2D>* scene) ;
+            void transferUniforms(Matrices<V2D>& mvp, const Scene<V2D>* scene) override {};
     };
 
 }
 
-#include "Basic2DMaterial.inl"
+//#include "Basic2DMaterial.inl"
 
 #endif // BASIC_2D_MATERIAL_HPP

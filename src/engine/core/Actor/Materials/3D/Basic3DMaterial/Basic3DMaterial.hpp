@@ -16,11 +16,11 @@ namespace NoxEngine {
             explicit Basic3DMaterial(const Color& color, const std::string& textureName);
             ~Basic3DMaterial();
 
-            void transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) override;
+            virtual void transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) override {};
     };
 
 }
 
-#include "Basic3DMaterial.inl"
+//#include "Basic3DMaterial.inl"
 
 #endif // BASIC_3D_MATERIAL_HPP
