@@ -2,7 +2,7 @@
 
 ## Technologies
 
-SDL2, SDL2_image, SDL2_ttf, glew, opengl
+SDL3, SDL3_image, SDL3_ttf, SDL3_mixer, glew, opengl
 
 ### Minimal working example
 
@@ -30,65 +30,61 @@ textures=/resources/textures/
 # ... some other sections that could be useful in your project
 ```
 ```cpp
+#include <iostream>
 
-// this loads all necessary things for the needed dimension
-// in engine.hpp
-// this also declare either the macro _2D or _3D.
-// 2D
-// #define __NOX_ENGINE_2D__
-// 3D
 #define __NOX_ENGINE_3D__
 
-#include <core/engine.hpp>
-#include <glm/glm.hpp>
+#include "core/engine.hpp"
+#include "Console.hpp"
+#include "IniSet.hpp"
 
 using namespace NoxEngine;
 
+int main(int argc, char** argv) {
+	IniSet config;
 
-int main() {
-    IniSet config;
+	if (!config.loadFromFile("config/config.ini")) {
+		Console::error("main", "Failed to load configuration");
+		return EXIT_FAILURE;
+	}
 
-    if(!config.loadFromFile("./config.ini")) {
-        Console::error("Failed to load the configuration.\nExiting.");
-        return 1;
-    }
+	Renderer renderer(config);
+	Scene3D scene;
+	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
 
-    Renderer renderer(config);
-    PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
-    Scene3D scene;
+	Texture::load("stone", "stonebrick_cracked.png");
 
-    
-    // load textures
-    Texture::load("stone", "stonebrick_cracked.png");
+	auto cube = std::make_shared<Cube>(1.f, /* "stone",  */Color(150, 50, 10));
+	cube->setPosition(0.f, 0.f, 0.f);
 
-    // cannot create a cube if shaders aren't loaded
-    auto cube = std::make_shared<Cube>(1, "stone");
+	scene.add(cube);
 
-    // add the entity to the scene
-    scene.add(cube);
 
-    // place the camera so it looks the entity
-    camera.setPosition(3, 2, 3);
-    camera.lookAt(0, 0, 0);
+	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 50.f);
+	light->setPosition(5.f, 2.f, 2.f);
 
-    while(!renderer.shouldClose()) {
-        // update ...
-        doStuffHere();
+	scene.add(light);
 
-        // render
-        renderer.render(&scene, &camera);
 
-        // update input
-        renderer.updateInput();
-    }
+	camera.setPosition(3.f, 2.f, 3.f);
+	camera.lookAt(0.f, 0.f, 0.f);
 
-    return 0;
+	while (!renderer.shouldClose()) {
+		renderer.render(scene, camera);
+
+		cube->rotate(0.1f, 0.f, 0.05f);
+
+		renderer.updateInput();
+	}
+
+
+	return EXIT_SUCCESS;
 }
 ```
 
 # Demos
 
-Available in the `src/demos/` folder.
+Available in the `src/example/` folder.
 
 ## Licence
 
