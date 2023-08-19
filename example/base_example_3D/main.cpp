@@ -28,20 +28,36 @@ int main(int argc, char** argv) {
 	Texture::load("stone", "stonebrick_cracked.png");
 
 
+	// color only
+	auto cubeA = std::make_shared<Cube>(1.f, Color(150, 50, 10));
+	cubeA->setPosition(-3.f, 0.f, 0.f);
 
-	auto cube = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
-	cube->setPosition(0.f, 0.f, 0.f);
+	// texture only
+	auto cubeB = std::make_shared<Cube>(1.f, "stone");
+	cubeB->setPosition(-1.f, 0.f, 0.f);
 
-	scene.add(cube);
+	// color + texure
+	auto cubeC = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
+	cubeC->setPosition(1.f, 0.f, 0.f);
+
+	// color + texture + texture opacity
+	auto cubeD = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
+	cubeD->setPosition(3.f, 0.f, 0.f);
+	cubeD->getMaterial()->setTextureOpacity(0.5f);
+
+	scene.add(cubeA);
+	scene.add(cubeB);
+	scene.add(cubeC);
+	scene.add(cubeD);
 
 
-	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 50.f);
+	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 25.f);
 	light->setPosition(5.f, 2.f, 2.f);
 
 	scene.add(light);
 
 
-	camera.setPosition(3.f, 2.f, 3.f);
+	camera.setPosition(0.f, 2.f, 6.f);
 	camera.lookAt(0.f, 0.f, 0.f);
 
 
@@ -49,7 +65,10 @@ int main(int argc, char** argv) {
 	while (!renderer.shouldClose()) {
 		renderer.render(scene, camera);
 
-		cube->rotate(0.1f, 0.f, 0.05f);
+		cubeA->rotate(0.1f, 0.f, 0.05f);
+		cubeB->rotate(0.1f, 0.f, 0.05f);
+		cubeC->rotate(0.1f, 0.f, 0.05f);
+		cubeD->rotate(0.1f, 0.f, 0.05f);
 
 		renderer.updateInput();
 	}

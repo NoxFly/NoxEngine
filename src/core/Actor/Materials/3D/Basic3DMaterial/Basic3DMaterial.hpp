@@ -20,6 +20,7 @@ namespace NoxEngine {
                 (void)scene;
                 m_shader->setMat4("MVP", mvp.get());
                 m_shader->setVec3("objectColor", m_color.vec3());
+                m_shader->setVec2("textureAndColorOpacity", m_textureAndColorOpacity);
             }
     };
 

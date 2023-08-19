@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 
 	Texture::load("stone", "stonebrick_cracked.png");
 
-	auto cube = std::make_shared<Cube>(1.f, /* "stone",  */Color(150, 50, 10));
+	auto cube = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
 	cube->setPosition(0.f, 0.f, 0.f);
 
 	scene.add(cube);
@@ -85,6 +85,18 @@ int main(int argc, char** argv) {
 # Demos
 
 Available in the `src/example/` folder.
+
+```sh
+# in the root of the project
+./run.sh --shared # add -v for verbose
+cd example
+# compiles and run
+make <target>
+```
+
+Replace `<target>` by one of the following example name :
+- 2D
+- 3D
 
 ## Licence
 

@@ -34,11 +34,15 @@ namespace NoxEngine {
             void setTextures(const std::vector<Texture*>& m_textures);
             void setColor(Color& color);
             void setWireframe(const bool isWireframe);
+            void setColorOpacity(const float opacity);
+            void setTextureOpacity(const float opacity);
 
             Shader* getShader() const;
             std::vector<Texture*> getTextures() const;
             Color getColor() const;
             bool isWireframed() const;
+            float getColorOpacity() const;
+            float getTextureOpacity() const;
 
             virtual void transferUniforms(Matrices<D>& mvp, const Scene<D>* scene) {
                 (void)mvp;
@@ -57,6 +61,7 @@ namespace NoxEngine {
             std::vector<Texture*> m_textures;
             Color m_color;
             bool m_wireframe;
+            V2D m_textureAndColorOpacity;
     };
 
 }

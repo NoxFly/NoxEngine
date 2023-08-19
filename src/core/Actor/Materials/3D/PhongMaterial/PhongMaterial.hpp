@@ -28,6 +28,7 @@ namespace NoxEngine {
                 m_shader->setMat4("V", mvp.getView());
                 m_shader->setVec3("objectColor", m_color.vec3());
                 m_shader->setFloat("specPower", m_specularIntensity);
+                m_shader->setVec2("textureAndColorOpacity", m_textureAndColorOpacity);
 
                 // sends the lights
                 if (lights.size() > 0) {

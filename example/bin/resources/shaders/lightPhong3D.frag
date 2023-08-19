@@ -9,6 +9,7 @@ in vec2 coordTexture;
 out vec4 out_Color;
 
 uniform sampler2D tex;
+uniform vec2 textureAndColorOpacity = vec2(0.0, 1.0);
 uniform vec3 lightPos;
 uniform vec3 objectColor;
 uniform vec3 lightColor;
@@ -19,8 +20,8 @@ uniform float specPower;
 void main()
 {
     // Material properties
-    vec3 materialDiffuseColor = texture(tex, coordTexture).rgb;
-	vec3 materialAmbientColor = objectColor * materialDiffuseColor;
+    vec3 materialDiffuseColor = mix(vec3(1.0), texture(tex, coordTexture).rgb, textureAndColorOpacity.x);
+	vec3 materialAmbientColor = mix(vec3(1.0), objectColor, textureAndColorOpacity.y) * materialDiffuseColor;
 	vec3 materialSpecularColor = vec3(specPower);
 
     
