@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
 
 
-	auto cube = std::make_shared<Cube>(1.f, /* "stone",  */Color(150, 50, 10));
+	auto cube = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
 	cube->setPosition(0.f, 0.f, 0.f);
 
 	scene.add(cube);

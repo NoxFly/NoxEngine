@@ -16,7 +16,7 @@ namespace NoxEngine {
     class Object3D: public Actor<V3D> {
         public:
             explicit Object3D();
-            explicit Object3D(const Geometry& geometry, const Material<V3D>& material);
+            explicit Object3D(Geometry* geometry, Material<V3D>* material);
             ~Object3D();
     };
 

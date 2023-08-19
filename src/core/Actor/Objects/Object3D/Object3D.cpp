@@ -9,11 +9,9 @@ namespace NoxEngine {
         Actor<V3D>()
     {}
 
-    Object3D::Object3D(const Geometry& geometry, const Material<V3D>& material):
+    Object3D::Object3D(Geometry* geometry, Material<V3D>* material):
         Actor<V3D>(geometry, material)
-    {
-        std::cout << "Object3D constructor" << std::endl;
-    }
+    {}
 
     Object3D::~Object3D()
     {}

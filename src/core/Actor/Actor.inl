@@ -1,18 +1,18 @@
-#include "GL/glew.h"
+#include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "utils/utils.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
 
 namespace NoxEngine {
 
     template <Dimension D>
     Actor<D>::Actor():
-        Actor(Geometry(), Material<D>())
+        Actor(new Geometry(), new Material<D>())
     {}
 
     template <Dimension D>
-    Actor<D>::Actor(const Geometry& geometry, const Material<D>& material):
+    Actor<D>::Actor(Geometry* geometry, Material<D>* material):
         m_uuid(generateUUID()),
         m_dimension(Is2D<D>? 2 : 3), m_is3D(m_dimension == 3),
         m_geometry(geometry), m_material(material),
@@ -28,14 +28,10 @@ namespace NoxEngine {
 
     // template <Dimension D>
     // const Actor<D>& Actor<D>::operator=(const Actor<D>& copy)
-    // {
-
-    // }
+    // {}
 
     template <Dimension D>
-    Actor<D>::~Actor() {
-        
-    }
+    Actor<D>::~Actor() {}
 
     template <Dimension D>
     const std::string& Actor<D>::getUUID() const noexcept {
@@ -44,12 +40,12 @@ namespace NoxEngine {
 
     template <Dimension D>
     Geometry* Actor<D>::getGeometry() noexcept {
-        return &m_geometry;
+        return m_geometry;
     }
 
     template <Dimension D>
     Material<D>* Actor<D>::getMaterial() noexcept {
-        return &m_material;
+        return m_material;
     }
 
     template <Dimension D>
@@ -116,14 +112,14 @@ namespace NoxEngine {
 
     template <Dimension D>
     void Actor<D>::render(Scene<D>* scene, Camera<D>* camera) {
-        if(!m_geometry.hasLoaded() || m_material.getShader() == nullptr)
+        if(!m_geometry->hasLoaded() || m_material->getShader() == nullptr)
             return;
 
-        auto shader = m_material.getShader();
-        
+        auto shader = m_material->getShader();
+
         Matrices<D>& mvp = camera->getMatrices();
 
-        const bool hasTexture = m_material.getTextures().size() > 0;
+        const bool hasTexture = m_material->getTextures().size() > 0;
         const bool translateOrRotate = m_hasToTranslate || m_hasToRotate;
 
         // apply matrix transformations
@@ -139,22 +135,21 @@ namespace NoxEngine {
         }
 
         // draw
-        glPolygonMode(GL_FRONT_AND_BACK, m_material.isWireframed()? GL_LINE : m_polygonMode);
+        glPolygonMode(GL_FRONT_AND_BACK, m_material->isWireframed()? GL_LINE : m_polygonMode);
         glCullFace(m_cullFace);
 
         // lock shader
         shader->use();
             // lock VAO
-            glBindVertexArray(m_geometry.getVAO());
+            glBindVertexArray(m_geometry->getVAO());
 
-                // TODO : fix this issue
-                m_material.transferUniforms(mvp, scene);
+                m_material->transferUniforms(mvp, scene);
 
                 if(hasTexture)
-                    glBindTexture(GL_TEXTURE_2D, m_material.getTextures()[0]->getID());
+                    glBindTexture(GL_TEXTURE_2D, m_material->getTextures()[0]->getID());
 
                 // renders
-                glDrawElements(GL_TRIANGLES, m_geometry.getElementCount(), GL_UNSIGNED_SHORT, 0);
+                glDrawElements(GL_TRIANGLES, m_geometry->getElementCount(), GL_UNSIGNED_SHORT, 0);
 
                 if(hasTexture)
                     glBindTexture(GL_TEXTURE_2D, 0);

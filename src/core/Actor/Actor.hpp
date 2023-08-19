@@ -25,7 +25,7 @@ namespace NoxEngine {
     class Actor: public Movable<D> {
         public:
             explicit Actor();
-            explicit Actor(const Geometry& geometry, const Material<D>& material);
+            explicit Actor(Geometry* geometry, Material<D>* material);
             // Actor(const Actor<D>& copy);
             // const Actor<D>& operator=(const Actor<D>& copy);
             virtual ~Actor();
@@ -58,8 +58,8 @@ namespace NoxEngine {
             const unsigned int m_dimension;
             const bool m_is3D;
 
-            Geometry m_geometry;
-            Material<D> m_material;
+            Geometry* m_geometry;
+            Material<D>* m_material;
             GLenum m_cullFace, m_polygonMode;
 
             D m_rotation;

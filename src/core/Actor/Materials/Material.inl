@@ -36,9 +36,7 @@ namespace NoxEngine {
         m_textures(textures),
         m_color(color),
         m_wireframe(false)
-    {
-        std::cout << "Material constructor" << std::endl;
-    }
+    {}
 
     template <Dimension D>
     Material<D>::Material(Texture* texture):
@@ -68,6 +66,12 @@ namespace NoxEngine {
     template <Dimension D>
     Material<D>::~Material()
     {}
+
+
+    template <Dimension D>
+    void Material<D>::setShader(Shader* shader) {
+        m_shader = shader;
+    }
 
     template <Dimension D>
     void Material<D>::setTexture(Texture* texture) {

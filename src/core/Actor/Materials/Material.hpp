@@ -29,6 +29,7 @@ namespace NoxEngine {
             ~Material();
 
 
+            void setShader(Shader* shader);
             void setTexture(Texture* texture);
             void setTextures(const std::vector<Texture*>& m_textures);
             void setColor(Color& color);
@@ -42,11 +43,6 @@ namespace NoxEngine {
             virtual void transferUniforms(Matrices<D>& mvp, const Scene<D>* scene) {
                 (void)mvp;
                 (void)scene;
-                // TODO : debug - to remove
-                m_shader->setMat4("MVP", mvp.get());
-                m_shader->setVec3("objectColor", m_color.vec3());
-                std::cout << "Mother method called" << std::endl;
-                //
             };
 
         protected:

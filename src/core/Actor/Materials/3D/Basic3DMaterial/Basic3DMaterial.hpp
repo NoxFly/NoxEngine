@@ -19,6 +19,7 @@ namespace NoxEngine {
             void transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) override {
                 (void)scene;
                 m_shader->setMat4("MVP", mvp.get());
+                m_shader->setVec3("objectColor", m_color.vec3());
             }
     };
 

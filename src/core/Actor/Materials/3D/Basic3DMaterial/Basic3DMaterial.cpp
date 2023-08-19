@@ -13,9 +13,7 @@ namespace NoxEngine {
 
     Basic3DMaterial::Basic3DMaterial(const Color& color):
         Material(Shader::get("color3D"), color)
-    {
-        std::cout << "Basic3DMaterial constructor" << std::endl;
-    }
+    {}
 
     Basic3DMaterial::Basic3DMaterial(const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName))

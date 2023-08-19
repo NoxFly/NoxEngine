@@ -9,7 +9,7 @@ namespace NoxEngine {
         Actor<V2D>()
     {}
 
-    Object2D::Object2D(const Geometry& geometry, const Material<V2D>& material):
+    Object2D::Object2D(Geometry* geometry, Material<V2D>* material):
         Actor<V2D>(geometry, material)
     {}
 

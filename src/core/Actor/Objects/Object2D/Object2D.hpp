@@ -8,13 +8,14 @@
 #include "core/Actor/Geometries/Geometry.hpp"
 #include "core/Actor/Materials/Material.hpp"
 
+
 namespace NoxEngine {
 
 	class Object2D: public Actor<V2D> {
 
 		public:
 			explicit Object2D();
-			explicit Object2D(const Geometry& geometry, const Material<V2D>& material);
+			explicit Object2D(Geometry* geometry, Material<V2D>* material);
 			~Object2D();
 	};
 

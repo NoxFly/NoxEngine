@@ -3,6 +3,7 @@
 #include "core/Actor/Geometries/2D/RectangleGeometry/RectangleGeometry.hpp"
 #include "core/Actor/Materials/2D/Basic2DMaterial/Basic2DMaterial.hpp"
 
+
 namespace NoxEngine {
 
     Rectangle::Rectangle():
@@ -11,18 +12,14 @@ namespace NoxEngine {
 
     Rectangle::Rectangle(V2D& size):
         Rectangle(size.x, size.y)
-    {
-
-    }
+    {}
 
     Rectangle::Rectangle(float width, float height):
-        Object2D(RectangleGeometry(width, height), Basic2DMaterial()),
+        Object2D(new RectangleGeometry(width, height), new Basic2DMaterial()),
         m_size(width, height)
     {}
 
-    Rectangle::~Rectangle() {
-
-    }
+    Rectangle::~Rectangle() {}
 
 
     const V2D& Rectangle::size() noexcept {
