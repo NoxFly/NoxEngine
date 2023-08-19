@@ -20,7 +20,7 @@ incDir="./include" # availible only on projectMode = 0
 outDir="./bin"
 buildDir="./build"
 cppVersion=20 # 98, 03, 11, 17, 20, 23
-cVersion=17 # 89, 99, 11, 17
+cVersion=17 # 89, 99, 11, 17, 23
 # --------------------------------------
 
 # PRIVATE
@@ -493,7 +493,12 @@ updateLibraryInclude()
     while read file; do
         cat "$file" | grep -Po '(?<=#include ")(.*\.('$hdrFileExt'|inl))(?=")' |
         while read -r dep; do
-            location=$(find "$baseIncludePath" -type f -name "$dep")
+            location=$(find "$baseIncludePath" -type f -name "$(basename "$dep")")
+
+            if [[ $location == '' ]]; then
+                location='/'
+            fi
+
             relative=$(realpath --relative-to="$file" "$location")
 
             search="#include \"$dep\""

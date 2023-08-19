@@ -2,30 +2,51 @@
 #define GEOMETRY_HPP
 
 #include <vector>
+#include <string>
+#include <GL/glew.h>
 
 
 namespace NoxEngine {
 
+    struct GeometryData {
+        std::vector<GLfloat> vertices;	// 2x2 or 3x3
+        std::vector<GLfloat> normals;	// 2x2 or 3x3
+        std::vector<GLfloat> colors;	// 3x3
+        std::vector<GLfloat> uvs;		// 2x2
+        std::vector<GLushort> indices; // EBO
+    };
+
+    
+
     class Geometry {
         public:
+            static void setObjectsPath(const std::string& objectsPath) noexcept;
+
             explicit Geometry();
-            explicit Geometry(const std::vector<float> vertices);
-            explicit Geometry(const std::vector<float> vertices, const std::vector<float> colors);
-            explicit Geometry(const std::vector<float> vertices, const std::vector<float> colors, const std::vector<float> textures);
+            Geometry(const Geometry& copy);
+            const Geometry& operator=(const Geometry& copy);
             ~Geometry();
 
-            void setVertices(const std::vector<float> vertices);
-            void setColors(const std::vector<float> colors);
-            void setTextures(const std::vector<float> textures);
+            bool hasLoaded() const noexcept;
 
-            std::vector<float> getVertices() const;
-            std::vector<float> getColors() const;
-            std::vector<float> getTextures() const;
+            GLuint getVAO() const noexcept;
+            GLuint getEBO() const noexcept;
+
+            GLuint getVertexCount() const noexcept;
+            GLuint getElementCount() const noexcept;
 
         protected:
-            std::vector<float> m_vertices;
-            std::vector<float> m_colors;
-            std::vector<float> m_textures;
+            static std::string m_objectsPath;
+
+            virtual bool load(const GeometryData& data);
+
+            void deleteVBO() noexcept;
+            void deleteVAO() noexcept;
+            void deleteEBO() noexcept;
+
+            bool m_hasLoaded;
+            GLuint m_VAO, m_VBO, m_EBO;
+            GLuint m_vertexCount, m_vElementCount;
     };
 
 }

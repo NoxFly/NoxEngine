@@ -1,4 +1,4 @@
-#include "Console.hpp"
+#include "Console/Console.hpp"
 
 template <typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::set(const Identifier id, const Resource& resource) {

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "utils.hpp"
+#include "utils/utils.hpp"
 
 using namespace std;
 
@@ -54,7 +54,7 @@ bool IniSet::loadFromFile(const string& filepath) {
     m_iniMap = {};
     m_rootMap = {};
 
-    int m = content.size();
+    const unsigned int m = content.size();
 
     if(m == 0)
         return true;
@@ -62,7 +62,7 @@ bool IniSet::loadFromFile(const string& filepath) {
     vector<pair<int, string>> sectionDetails = {};
 
     // detect sections
-    for(int i=0; i < m; i++) {
+    for(unsigned int i=0; i < m; i++) {
         string line = content[i];
 
         if(startsWith(line, ";"))
@@ -80,8 +80,9 @@ bool IniSet::loadFromFile(const string& filepath) {
 
     m_sectionCount = sectionDetails.size();
 
-    int n = (m_sectionCount == 0)? m : sectionDetails[0].first;
-    int i, j, k;
+    unsigned int n = (m_sectionCount == 0)? m : sectionDetails[0].first;
+    unsigned int j, k;
+    unsigned int i;
 
     i = -1;
 
@@ -92,7 +93,8 @@ bool IniSet::loadFromFile(const string& filepath) {
     for(i=0; i < m_sectionCount; i++) {
         pair<int, string> section = sectionDetails[i];
         j = section.first;
-        k = (i < m_sectionCount-1)? sectionDetails[i+1].first : m;
+        const unsigned int idx = i + 1;
+        k = (i < m_sectionCount-1)? sectionDetails[idx].first : m;
         
         while(++j < k)
             assignFromRawString(section.second, content[j]);
@@ -101,10 +103,10 @@ bool IniSet::loadFromFile(const string& filepath) {
     return true;
 }
 
-int IniSet::stringIsValidPair(const string& str) const {
+unsigned int IniSet::stringIsValidPair(const string& str) const {
     bool foundEqual = false;
-    int varSize = 0;
-    int valueSize = 0;
+    unsigned int varSize = 0;
+    unsigned int valueSize = 0;
 
     for(auto &c : str) {
         // value side
@@ -282,8 +284,8 @@ string IniSet::toString() const {
     for(auto &p : m_iniMap) {
         str += "\n[" + p.first + "]\n";
 
-        int j = 0;
-        int size = p.second.size();
+        unsigned int j = 0;
+        unsigned int size = p.second.size();
         
         for(auto &sp : p.second) {
             str += "  " + sp.first + "=" + sp.second.second;
@@ -300,14 +302,14 @@ string IniSet::toString() const {
 
 string IniSet::toJSONString() const {
     string str = "{";
-    int i = 0;
+    unsigned int i = 0;
 
     if(m_rootMap.size() > 0 || m_iniMap.size() > 0)
         str += "\n";
 
     for(auto &p : m_rootMap) {
         string g = p.second.first == "string" ? "\"" : "";
-        str += "  \"" + p.first + "\": " + g + p.second.second + g + ((++i < (int)m_rootMap.size())? "," : "") + "\n";
+        str += "  \"" + p.first + "\": " + g + p.second.second + g + ((++i < (unsigned int)m_rootMap.size())? "," : "") + "\n";
     }
 
     i = 0;
@@ -315,13 +317,13 @@ string IniSet::toJSONString() const {
     for(auto &p : m_iniMap) {
         str += "  \"" + p.first + "\": {\n";
 
-        int j = 0;
+        unsigned int j = 0;
         
         for(auto &sp : p.second) {
             string g = sp.second.first == "string" ? "\"" : "";
             str += "    \"" + sp.first + "\": " + g + sp.second.second + g;
 
-            if(++j < (int)p.second.size())
+            if(++j < (unsigned int)p.second.size())
                 str += ",";
             
             str += "\n";
@@ -329,7 +331,7 @@ string IniSet::toJSONString() const {
 
         str += "  }";
 
-        if(++i < (int)m_iniMap.size())
+        if(++i < (unsigned int)m_iniMap.size())
             str += ",";
         
         str += "\n";

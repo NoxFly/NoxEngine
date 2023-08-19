@@ -3,42 +3,48 @@
 
 #include <glm/glm.hpp>
 
-#include "engine.typedef.hpp"
-#include "Camera.hpp"
-#include "Object3D.hpp"
-#include "Matrices3D.hpp"
+#include "core/engine.typedef.hpp"
+#include "core/Camera/Camera.hpp"
+#include "core/MatricesMVP/Matrices.hpp"
 
 
 namespace NoxEngine {
 
     class Camera3D: public Camera<V3D> {
         public:
-            Camera3D(double fov, double aspect, double near, double far):
+            explicit Camera3D(const float left, const float right, const float top, const float bottom, const float near, const float far):
                 Camera(),
-                m_fov(fov), m_aspect(aspect), m_near(near), m_far(far)
+                m_near(near), m_far(far)
             {
-                m_matrix = Matrices3D(m_fov, m_aspect, m_near, m_far, m_position, m_verticalAxis);
+                m_matrix = Matrices<V3D>(left, right, top, bottom, m_near, m_far, m_position, m_verticalAxis);
+            }
+
+            explicit Camera3D(const float fov, const float aspect, const float near, const float far) :
+                Camera(),
+                m_near(near), m_far(far)
+            {
+                m_matrix = Matrices<V3D>(fov, aspect, m_near, m_far, m_position, m_verticalAxis);
             }
             
             virtual ~Camera3D() {};
 
-            V3D getPosition() const {
+            V3D getPosition() const noexcept {
                 return m_position;
             }
 
-            void setPosition(const float x, const float y, const float z) {
+            void setPosition(const float x, const float y, const float z) noexcept {
                 Camera::_setPosition(x, y, z);
             }
 
-            void setPosition(const V3D& position) {
+            void setPosition(const V3D& position) noexcept {
                 Camera::_setPosition(position);
             };
 
-            virtual void move(const V3D& offset, unsigned int duration = 0) = 0;
-            virtual void moveTo(const V3D& position, unsigned int duration = 0) = 0;
+            virtual void move(const V3D& offset, const unsigned int duration = 0) = 0;
+            virtual void moveTo(const V3D& position, const unsigned int duration = 0) = 0;
 
         protected:
-            double m_fov, m_aspect, m_near, m_far;
+            double m_near, m_far;
     };
 
 }

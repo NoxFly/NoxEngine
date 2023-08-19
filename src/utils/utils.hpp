@@ -48,6 +48,22 @@ std::string dirname(std::string path);
 std::string pathWithNoExt(std::string path);
 
 /**
+ * Repeats a character c n times in a row.
+ * Returns the resulting string
+ * @param c The character to repeat
+ * @param n The amount of time to repeat c
+ */
+std::string repeat(char c, unsigned int n);
+
+/**
+ * Repeats a character c n times in a row.
+ * Returns the resulting string
+ * @param c The character to repeat
+ * @param n The amount of time to repeat c
+ */
+std::string repeat(std::string c, unsigned int n);
+
+/**
  * Returns either a given string is an integer or not
  * @param str The string to check
  * @return Either the string can be converted to an integer or not

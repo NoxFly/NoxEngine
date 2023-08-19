@@ -4,28 +4,29 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <glm/vec4.hpp>
 
 /**
  * @struct A basic RGBA struct
  */
 struct Color {
-    unsigned char r, g, b, a=255;
+    float r, g, b, a=1;
 
     Color() {
         Color(0, 0, 0, 0);
     }
 
-    Color(const int red, const int green, const int blue):
+    Color(const unsigned short red, const unsigned short green, const unsigned short blue):
         Color(red, green, blue, 255)
     {
         
     }
 
-    Color(const int red, const int green, const int blue, const int alpha) {
-        r = std::clamp(red, 0, 255);
-        g = std::clamp(green, 0, 255);
-        b = std::clamp(blue, 0, 255);
-        a = std::clamp(alpha, 0, 255);
+    Color(const unsigned short red, const unsigned short green, const unsigned short blue, const unsigned short alpha) {
+        r = std::clamp(red,     (unsigned short)0, (unsigned short)255) / 255.f;
+        g = std::clamp(green,   (unsigned short)0, (unsigned short)255) / 255.f;
+        b = std::clamp(blue,    (unsigned short)0, (unsigned short)255) / 255.f;
+        a = std::clamp(alpha,   (unsigned short)0, (unsigned short)255) / 255.f;
     }
 
     Color(const Color& color) {
@@ -42,6 +43,14 @@ struct Color {
         a = color.a;
 
         return *this;
+    }
+
+    glm::vec3 vec3() const noexcept {
+        return glm::vec3(r, g, b);
+    }
+
+    glm::vec4 vec4() const noexcept {
+        return glm::vec4(r, g, b, a);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Color& color) {

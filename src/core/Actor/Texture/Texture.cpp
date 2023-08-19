@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Console.hpp"
+#include "Console/Console.hpp"
 
 
 namespace NoxEngine {
@@ -11,7 +11,7 @@ namespace NoxEngine {
     ResourceHolder<Texture, std::string> Texture::m_bank;
 
 
-    void Texture::setTexturesPath(const std::string& texturesPath) {
+    void Texture::setTexturesPath(const std::string& texturesPath) noexcept {
         Texture::texturesPath = ((texturesPath[0] == '/')? "." : "") + texturesPath;
     }
 
@@ -26,7 +26,7 @@ namespace NoxEngine {
         return false;
     }
 
-    Texture* Texture::get(const std::string& textureName) {
+    Texture* Texture::get(const std::string& textureName) noexcept {
         return &m_bank.get(textureName);
     }
 
@@ -58,15 +58,15 @@ namespace NoxEngine {
         return *this;
     }
 
-    GLuint Texture::getID() const {
+    GLuint Texture::getID() const noexcept {
         return m_id;
     }
 
-    std::string Texture::getName() const {
+    std::string Texture::getName() const noexcept {
         return m_name;
     }
 
-    std::string Texture::getPath() const {
+    std::string Texture::getPath() const noexcept {
         return m_path;
     }
 
@@ -80,7 +80,7 @@ namespace NoxEngine {
         }
 
         SDL_Surface* invertedImage = invertPixels(image);
-        SDL_FreeSurface(image);
+        SDL_DestroySurface(image);
 
         if(glIsTexture(m_id) == GL_TRUE)
             glDeleteTextures(1, &m_id);
@@ -102,7 +102,7 @@ namespace NoxEngine {
         }
         else {
             Console::error("Texture::load", "Unknown internal image format");
-            SDL_FreeSurface(invertedImage);
+            SDL_DestroySurface(invertedImage);
             return false;
         }
 
@@ -115,18 +115,16 @@ namespace NoxEngine {
         // unlock
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        SDL_FreeSurface(invertedImage);
+        SDL_DestroySurface(invertedImage);
 
         return true;
     }
 
     SDL_Surface* Texture::invertPixels(SDL_Surface *src) const {
         // copy source image in pixels
-        SDL_Surface *invertedImage = SDL_CreateRGBSurface(
-            0,
+        SDL_Surface *invertedImage = SDL_CreateSurface(
             src->w, src->h,
-            src->format->BitsPerPixel,
-            src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask
+            src->format->format
         );
 
         // tmp array to manipulate pixels

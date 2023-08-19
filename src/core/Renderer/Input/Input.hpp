@@ -1,30 +1,30 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
-#include "engine.typedef.hpp"
+#include "core/engine.typedef.hpp"
 
 namespace NoxEngine {
 
     class Input {
         public:
-            Input();
+            explicit Input();
             ~Input();
 
-            bool shouldClose();
-            void updateEvents();
+            bool shouldClose() noexcept;
+            void updateEvents() noexcept;
 
-            bool isKeyDown(const SDL_Scancode key) const;
-            bool isMouseButtonDown(const Uint8 button) const;
-            bool isMouseMoving() const;
+            bool isKeyDown(const SDL_Scancode key) const noexcept;
+            bool isMouseButtonDown(const Uint8 button) const noexcept;
+            bool isMouseMoving() const noexcept;
 
-            int getMouseX() const;
-            int getMouseY() const;
-            int wheelScroll() const;
-            V2D getMouseDir() const;
-            V2D getMousePoint() const;
-            V2D getMousePointFromCenter(SDL_Window* window) const;
+            int getMouseX() const noexcept;
+            int getMouseY() const noexcept;
+            int wheelScroll() const noexcept;
+            V2D getMouseDir() const noexcept;
+            V2D getMousePoint() const noexcept;
+            V2D getMousePointFromCenter(SDL_Window* window) const noexcept;
 
         private:
             bool m_keys[SDL_NUM_SCANCODES];

@@ -5,10 +5,10 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "engine.typedef.hpp"
+#include "core/engine.typedef.hpp"
 
-#include "Actor.hpp"
-#include "Scene.hpp"
+#include "core/Actor/Actor.hpp"
+#include "core/Scene/Scene.hpp"
 
 
 
@@ -27,10 +27,11 @@ namespace NoxEngine {
 
 }
 
-#include "Camera2D.hpp"
-#include "Matrices2D.hpp"
-#include "Rectangle.hpp"
-
+#include "core/Camera/2D/Camera2D/Camera2D.hpp"
+#include "core/Actor/Objects/Object2D/Rectangle/Rectangle.hpp"
+#include "core/Actor/Geometries/2D/RectangleGeometry/RectangleGeometry.hpp"
+#include "core/Actor/Geometries/2D/CircleGeometry/CircleGeometry.hpp"
+#include "core/Actor/Materials/2D/Basic2DMaterial/Basic2DMaterial.hpp"
 
 
 
@@ -53,10 +54,14 @@ namespace NoxEngine {
 
 }
 
-#include "PerspectiveCamera.hpp"
-#include "Matrices3D.hpp"
-#include "Cube.hpp"
-
+#include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "core/Camera/3D/OrthographicCamera/OrthographicCamera.hpp"
+#include "core/Actor/Objects/Object3D/Cube/Cube.hpp"
+#include "core/Actor/Geometries/3D/BoxGeometry/BoxGeometry.hpp"
+#include "core/Actor/Geometries/3D/SphereGeometry/SphereGeometry.hpp"
+#include "core/Actor/Light/AmbientLight/AmbientLight.hpp"
+#include "core/Actor/Materials/3D/Basic3DMaterial/Basic3DMaterial.hpp"
+#include "core/Actor/Materials/3D/PhongMaterial/PhongMaterial.hpp"
 
 
 
@@ -80,9 +85,12 @@ namespace NoxEngine {
 
 
 // postload : common to both engines
-#include "Renderer.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
+#include "core/MatricesMVP/Matrices.hpp"
+#include "core/Renderer/Renderer.hpp"
+#include "core/Actor/Shader/Shader.hpp"
+#include "core/Actor/Texture/Texture.hpp"
+
+#include "core/Actor/Light/AmbientLight/AmbientLight.hpp"
 
 
 #endif // ENGINE_HPP

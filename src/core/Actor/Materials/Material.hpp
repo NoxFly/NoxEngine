@@ -3,55 +3,68 @@
 
 #include <vector>
 
-#include "Texture.hpp"
-#include "Shader.hpp"
-#include "Color.hpp"
+#include "core/engine.typedef.hpp"
+#include "core/Actor/Texture/Texture.hpp"
+#include "core/Actor/Shader/Shader.hpp"
+#include "core/MatricesMVP/Matrices.hpp"
+#include "utils/Color.hpp"
+#include "core/Scene/Scene.hpp"
 
 
 namespace NoxEngine {
 
+    template <Dimension D>
     class Material {
         public:
             explicit Material();
-            explicit Material(Shader* shader);
-            explicit Material(Shader* shader, Texture* texture);
-            explicit Material(Shader* shader, Texture* texture, const Color& color);
-            explicit Material(Shader* shader, Texture* texture, const std::vector<Color>& colors);
-            explicit Material(Shader* shader, const Color& color);
-            explicit Material(Shader* shader, const std::vector<Color>& colors);
-            explicit Material(Shader* shader, const std::vector<Texture*>& textures);
-            explicit Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color);
-            explicit Material(Shader* shader, const std::vector<Texture*>& textures, const std::vector<Color>& colors);
             explicit Material(Texture* texture);
             explicit Material(const std::vector<Texture*>& textures);
             explicit Material(const Color& color);
-            explicit Material(const std::vector<Color>& colors);
             explicit Material(Texture* texture, const Color& color);
-            explicit Material(Texture* texture, const std::vector<Color>& colors);
             explicit Material(const std::vector<Texture*>& textures, const Color& color);
-            explicit Material(const std::vector<Texture*>& textures, const std::vector<Color>& colors);
+
+            /*Material(const Material& copy) = delete;
+            const Material& operator=(const Material& copy) = delete;*/
 
             ~Material();
 
-            void setShader(Shader* shader);
+
             void setTexture(Texture* texture);
             void setTextures(const std::vector<Texture*>& m_textures);
             void setColor(Color& color);
-            void setColors(const std::vector<Color>& colors);
             void setWireframe(const bool isWireframe);
 
             Shader* getShader() const;
             std::vector<Texture*> getTextures() const;
-            std::vector<Color> getColors() const;
+            Color getColor() const;
             bool isWireframed() const;
 
-        private:
+            virtual void transferUniforms(Matrices<D>& mvp, const Scene<D>* scene) {
+                (void)mvp;
+                (void)scene;
+                // TODO : debug - to remove
+                m_shader->setMat4("MVP", mvp.get());
+                m_shader->setVec3("objectColor", m_color.vec3());
+                std::cout << "Mother method called" << std::endl;
+                //
+            };
+
+        protected:
+            explicit Material(Shader* shader);
+            explicit Material(Shader* shader, Texture* texture);
+            explicit Material(Shader* shader, Texture* texture, const Color& color);
+            explicit Material(Shader* shader, const Color& color);
+            explicit Material(Shader* shader, const std::vector<Texture*>& textures);
+            explicit Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color);
+
             Shader* m_shader;
             std::vector<Texture*> m_textures;
-            std::vector<Color> m_colors;
+            Color m_color;
             bool m_wireframe;
     };
 
 }
+
+#include "Material.inl"
 
 #endif // MATERIAL_HPP

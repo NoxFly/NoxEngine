@@ -1,9 +1,9 @@
 # MODIFIABLE
 CFLAGS 		:= -Werror -Wall -Wextra
 LDFLAGS		:=
-LIBS			:= SDL2main SDL2 SDL2_image
-UNIX_LIBS 		:= GL GLEW 
-WIN_LIBS 		:= mingw32 opengl32 glew32
+LIBS		:= SDL3 SDL3_image
+UNIX_LIBS 	:= GL GLEW 
+WIN_LIBS 	:= mingw32 opengl32 glew32
 
 # NOT MODIFIABLE
 # all what's below must not be modified
@@ -171,7 +171,7 @@ endif
 ifeq ($(VERBOSE), 1)
 	@echo "Compiling $<...";
 endif
-	$(CC) $(INC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(INC) $(CFLAGS) -c -o $@ $<
 
 else # RELEASE
 

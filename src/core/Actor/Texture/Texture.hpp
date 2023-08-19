@@ -2,20 +2,20 @@
 #define TEXTURE_HPP
 
 #include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <GL/glew.h>
 
-#include "ResourceHolder.hpp"
+#include "ResourceHolder/ResourceHolder.hpp"
 
 
 namespace NoxEngine {
 
     class Texture {
         public:
-            static void setTexturesPath(const std::string& texturesPath);
+            static void setTexturesPath(const std::string& texturesPath) noexcept;
             static bool load(const std::string& texturePath, const std::string& textureName);
-            static Texture* get(const std::string& textureName);
+            static Texture* get(const std::string& textureName) noexcept;
 
             explicit Texture(const std::string& texturePath, const std::string& textureName);
             explicit Texture(Texture const& copy);
@@ -26,9 +26,9 @@ namespace NoxEngine {
 
             bool load();
 
-            GLuint getID() const;
-            std::string getName() const;
-            std::string getPath() const;
+            GLuint getID() const noexcept;
+            std::string getName() const noexcept;
+            std::string getPath() const noexcept;
 
         private:
             static std::string texturesPath;

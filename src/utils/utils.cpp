@@ -27,6 +27,26 @@ std::string pathWithNoExt(std::string path) {
     return path.substr(0, path.find_last_of("."));
 }
 
+std::string repeat(char c, unsigned int n) {
+    std::string s = "";
+
+    for (unsigned int i = 0; i < n; i++) {
+        s += c;
+    }
+
+    return s;
+}
+
+std::string repeat(std::string c, unsigned int n) {
+    std::string s = "";
+
+    for (unsigned int i = 0; i < n; i++) {
+        s += c;
+    }
+
+    return s;
+}
+
 bool isInteger(const string& str) {
     for(char const &c : str) {
         if(isdigit(c) == 0)
@@ -81,13 +101,13 @@ Color getColorFromString(string str) {
         std::vector<std::string> vColor = split(str, ",");
 
         if(vColor.size() == 3 || vColor.size() == 4) {
-            int arr[] = { 0, 0, 0, 255 };
+            float arr[] = { 0.f, 0.f, 0.f, 255.f };
 
             for(int i=0; i < (int)vColor.size(); i++) {
                 string c = vColor[i];
 
                 if(isInteger(c))
-                    arr[i] = stoi(c);
+                    arr[i] = stoi(c) / 255.f;
                 else
                     return color;
             }

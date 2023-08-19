@@ -65,14 +65,14 @@ class IniSet {
     private:
         static std::string pairSeparator;
 
-        int stringIsValidPair(const std::string& str) const;
+        unsigned int stringIsValidPair(const std::string& str) const;
         void assignFromRawString(const std::string& section, const std::string& str);
 
         // { section: { key: { type, value } } }
         std::map<std::string, std::map<std::string, std::pair<std::string, std::string>>> m_iniMap;
         // { key: { type, value } }
         std::map<std::string, std::pair<std::string, std::string>> m_rootMap;
-        int m_sectionCount;
+        unsigned int m_sectionCount;
 };
 
 #endif // INISET_HPP

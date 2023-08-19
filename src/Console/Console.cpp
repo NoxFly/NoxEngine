@@ -42,6 +42,7 @@ void Console::message(Console::method method, const std::string& where, const st
 }
 #else
 void Console::message(Console::method method, const std::string& where, const std::string& message) {
+    std::cout << "Not output" << std::endl;
     (void)method;
     (void)where;
     (void)message;

@@ -1,7 +1,7 @@
 #ifndef MOVABLE_OBJECT_HPP
 #define MOVABLE_OBJECT_HPP
 
-#include "engine.typedef.hpp"
+#include "core/engine.typedef.hpp"
 
 namespace NoxEngine {
 
@@ -15,21 +15,21 @@ namespace NoxEngine {
             virtual ~Movable() = 0;
 
             // GETTERS
-            D getPosition() const {
+            D getPosition() const noexcept {
                 return m_position;
             }
 
 
             // SETTERS
-            void setPosition(const float x, const float y) requires (Is2D<D> && PublicSetter) {
+            void setPosition(const float x, const float y) noexcept requires (Is2D<D> && PublicSetter) {
                 m_position = V2D(x, y);
             }
 
-            void setPosition(const float x, const float y, const float z) requires (Is3D<D> && PublicSetter) {
+            void setPosition(const float x, const float y, const float z) noexcept requires (Is3D<D> && PublicSetter) {
                 m_position = V3D(x, y, z);
             }
 
-            void setPosition(const D& position) requires PublicSetter {
+            void setPosition(const D& position) noexcept requires PublicSetter {
                 m_position = position;
             }
 

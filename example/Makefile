@@ -10,7 +10,7 @@ LIB_DIR		:= $(ROOT_DIR)/bin/lib
 CFLAGS		:= -std=c++20 $(DFLAGS)
 LDFLAGS		:= -std=c++20
 
-LIBS			:= NoxEngine SDL2main SDL2 SDL2_image
+LIBS			:= NoxEngine SDL3 SDL3_image
 UNIX_LIBS 		:= GL GLEW 
 WIN_LIBS 		:= mingw32 opengl32 glew32
 

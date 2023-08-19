@@ -5,28 +5,45 @@
 
 #include <iostream>
 
-#include "Console.hpp"
+#include "Console/Console.hpp"
+#include "Matrices.hpp"
+
 
 namespace NoxEngine {
 
     template <Dimension D>
     Matrices<D>::Matrices():
-        Matrices(glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)), {})
+        Matrices(glm::lookAt(V3D(0, 0, 0), V3D(0, 0, 0), V3D(0, 1, 0)), {})
     {}
 
     template <Dimension D>
-    Matrices<D>::Matrices(M4 view):
+    Matrices<D>::Matrices(const M4& view):
         Matrices(view, {})
     {}
 
     template <Dimension D>
-    Matrices<D>::Matrices(M4 view, std::stack<M4> saves):
-        m_needsToUpdate(true),
+    Matrices<D>::Matrices(const M4& view, const std::stack<M4>& saves):
+        m_needsUpdate(true),
         m_model(1.0f),
         m_view(view),
         m_mvp(),
+        m_projection(1.0f),
         m_saves{saves}
     {}
+
+    template <Dimension D>
+    Matrices<D>::Matrices(const float left, const float right, const float top, const float bottom, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
+        Matrices(glm::lookAt(position, V3D(0, 0, 0), verticalAxis))
+    {
+        m_projection = glm::ortho(left, right, bottom, top, near, far);
+    }
+
+    template <Dimension D>
+    Matrices<D>::Matrices(const float fov, const float aspect, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>:
+        Matrices(glm::lookAt(position, V3D(0, 0, 0), verticalAxis))
+    {
+            m_projection = glm::perspective(fov, aspect, near, far);
+    }
 
 
     template <Dimension D>
@@ -39,7 +56,7 @@ namespace NoxEngine {
         if(!m_saves.empty()) {
             m_model = m_saves.top();
             m_saves.pop();
-            m_needsToUpdate = true;
+            m_needsUpdate = true;
         }
     }
 
@@ -64,8 +81,18 @@ namespace NoxEngine {
     }
 
     template <Dimension D>
+    M4 Matrices<D>::getProjection() const noexcept requires Is3D<D> {
+        return m_projection;
+    }
+
+    template <Dimension D>
+    M4& Matrices<D>::getProjection() noexcept requires Is3D<D> {
+        return m_projection;
+    }
+
+    template <Dimension D>
     M4& Matrices<D>::get() noexcept {
-        if(m_needsToUpdate)
+        if(m_needsUpdate)
             update();
 
         return m_mvp;
@@ -74,13 +101,33 @@ namespace NoxEngine {
     template <Dimension D>
     void Matrices<D>::setView(const M4& lookAt) noexcept {
         m_view = lookAt;
-        m_needsToUpdate = true;
+        m_needsUpdate = true;
+    }
+
+    template <Dimension D>
+    void Matrices<D>::translate(const V3D& translation) noexcept requires Is3D<D> {
+        _translate(translation);
+    }
+
+    template <Dimension D>
+    void Matrices<D>::rotate(const V3D& rotation) noexcept requires Is3D<D> {
+        _rotate(rotation);
+    }
+
+    template <Dimension D>
+    void Matrices<D>::translate(const V2D& translation) noexcept requires Is2D<D> {
+        _translate(V3D(translation, 0.f));
+    }
+    
+    template <Dimension D>
+    void Matrices<D>::rotate(const V2D& rotation) noexcept requires Is2D<D> {
+        _rotate(V3D(rotation, 0.f));
     }
 
     template <Dimension D>
     void Matrices<D>::_translate(const V3D& translation) noexcept {
         m_model = glm::translate(m_model, translation);
-        m_needsToUpdate = true;
+        m_needsUpdate = true;
     }
     
 
@@ -95,13 +142,13 @@ namespace NoxEngine {
         if(rotation.z != 0)
             m_model = glm::rotate(m_model, glm::radians(rotation.z), V3D(1, 0, 0));
 
-        m_needsToUpdate = true;
+        m_needsUpdate = true;
     }
 
     template <Dimension D>
     void Matrices<D>::update() noexcept {
-        m_mvp = m_model * m_view;
-        m_needsToUpdate = false;
+        m_mvp = m_projection * m_view * m_model;
+        m_needsUpdate = false;
     }
 
 }
