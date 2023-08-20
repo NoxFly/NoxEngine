@@ -64,6 +64,27 @@ std::string repeat(char c, unsigned int n);
 std::string repeat(std::string c, unsigned int n);
 
 /**
+ * Removes the leading whitespaces from a string.
+ * Does not modify the given string.
+ * Returns the modified string.
+ */
+std::string ltrim(const std::string& str);
+
+/**
+ * Removes the trailing whitespaces from a string.
+ * Does not modify the given string.
+ * Returns the modified string.
+ */
+std::string rtrim(const std::string& str);
+
+/**
+ * Removes the leading and trailing whitespaces from a string.
+ * Does not modify the given string.
+ * Returns the modified string.
+ */
+std::string trim(const std::string& str);
+
+/**
  * Returns either a given string is an integer or not
  * @param str The string to check
  * @return Either the string can be converted to an integer or not

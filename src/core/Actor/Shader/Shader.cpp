@@ -251,32 +251,10 @@ namespace NoxEngine {
 
     bool Shader::compileShader(GLuint& shader, const std::string& type, const std::string& filepath) {
         GLenum shaderType = type == "VERTEX" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
-
+        
         std::string shaderCode;
-        std::ifstream shaderFile;
 
-        shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-        try {
-            // open files
-            shaderFile.open(filepath);
-
-            std::stringstream shaderStream;
-
-            // read file's buffer contents into streams
-            shaderStream << shaderFile.rdbuf();
-
-            // close file handlers
-            shaderFile.close();
-
-            // convert stream into string
-            shaderCode = shaderStream.str();
-        }
-
-        catch (std::ifstream::failure const& e)
-        {
-            std::string what = e.what();
-            Console::error("Shader::compileShader", "Cannot read file : " + what);
+        if(!readAndPrecomputeFile(filepath, shaderCode)) {
             return false;
         }
 
@@ -301,6 +279,104 @@ namespace NoxEngine {
         }
 
         return true;
+    }
+
+
+    bool Shader::readAndPrecomputeFile(const std::string& filepath, std::string& shaderContent) {
+        std::ifstream shaderFile;
+
+        shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+        try {
+            // open files
+            shaderFile.open(filepath);
+
+            if(!shaderFile.is_open()) {
+                throw "Failed to open " + filepath + " file";
+                return false;
+            }
+
+            std::string lineBuffer;
+
+            // ENHANCEMENT : for scaling, could be defined by rules and splitted and managed by an external entity
+            const std::string identifier = "#include";
+            const auto identifierSize = identifier.size();
+
+            while(std::getline(shaderFile, lineBuffer)) {
+                auto identifierIdx = lineBuffer.find(identifier);
+
+                if(identifierIdx != lineBuffer.npos) {
+                    lineBuffer.erase(0, identifierIdx + identifierSize);
+                    lineBuffer = trim(lineBuffer);
+
+                    // not form of '#include <>' with a character between tags
+                    if(lineBuffer.size() < 3 || lineBuffer.front() != '<' || lineBuffer.back() != '>') {
+                        throw std::runtime_error("Malformed syntax for include directive");
+                    }
+
+                    const std::string depPath = lineBuffer.substr(1, lineBuffer.size() - 2);
+                    lineBuffer = "";
+                    
+                    getDependencyContent(depPath, lineBuffer);
+                }
+
+                shaderContent += lineBuffer + '\n';
+            }
+
+            // close file handlers
+            shaderFile.close();
+        }
+
+        catch(std::ifstream::failure const& e) {
+            if(e.code().value() == 1) {
+                shaderFile.close();
+            }
+            else {
+                throw std::runtime_error(e.what());
+            }
+        }
+
+        catch(std::runtime_error const& e) {
+            std::string what = e.what();
+
+            Console::error(
+                "Shader::compileShader",
+                "Failed to read and parse file " + filepath + " : " + what
+            );
+            
+            return false;
+        }
+
+        return true;
+    }
+
+    void Shader::getDependencyContent(const std::string& dependencyPath, std::string& dependencyContent) {
+        const std::string depPath = (dependencyPath.front() == '/'
+            ? dependencyPath
+            : Shader::m_shadersPath + dependencyPath
+        ) + ".glsl";
+
+        std::ifstream depFile;
+
+        depFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+        // do not use try/catch as it is Shader::readAndPrecomputeFile that is treating errors.
+        // if it throws here, then the caller will receive that error.
+
+        // open files
+        depFile.open(depPath);
+
+        if(!depFile.is_open()) {
+            throw std::runtime_error("Failed to import dependency (" + depPath + ")");
+        }
+
+        std::stringstream depStream;
+
+        depStream << depFile.rdbuf();
+
+        depFile.close();
+
+        dependencyContent = depStream.str();
     }
 
 

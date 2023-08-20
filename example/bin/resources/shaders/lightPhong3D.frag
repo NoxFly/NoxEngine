@@ -31,22 +31,22 @@ void main()
     vec3 lightColPow = lightColor * lightPower;
     
 
-    // Ambiante
+    // Ambiant
     vec3 ambiante = materialAmbientColor;
 
     
     // diffuse
     vec3 norm = normalize(normal_cameraspace);
     vec3 lightDir = normalize(lightDir_cameraspace);
-    float cosTheta = clamp(dot(norm, lightDir), 0, 1);
+    float cosTheta = saturate(dot(norm, lightDir));
 
     vec3 diffuse = materialDiffuseColor * lightColPow * cosTheta / distance;
 
 
-    // speculare
+    // specular
     vec3 viewDir = normalize(eyeDir_cameraspace);
     vec3 reflectDir = reflect(-lightDir, norm);
-    float cosAlpha = clamp(dot(viewDir, reflectDir), 0, 1);
+    float cosAlpha = saturate(dot(viewDir, reflectDir));
 
     vec3 specular = materialSpecularColor * lightColPow * pow(cosAlpha, 5.0) / distance;
 

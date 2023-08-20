@@ -79,6 +79,20 @@ string replace(const string& str, const string& find, const string& replace) {
     return result;
 }
 
+std::string ltrim(const std::string& str) {
+    size_t start = str.find_first_not_of(" \n\r\t\f\v");
+    return (start == std::string::npos) ? "" : str.substr(start);
+}
+
+std::string rtrim(const std::string& str) {
+    size_t end = str.find_last_not_of(" \n\r\t\f\v");
+    return (end == std::string::npos) ? "" : str.substr(0, end + 1);
+}
+
+std::string trim(const std::string& str) {
+    return rtrim(ltrim(str));
+}
+
 vector<string> split(string sequence, string separator) {
     size_t pos = 0;
     vector<string> splitted = {};

@@ -61,7 +61,19 @@ namespace NoxEngine {
             inline static std::string m_shadersPath = "./";
             inline static GLuint m_defaultGLversion = 0;
             inline static ResourceHolder<Shader, std::string> m_bank;
-
+            
+            /**
+             * @brief Read a shader .vert or .frag file, then precompute it with custom defined preprocessor directives.
+             * For the include directive, does not search recursivly. Only a .vert or .frag can include a .glsl file.
+             * @param filepath 
+             * @param shaderContent 
+             * @return Either the file has been successfully read and computed
+             */
+            bool readAndPrecomputeFile(const std::string& filepath, std::string& shaderContent);
+            /**
+             * Tries to read a .glsl file
+             */
+            void getDependencyContent(const std::string& dependencyPath, std::string& dependencyContent);
             bool checkCompileErrors(GLuint& shader, const std::string& type);
             bool compileShader(GLuint& shader, const std::string& type, const std::string& filepath);
             void destroyShader() noexcept;
