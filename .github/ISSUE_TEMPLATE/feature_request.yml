@@ -1,0 +1,18 @@
+name: 💡 Feature Request
+description: Suggest an idea to improve the engine
+title: 'Feature: '
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Feature Request
+      description: A clear and concise description of what the feature does.
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-code
+    attributes:
+      label: Related Code
+      description: If you are able to illustrate the feature request with an example, please provide it.

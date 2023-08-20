@@ -1,0 +1,62 @@
+name: 🐛 Bug Report
+description: Create a report to help us improve Ionic Framework
+title: 'Bug: '
+
+body:
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: OS
+      description: On which OS the bug occurs
+      options:
+        - Windows - Visual Studio
+        - Windows - MingW
+        - Windows - WSL
+        - Mac
+        - Debian / Ubuntu / Kali
+        - Arch Linux
+        - CentOS
+        - Elementary OS
+        - Fedora
+        - Gentoo
+        - Mint
+        - Manjaro
+        - openSUSE
+        - Other
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current Behavior
+      description: A clear description of what the bug is and how it manifests.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please explain the steps required to duplicate this issue.
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional Information
+      description: List any other information that is relevant to your issue.
