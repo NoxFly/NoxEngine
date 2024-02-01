@@ -100,4 +100,4 @@ Replace `<target>` by one of the following example name :
 
 ## Licence
 
-Read the [MIT licence](./LICENCE).
+Read the [AGPL licence](./LICENCE).
