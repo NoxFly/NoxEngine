@@ -20,10 +20,8 @@ namespace NoxEngine {
 
     class Geometry {
         public:
-            static void setObjectsPath(const std::string& objectsPath) noexcept;
-
             explicit Geometry();
-            Geometry(const Geometry& copy);
+            explicit Geometry(const Geometry& copy);
             const Geometry& operator=(const Geometry& copy);
             ~Geometry();
 
@@ -36,8 +34,6 @@ namespace NoxEngine {
             GLuint getElementCount() const noexcept;
 
         protected:
-            static std::string m_objectsPath;
-
             virtual bool load(const GeometryData& data);
 
             void deleteVBO() noexcept;

@@ -1,5 +1,7 @@
 #include "Object3D.hpp"
 
+#include <fstream>
+
 #include "Console/Console.hpp"
 
 

@@ -3,13 +3,6 @@
 
 namespace NoxEngine {
 
-    std::string Geometry::m_objectsPath = "./";
-
-    void Geometry::setObjectsPath(const std::string& objectsPath) noexcept {
-        Geometry::m_objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
-    }
-
-
     Geometry::Geometry():
         m_hasLoaded(false),
         m_VAO(0), m_VBO(0), m_EBO(0),

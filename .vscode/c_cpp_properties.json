@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/bin/lib/include/NoxEngine/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

@@ -2,7 +2,7 @@
 
 #include "./Renderer.hpp"
 
-#include <SDL3_image/SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 
 #include "Console/Console.hpp"
@@ -22,24 +22,25 @@ namespace NoxEngine {
         m_FPS(30), m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
         m_clearColor{}
     {
-        if(m_config.hasKey("ENGINE", "background"))
-            m_clearColor = getColorFromString(m_config.getValue("ENGINE", "background"));
-        else
-            m_clearColor = Color(0, 0, 0);
+        m_clearColor = (m_config.hasKey("ENGINE", "background"))
+            ? getColorFromString(m_config.getValue("ENGINE", "background"))
+            : Color(0, 0, 0);
 
-        if(InitSDL() && InitGL()) {
-            m_isInit = true;
-            // get a black screen before the rest of the code
-            // loads a lot of things, and then we get a bugged window.
-            swapWindow();
-
-            Shader::setShadersPath(m_config.getValue("PATH", "shaders"));
-            Shader::setDefaultGLSLversion(getCompactGLversion());
-            Shader::loadFolder();
-
-            Texture::setTexturesPath(m_config.getValue("PATH", "textures"));
-            Geometry::setObjectsPath(m_config.getValue("PATH", "models"));
+        if(!InitSDL() || !InitGL()) {
+            exit(1);
         }
+
+        m_isInit = true;
+        // get a black screen before the rest of the code
+        // loads a lot of things, and then we get a bugged window.
+        swapWindow();
+
+        Shader::setShadersPath(m_config.getValue("PATH", "shaders"));
+        Shader::setDefaultGLSLversion(getCompactGLversion());
+        Shader::loadFolder();
+
+        Texture::setTexturesPath(m_config.getValue("PATH", "textures"));
+        Actor<V3D>::setObjectsPath(m_config.getValue("PATH", "models"));
     }
 
     Renderer::~Renderer() {
@@ -62,6 +63,7 @@ namespace NoxEngine {
 
         int fullscreenMode = m_config.getIntValue("ENGINE", "fullscreen", 0);
         int windowWidth = 0, windowHeight = 0;
+        Uint32 flags = SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL;
 
         // fullscreen config :
         // 0 = not fullscreen (bug a bit)
@@ -75,9 +77,11 @@ namespace NoxEngine {
         }
         // fullscreen borderless
         else if(fullscreenMode == 2) {
-            auto DM = SDL_GetCurrentDisplayMode(0);
-            windowWidth = DM->w;
-            windowHeight = DM->h;
+            SDL_DisplayMode DM;
+            SDL_GetCurrentDisplayMode(0, &DM);
+            windowWidth = DM.w;
+            windowHeight = DM.h;
+            flags |= SDL_WINDOW_BORDERLESS;
         }
 
     #ifdef DEBUG
@@ -89,24 +93,20 @@ namespace NoxEngine {
     #endif
 
         // OpenGL version
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, sdl_maj_v);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, sdl_min_v);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
         // Double Buffer
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
         // multi-sampling
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_config.getIntValue("ENGINE", "multisampling_buffer", 1));
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_config.getIntValue("ENGINE", "multisampling_amples", 16));
+        // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_config.getIntValue("ENGINE", "multisampling_buffer", 1));
+        // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_config.getIntValue("ENGINE", "multisampling_amples", 16));
 
-        m_window = SDL_CreateWindowWithPosition(
-            title.c_str(),
-            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            windowWidth, windowHeight,
-            SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL
-        );
+        
+        m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, flags);
 
         if(m_window == 0) {
             std::string err = SDL_GetError();
@@ -115,8 +115,9 @@ namespace NoxEngine {
             return false;
         }
 
-        if(fullscreenMode == 1)
+        if(fullscreenMode == 1) {
             SDL_SetWindowFullscreen(m_window, SDL_TRUE);
+        }
 
         // set window's icon
         if(m_config.hasKey("ENGINE", "icon")) {
@@ -126,7 +127,7 @@ namespace NoxEngine {
 
             if(icon != NULL) {
                 SDL_SetWindowIcon(m_window, icon);
-                SDL_DestroySurface(icon);
+                SDL_FreeSurface(icon);
             }
             else {
                 std::string err = SDL_GetError();
@@ -134,8 +135,9 @@ namespace NoxEngine {
             }
         }
 
-        if(!m_config.getBoolValue("ENGINE", "hidden", false))
+        if(!m_config.getBoolValue("ENGINE", "hidden", false)) {
             show();
+        }
 
         return true;
     }
@@ -253,7 +255,7 @@ namespace NoxEngine {
 
 
     void Renderer::setMouseGrab(const bool grabbed) noexcept {
-        SDL_SetWindowGrab(m_window, grabbed? SDL_TRUE : SDL_FALSE);
+        SDL_SetWindowMouseGrab(m_window, grabbed? SDL_TRUE : SDL_FALSE);
     }
 
 
@@ -269,7 +271,7 @@ namespace NoxEngine {
 
 
     bool Renderer::isMouseGrabbed() const noexcept {
-        return SDL_GetWindowGrab(m_window);
+        return SDL_GetWindowMouseGrab(m_window);
     }
 
 

@@ -7,6 +7,14 @@
 namespace NoxEngine {
 
     template <Dimension D>
+    std::string Actor<D>::m_objectsPath = "./";
+
+    template <Dimension D>
+    void Actor<D>::setObjectsPath(const std::string& objectsPath) noexcept {
+        Actor<D>::m_objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
+    }
+
+    template <Dimension D>
     Actor<D>::Actor():
         Actor(new Geometry(), new Material<D>())
     {}

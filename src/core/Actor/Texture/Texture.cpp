@@ -80,7 +80,7 @@ namespace NoxEngine {
         }
 
         SDL_Surface* invertedImage = invertPixels(image);
-        SDL_DestroySurface(image);
+        SDL_FreeSurface(image);
 
         if(glIsTexture(m_id) == GL_TRUE)
             glDeleteTextures(1, &m_id);
@@ -102,7 +102,7 @@ namespace NoxEngine {
         }
         else {
             Console::error("Texture::load", "Unknown internal image format");
-            SDL_DestroySurface(invertedImage);
+            SDL_FreeSurface(invertedImage);
             return false;
         }
 
@@ -115,16 +115,18 @@ namespace NoxEngine {
         // unlock
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        SDL_DestroySurface(invertedImage);
+        SDL_FreeSurface(invertedImage);
 
         return true;
     }
 
     SDL_Surface* Texture::invertPixels(SDL_Surface *src) const {
         // copy source image in pixels
-        SDL_Surface *invertedImage = SDL_CreateSurface(
+        SDL_Surface *invertedImage = SDL_CreateRGBSurface(
+            0,
             src->w, src->h,
-            src->format->format
+            src->format->BitsPerPixel,
+            src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask
         );
 
         // tmp array to manipulate pixels

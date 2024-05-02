@@ -33,15 +33,15 @@ int main(int argc, char** argv) {
 	cubeA->setPosition(-3.f, 0.f, 0.f);
 
 	// texture only
-	auto cubeB = std::make_shared<Cube>(1.f, "stone");
+	auto cubeB = std::make_shared<Cube>(1.2f, "stone");
 	cubeB->setPosition(-1.f, 0.f, 0.f);
 
 	// color + texure
-	auto cubeC = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
+	auto cubeC = std::make_shared<Cube>(1.3f, "stone", Color(150, 50, 10));
 	cubeC->setPosition(1.f, 0.f, 0.f);
 
 	// color + texture + texture opacity
-	auto cubeD = std::make_shared<Cube>(1.f, "stone", Color(150, 50, 10));
+	auto cubeD = std::make_shared<Cube>(.5f, "stone", Color(150, 50, 10));
 	cubeD->setPosition(3.f, 0.f, 0.f);
 	cubeD->getMaterial()->setTextureOpacity(0.5f);
 
@@ -49,6 +49,11 @@ int main(int argc, char** argv) {
 	scene.add(cubeB);
 	scene.add(cubeC);
 	scene.add(cubeD);
+
+	// auto cube = std::make_shared<Mesh3D>();
+	// cube->loadFromFile("cube.obj");
+	
+	// scene.add(cube);
 
 
 	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 25.f);
