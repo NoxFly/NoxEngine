@@ -88,7 +88,7 @@ All added options not handled by the script will be executable's options.
 --shared                                Build the project as shared library.
 
 Note : the libs/ folder is only for Window's libraries. On Linux it will find on the \$path.
-Also, you can need to put .dll on the $binDir folder.
+Also, you can need to put .dll on the $outDir folder.
 The script will adapt depending on which OS you're building and running the project.
 It means that you can develop, build and run on Linux and Windows the same project."
 

@@ -40,7 +40,6 @@ namespace NoxEngine {
 			~BufferGeometry();
 
 			bool loadFromData(const GeometryData& data);
-			bool loadFromFileObj(const std::string& filepath);
 
 		protected:
 			bool load(const GeometryData& data);

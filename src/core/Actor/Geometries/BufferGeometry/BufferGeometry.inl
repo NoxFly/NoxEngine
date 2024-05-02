@@ -1,6 +1,5 @@
 //#pragma warning (disable: 4244 4312 4996 6031 6054)
 
-#include <fstream>
 #include <string>
 
 #include "core/engine.typedef.hpp"
@@ -26,163 +25,9 @@ namespace NoxEngine {
 	}
 
 	template <Dimension D>
-	bool BufferGeometry<D>::loadFromFileObj(const std::string& filepath) {
-		const std::string path = Geometry::m_objectsPath + filepath;
-
-		std::ifstream file(path);
-
-		if (!file.is_open() || !file.good()) {
-			Console::error("BufferGeometry::loadFromFile", "Failed to open file : " + path);
-			return false;
-		}
-
-		std::string line;
-
-		std::vector<GLfloat> vertices;
-		std::vector<GLfloat> normals;
-		std::vector<GLfloat> colors;
-		std::vector<GLfloat> uvs;
-		std::vector<GLushort> vIndices;
-		std::vector<GLushort> nIndices;
-		std::vector<GLushort> cIndices;
-		std::vector<GLushort> uIndices;
-
-		bool vC = false, nC = false, cC = false, uC = false;
-
-		unsigned int lineIndex = 1;
-
-		while (std::getline(file, line)) {
-			char header[8];
-			auto cline = line.c_str();
-
-			sscanf(cline, "%s", header);
-
-			// comment
-			if (strcmp(header, "#") == 0) {
-				continue;
-			}
-			// vertices
-			else if (strcmp(header, "v") == 0) {
-				float x, y, z;
-
-				sscanf(cline, "%f %f %f\n", &x, &y, &z);
-
-				vertices.push_back(x);
-				vertices.push_back(y);
-				vertices.push_back(z);
-				
-				if (!vC) {
-					vC = true;
-				}
-			}
-			// normals
-			else if (strcmp(header, "vn") == 0) {
-				float x, y, z;
-
-				sscanf(cline, "%f %f %f\n", &x, &y, &z);
-
-				normals.push_back(x);
-				normals.push_back(y);
-				normals.push_back(z);
-
-				if (!nC) {
-					nC = true;
-				}
-			}
-			// colors
-			else if (strcmp(header, "vc") == 0) {
-				float r, g, b;
-				
-				sscanf(cline, "%f %f %f\n", &r, &g, &b);
-				
-				colors.push_back(r);
-				colors.push_back(g);
-				colors.push_back(b);
-
-				if (!cC) {
-					cC = true;
-				}
-			}
-			// uvs
-			else if (strcmp(header, "vt") == 0) {
-				float x, y;
-				
-				sscanf(cline, "%f %f\n", &x, &y);
-				
-				uvs.push_back(x);
-				uvs.push_back(y);
-
-				if (!uC) {
-					uC = true;
-				}
-			}
-			// EBO
-			else if (strcmp(header, "f") == 0) {
-				for (unsigned int i = 0; i < 3; i++) {
-					if (vC) {
-						GLushort v;
-						
-						if (!sscanf(cline, "%hu", &v)) {
-							Console::error("BufferGeometry::loadFromFile", "Syntax error (line " + std::to_string(lineIndex) + ")");
-							return false;
-						}
-
-						vIndices.push_back(v);
-					}
-
-					if (nC) {
-						GLushort n;
-
-						if (!sscanf(cline, "/%hu", &n)) {
-							Console::error("BufferGeometry::loadFromFile", "Syntax error (line " + std::to_string(lineIndex) + ")");
-							return false;
-						}
-
-						nIndices.push_back(n);
-					}
-
-					if (uC) {
-						GLushort uv;
-						
-						if (!sscanf(cline, "/%hu", &uv)) {
-							Console::error("BufferGeometry::loadFromFile", "Syntax error (line " + std::to_string(lineIndex) + ")");
-							return false;
-						}
-
-						uIndices.push_back(uv);
-					}
-
-					if (cC) {
-						GLushort c;
-
-						if (!sscanf(cline, "/%hu", &c)) {
-							Console::error("BufferGeometry::loadFromFile", "Syntax error (line " + std::to_string(lineIndex) + ")");
-							return false;
-						}
-
-						cIndices.push_back(c);
-					}
-				}
-			}
-
-			++lineIndex;
-		}
-
-		GeometryData data = {
-			vertices,
-			normals,
-			colors,
-			uvs,
-			vIndices
-		};
-
-		return load(data);
-	}
-
-	template <Dimension D>
 	bool BufferGeometry<D>::load(const GeometryData& data)
 	{
-		if (m_hasLoaded) {
+		if(m_hasLoaded) {
 			// unload previous data
 			deleteVAO();
 			deleteVBO();
@@ -361,7 +206,7 @@ namespace NoxEngine {
 			|| (cSize  > 0 && cSize  != vSize)
 		) {
 			Console::error("BufferGeometry::indexData", "Misconception of provided data : not same size");
-			std::cout << vSize << ", " << uvSize << ", " << nSize << ", " << cSize << std::endl;
+			Console::error(std::to_string(vSize) + ", " + std::to_string(uvSize) + ", " + std::to_string(nSize) + ", " + std::to_string(cSize));
 			return;
 		}
 

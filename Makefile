@@ -1,7 +1,7 @@
 # MODIFIABLE
 CFLAGS 		:= -Werror -Wall -Wextra
 LDFLAGS		:=
-LIBS		:= SDL3 SDL3_image
+LIBS		:= SDL2 SDL2main SDL2_image SDL2_ttf
 UNIX_LIBS 	:= GL GLEW 
 WIN_LIBS 	:= mingw32 opengl32 glew32
 

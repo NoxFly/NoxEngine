@@ -56,6 +56,7 @@ namespace NoxEngine {
 
 #include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
 #include "core/Camera/3D/OrthographicCamera/OrthographicCamera.hpp"
+#include "core/Actor/Objects/Object3D/Mesh3D/Mesh3D.hpp"
 #include "core/Actor/Objects/Object3D/Cube/Cube.hpp"
 #include "core/Actor/Geometries/3D/BoxGeometry/BoxGeometry.hpp"
 #include "core/Actor/Geometries/3D/SphereGeometry/SphereGeometry.hpp"

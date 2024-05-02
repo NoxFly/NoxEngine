@@ -24,6 +24,8 @@ namespace NoxEngine {
     template <Dimension D>
     class Actor: public Movable<D> {
         public:
+            static void setObjectsPath(const std::string& objectsPath) noexcept;
+
             explicit Actor();
             explicit Actor(Geometry* geometry, Material<D>* material);
             // Actor(const Actor<D>& copy);
@@ -54,6 +56,8 @@ namespace NoxEngine {
             void render(Scene<D>* scene, Camera<D>* camera);
 
         protected:
+            static std::string m_objectsPath;
+
             const std::string m_uuid;
             const unsigned int m_dimension;
             const bool m_is3D;

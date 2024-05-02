@@ -2,7 +2,7 @@
 
 ## Technologies
 
-SDL3, SDL3_image, SDL3_ttf, SDL3_mixer, glew, opengl
+SDL2, SDL2_image, SDL2_ttf, SDL2_mixer, glew, opengl
 
 ### Minimal working example
 

@@ -1,7 +1,7 @@
 {
     "files.associations": {
-        "*.sql": "sql",
         "*.ejs": "html",
+        "*.sql": "sql",
         "tuple": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -59,6 +59,8 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "chrono": "cpp",
+        "optional": "cpp"
     }
 }

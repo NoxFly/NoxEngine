@@ -33,38 +33,39 @@ namespace NoxEngine {
             Uint8 mb = events.button.button;
 
             switch(events.type) {
-                case SDL_EventType::SDL_EVENT_QUIT:
-                    m_shouldClose = true;
+                case SDL_WINDOWEVENT:
+                    if(events.window.event == SDL_WINDOWEVENT_CLOSE)
+                        m_shouldClose = true;
                     break;
 
                 // ----------------------------- KEYBOARD
                 // key down
-                case SDL_EVENT_KEY_DOWN:
+                case SDL_KEYDOWN:
                     if(!m_keys[kc])
                         m_keys[kc] = true;
                     break;
 
                 // key up
-                case SDL_EVENT_KEY_UP:
+                case SDL_KEYUP:
                     if(m_keys[kc])
                         m_keys[kc] = false;
                     break;
 
                 // ----------------------------- MOUSE
                 // mouse button pressed
-                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case SDL_MOUSEBUTTONDOWN:
                     if(!m_mouseButtons[mb])
                         m_mouseButtons[mb] = true;
                     break;
 
                 // mouse button released
-                case SDL_EVENT_MOUSE_BUTTON_UP:
+                case SDL_MOUSEBUTTONUP:
                     if(m_mouseButtons[mb])
                         m_mouseButtons[mb] = false;
                     break;
 
                 // mouse move
-                case SDL_EVENT_MOUSE_MOTION:
+                case SDL_MOUSEMOTION:
                     m_oldMouseX = m_mouseX;
                     m_oldMouseY = m_mouseY;
 
