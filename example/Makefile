@@ -1,9 +1,9 @@
 BINDIR		:= ./bin
-BUILDDIR	:= ./build/$(TARGET)
+BUILDDIR	:= ../build/examples
 LIB_NAME	:= NoxEngine
 
-SRC 		:= $(wildcard $(TARGET)/*.cpp)
-EXECUTABLE	:= $(BINDIR)/debug/$(TARGET)
+SRC 		:= $(TARGET).cpp
+EXECUTABLE	:= $(BINDIR)/$(TARGET)
 
 ROOT_DIR	:=$(realpath $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))/..)
 LIB_DIR		:= $(ROOT_DIR)/bin/lib
@@ -26,29 +26,28 @@ else
 endif
 
 LIBS		:= $(patsubst %, -l%, $(LIBS))
-OBJECTS		:= $(patsubst $(TARGET)/%, $(BUILDDIR)/%, $(SRC:.cpp=.o))
-
+OBJECTS		:= $(patsubst %, $(BUILDDIR)/%, $(SRC:.cpp=.o))
 
 $(EXECUTABLE): $(OBJECTS)
 	@echo "Linking and executing..."
-	@mkdir -p $(BINDIR)/debug
+	@mkdir -p $(BINDIR)
 	@$(CC) $(LIB_INC) $(LDFLAGS) -o $(EXECUTABLE) $^ $(LIBS)
 
-$(BUILDDIR)/%.o: $(TARGET)/%.cpp
+$(BUILDDIR)/%.o: %.cpp
 	@echo "Compiling example $(TARGET): $<..."
 	@mkdir -p $(BUILDDIR)
 	@$(CC) $(INC) $(LIB_INC) $(CFLAGS) -c -o $@ $<
 
 2D:
-	@$(MAKE) -s TARGET=base_example_2D
-	@$(BINDIR)/debug/base_example_2D
+	@$(MAKE) -s TARGET=base2D
+	@$(BINDIR)/base2D
 
 3D:
-	@$(MAKE) -s TARGET=base_example_3D
-	@$(BINDIR)/debug/base_example_3D
+	@$(MAKE) -s TARGET=base3D
+	@$(BINDIR)/base3D
 
 clean:
-	rm -f $(BINDIR)/debug/*
+	rm -f $(BINDIR)/*
 
 
 .PHONY: clean 2D 3D
