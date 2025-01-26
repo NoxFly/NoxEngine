@@ -7,6 +7,7 @@ bin/lib
 
 .old/
 
+.vscode/
 .vscode/*.log
 .vs/
 x86/

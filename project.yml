@@ -1,0 +1,23 @@
+project:
+  name: NoxEngine
+  description: No description provided.
+  version: 1.0.0
+  author: 
+  url: 
+  license: 
+
+config:
+  mode: 1
+  type: cpp
+  cppVersion: 20
+  guard: ifndef
+  flags: -Wall -Wextra
+
+dependencies:
+  GLEW: libglew-dev
+  GLM: libglm-dev
+  OpenGL: libglu1-mesa-dev
+  SDL2: libsdl2-dev
+  SDL2_image: libsdl2-image-dev
+  SDL2_ttf: libsdl2-ttf-dev
+

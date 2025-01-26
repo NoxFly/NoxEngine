@@ -1,5 +1,6 @@
 BINDIR		:= ./bin
 BUILDDIR	:= ./build/$(TARGET)
+LIB_NAME	:= NoxEngine
 
 SRC 		:= $(wildcard $(TARGET)/*.cpp)
 EXECUTABLE	:= $(BINDIR)/debug/$(TARGET)
@@ -10,50 +11,22 @@ LIB_DIR		:= $(ROOT_DIR)/bin/lib
 CFLAGS		:= -std=c++20 $(DFLAGS)
 LDFLAGS		:= -std=c++20
 
-LIBS			:= NoxEngine SDL2 SDL2main SDL2_image
-UNIX_LIBS 		:= GL GLEW
-WIN_LIBS 		:= mingw32 opengl32 glew32
+LIBS		:= $(LIB_NAME) SDL2 SDL2main SDL2_image GL GLEW
 
-INC			:= -I$(LIB_DIR)/include/NoxEngine
+INC			:= -I$(LIB_DIR)/include/$(LIB_NAME)
 LIB_INC		:= -L$(LIB_DIR)
+
 
 export LD_LIBRARY_PATH	:= $(LIB_DIR)
 
-# detect if compiler is gcc instead of clang. Not viewing for other compiler
 ifeq ($(CXX), g++)
 	CC := g++
 else
 	CC := clang++
-endif # C++ : clang++ or g++
-
-# OS DETECTION
-SYS := $(shell $(CC) -dumpmachine)
-OS	= WINDOWS
-
-ifneq (, $(findstring linux, $(SYS)))
-	OS := LINUX
-else ifneq (, $(findstring mingw, $(SYS)))
-	OS := WINDOWS
-else ifneq (, $(findstring cygwin, $(SYS)))
-	OS := MACOS
-endif
-
-
-# Add window's extra libs paths
-ifeq (WINDOWS, $(OS))
-	INC += -I$(ROOT_DIR)/libs/WIN32/include
-	LIB_INC += -L$(ROOT_DIR)/libs/WIN32/lib
-
-	LIBS := $(WIN_LIBS) $(LIBS)
-	EXECUTABLE := $(EXECUTABLE).exe
-else
-	LIBS := $(UNIX_LIBS) $(LIBS)
 endif
 
 LIBS		:= $(patsubst %, -l%, $(LIBS))
-
 OBJECTS		:= $(patsubst $(TARGET)/%, $(BUILDDIR)/%, $(SRC:.cpp=.o))
-
 
 
 $(EXECUTABLE): $(OBJECTS)
@@ -68,11 +41,11 @@ $(BUILDDIR)/%.o: $(TARGET)/%.cpp
 
 2D:
 	@$(MAKE) -s TARGET=base_example_2D
-	@cd $(BINDIR); ./debug/base_example_2D
+	@$(BINDIR)/debug/base_example_2D
 
 3D:
 	@$(MAKE) -s TARGET=base_example_3D
-	@cd $(BINDIR); ./debug/base_example_3D
+	@$(BINDIR)/debug/base_example_3D
 
 clean:
 	rm -f $(BINDIR)/debug/*
