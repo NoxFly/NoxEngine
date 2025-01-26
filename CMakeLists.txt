@@ -69,8 +69,10 @@ endif()
 if(BUILD_TYPE STREQUAL "build")
     set(EXECUTABLE_OUTPUT_PATH ${OUT}/${CMAKE_BUILD_TYPE}) # VS specific
 elseif(BUILD_TYPE STREQUAL "shared")
+    list(FILTER SOURCES EXCLUDE REGEX ".*main\.${SRCEXT}$")
     set(EXECUTABLE_OUTPUT_PATH ${OUT}/lib) # VS specific
 elseif(BUILD_TYPE STREQUAL "static")
+    list(FILTER SOURCES EXCLUDE REGEX ".*main\.${SRCEXT}$")
     set(EXECUTABLE_OUTPUT_PATH ${OUT}/lib) # VS specific
 endif()
 
