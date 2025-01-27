@@ -1,3 +1,5 @@
+//!shared
+
 #include <iostream>
 
 #define __NOX_ENGINE_3D__
@@ -9,9 +11,12 @@
 using namespace NoxEngine;
 
 int main(int argc, char** argv) {
+	(void)argc;
+	(void)argv;
+
 	IniSet config;
 
-	if (!config.loadFromFile("_resources/config/config.ini")) {
+	if (!config.loadFromFile("res/config/config.ini")) {
 		Console::error("main", "Failed to load configuration");
 		return EXIT_FAILURE;
 	}

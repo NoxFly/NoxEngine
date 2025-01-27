@@ -1,3 +1,5 @@
+//!shared
+
 #include <iostream>
 
 #define __NOX_ENGINE_2D__
@@ -9,7 +11,10 @@
 using namespace NoxEngine;
 
 int main(int argc, char** argv) {
-    std::string configPath = "_resources/config/config.ini";
+    (void)argc;
+	(void)argv;
+
+    std::string configPath = "res/config/config.ini";
 
     if(argc > 1) {
         configPath = argv[1];

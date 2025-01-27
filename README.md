@@ -4,6 +4,8 @@
 
 SDL2, SDL2_image, SDL2_ttf, SDL2_mixer, glew, opengl
 
+Working with the [nfpm](https://github.com/NoxFly/nfpm) tool to compile, run and manage project.
+
 ### Minimal working example
 
 ```ini
@@ -22,10 +24,10 @@ multisampling_buffer=1
 multisampling_amples=16
 
 [PATH]
-resources=/resources/
-images=/resources/images/
-shaders=/resources/shaders/
-textures=/resources/textures/
+resources=res/
+images=res/images/
+shaders=res/shaders/
+textures=res/textures/
 
 # ... some other sections that could be useful in your project
 ```
@@ -84,19 +86,12 @@ int main(int argc, char** argv) {
 
 # Demos
 
-Available in the `src/example/` folder.
+Available in the `src/examples/` folder.
 
 ```sh
-# in the root of the project
-./run.sh --shared # add -v for verbose
-cd example
-# compiles and run
-make <target>
+nf run -v --shared # build the engine
+nf example base3D # run the example with built engine as shared library
 ```
-
-Replace `<target>` by one of the following example name :
-- 2D
-- 3D
 
 ## Licence
 

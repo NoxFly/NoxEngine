@@ -8,6 +8,7 @@ set(PROJECT_NAME "NoxEngine")
 project("${PROJECT_NAME}" VERSION 1.0.0 DESCRIPTION "No description provided." HOMEPAGE_URL "" LANGUAGES CXX)
 
 # injectable variables
+set(BUILD_KIND "project" CACHE STRING "project or examples or tests")
 set(BUILD_MODE "release" CACHE STRING "debug or release")
 set(SRCDIR "src" CACHE STRING "Source directory")
 set(INCDIR "include" CACHE STRING "Include directory")
@@ -18,6 +19,31 @@ set(SRCEXT "cpp" CACHE STRING "Source file extension (c or cpp)")
 set(MACRO "" CACHE STRING "Macro definitions")
 set(FLAGS "" CACHE STRING "Additional compiling flags")
 set(LIBRARIES "" CACHE STRING "Additional libraries list to link against")
+set(ET_SRC_FILE "" CACHE STRING "Source file to compile (example or test only)")
+set(ET_PROJECT_LIB_PATH "" CACHE STRING "The project built-as-library path (example or test only)")
+set(ET_PROJECT_LIB_INCLUDE_PATH "" CACHE STRING "The project built-as-library headers path (example or test only)")
+
+# VS specific
+if(MSVC)
+    message(STATUS "MSVC detected")
+    message(FATAL_ERROR "MSVC is not supported yet. Feel free to contribute. https://github.com/NoxFly/nfpm")
+endif()
+
+# UNIX-ONLY - Function to find and include/link libraries
+function(find_and_link_library lib TARGET)
+    find_path(${lib}_INCLUDE_DIR ${lib})
+    find_library(${lib}_LIBRARY ${lib})
+
+    if(${lib}_INCLUDE_DIR)
+        include_directories(${${lib}_INCLUDE_DIR})
+        message(STATUS "Found include directory for ${lib}: ${${lib}_INCLUDE_DIR}")
+    endif()
+
+    if(${lib}_LIBRARY)
+        target_link_libraries(${TARGET} ${${lib}_LIBRARY})
+        message(STATUS "Found library for ${lib}: ${${lib}_LIBRARY}")
+    endif()
+endfunction()
 
 if(${SRCEXT} STREQUAL "c")
     set(CMAKE_C_STANDARD ${LANGVERSION})
@@ -27,6 +53,12 @@ else()
     set(CMAKE_CXX_STANDARD ${LANGVERSION})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAGS}")
     enable_language(CXX)
+endif()
+
+if(MACRO)
+    foreach(M IN LISTS MACRO)
+        add_compile_definitions(${M})
+    endforeach()
 endif()
 
 # if SRCDIR, INCDIR, OUT, BUILDDIR start with "./", remove it
@@ -42,128 +74,129 @@ set(BUILDDIR ${CMAKE_SOURCE_DIR}/${BUILDDIR})
 set(SRCDIR ${CMAKE_SOURCE_DIR}/${SRCDIR})
 set(INCDIR ${CMAKE_SOURCE_DIR}/${INCDIR})
 
-# get all source files
-file(GLOB_RECURSE SOURCES "${SRCDIR}/*.${SRCEXT}")
+# project
+if(BUILD_KIND STREQUAL "project")
+    
+    # get all source files
+    file(GLOB_RECURSE SOURCES "${SRCDIR}/*.${SRCEXT}")
 
-# get all include directories
-file(GLOB_RECURSE HEADER_FILES "${INCDIR}/*.h" "${INCDIR}/*.hpp")
+    # get all include directories
+    file(GLOB_RECURSE HEADER_FILES "${INCDIR}/*.h" "${INCDIR}/*.hpp")
 
-set(INCLUDE_DIRS "")
-list(APPEND INCLUDE_DIRS ${INCDIR})
-foreach(HEADER_FILE ${HEADER_FILES})
-    get_filename_component(DIR ${HEADER_FILE} DIRECTORY)
-    list(APPEND INCLUDE_DIRS ${DIR})
-endforeach()
-
-# remove duplicate directories
-list(REMOVE_DUPLICATES INCLUDE_DIRS)
-
-include_directories(${INCLUDE_DIRS})
-
-if(MACRO)
-    foreach(M IN LISTS MACRO)
-        add_compile_definitions(${M})
+    set(INCLUDE_DIRS "")
+    list(APPEND INCLUDE_DIRS ${INCDIR})
+    foreach(HEADER_FILE ${HEADER_FILES})
+        get_filename_component(DIR ${HEADER_FILE} DIRECTORY)
+        list(APPEND INCLUDE_DIRS ${DIR})
     endforeach()
-endif()
 
-if(BUILD_TYPE STREQUAL "build")
-    set(EXECUTABLE_OUTPUT_PATH ${OUT}/${CMAKE_BUILD_TYPE}) # VS specific
-elseif(BUILD_TYPE STREQUAL "shared")
-    list(FILTER SOURCES EXCLUDE REGEX ".*main\.${SRCEXT}$")
-    set(EXECUTABLE_OUTPUT_PATH ${OUT}/lib) # VS specific
-elseif(BUILD_TYPE STREQUAL "static")
-    list(FILTER SOURCES EXCLUDE REGEX ".*main\.${SRCEXT}$")
-    set(EXECUTABLE_OUTPUT_PATH ${OUT}/lib) # VS specific
-endif()
+    # remove duplicate directories
+    list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
+    include_directories(${INCLUDE_DIRS})
 
-# Create the "bin/" directory if it doesn't exist
-file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
-
-# UNIX-ONLY - Function to find and include/link libraries
-function(find_and_link_library lib)
-    find_path(${lib}_INCLUDE_DIR ${lib})
-    find_library(${lib}_LIBRARY ${lib})
-
-    if(${lib}_INCLUDE_DIR)
-        include_directories(${${lib}_INCLUDE_DIR})
-        message(STATUS "Found include directory for ${lib}: ${${lib}_INCLUDE_DIR}")
+    if(BUILD_TYPE STREQUAL "build")
+        set(EXECUTABLE_OUTPUT_PATH ${OUT}/${CMAKE_BUILD_TYPE}) # VS specific
+    elseif(BUILD_TYPE STREQUAL "shared")
+        list(FILTER SOURCES EXCLUDE REGEX ".*main\.${SRCEXT}$")
+        set(EXECUTABLE_OUTPUT_PATH ${OUT}/lib) # VS specific
+    elseif(BUILD_TYPE STREQUAL "static")
+        list(FILTER SOURCES EXCLUDE REGEX ".*main\.${SRCEXT}$")
+        set(EXECUTABLE_OUTPUT_PATH ${OUT}/lib) # VS specific
     endif()
 
-    if(${lib}_LIBRARY)
-        target_link_libraries(${PROJECT_NAME} ${${lib}_LIBRARY})
-        message(STATUS "Found library for ${lib}: ${${lib}_LIBRARY}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
+
+    # Create the "bin/" directory if it doesn't exist
+    file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
+
+    # specific build type config - targets
+
+    if(BUILD_TYPE STREQUAL "build")
+        add_executable(${PROJECT_NAME} ${SOURCES})
+
+        set_target_properties(${TARGET} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        )
+
+        install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+        add_custom_target(build
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}
+            COMMENT "Building executable"
+        )
+
+
+    elseif(BUILD_TYPE STREQUAL "shared")
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUT}/lib)
+
+        add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        )
+
+        install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+
+        add_custom_target(shared
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}
+            COMMENT "Building shared library"
+        )
+
+
+    elseif(BUILD_TYPE STREQUAL "static")
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUT}/lib)
+
+        add_library(${PROJECT_NAME} STATIC ${SOURCES})
+
+        set_target_properties(${TARGET} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+        )
+
+        install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+
+        add_custom_target(static
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}
+            COMMENT "Building static library"
+        )
+
     endif()
-endfunction()
 
 
-# VS specific
-if(MSVC)
-    message(STATUS "MSVC detected")
-    message(FATAL_ERROR "MSVC is not supported yet. Feel free to contribute. https://github.com/NoxFly/nfpm")
-endif()
-
-
-# specific build type config - targets
-
-if(BUILD_TYPE STREQUAL "build")
-    add_executable(${PROJECT_NAME} ${SOURCES})
-
-    set_target_properties(${TARGET} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-    )
-
-    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
-    add_custom_target(build
-        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}
-        COMMENT "Building executable"
-    )
-
-
-elseif(BUILD_TYPE STREQUAL "shared")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUT}/lib)
-
-    add_library(${PROJECT_NAME} SHARED ${SOURCES})
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    )
-
-    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-
-    add_custom_target(shared
-        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}
-        COMMENT "Building shared library"
-    )
-
-
-elseif(BUILD_TYPE STREQUAL "static")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUT}/lib)
-
-    add_library(${PROJECT_NAME} STATIC ${SOURCES})
-
-    set_target_properties(${TARGET} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-    )
-
-    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-
-    add_custom_target(static
-        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}
-        COMMENT "Building static library"
-    )
-
-endif()
-
-
-if(NOT MSVC)
     foreach(lib ${LIBRARIES})
-        find_and_link_library(${lib})
+        find_and_link_library(${lib} ${PROJECT_NAME})
     endforeach()
-endif()
 
+
+# examples
+elseif(BUILD_KIND STREQUAL "examples")
+    string(REPLACE "/" "_" EXAMPLE_NAME ${ET_SRC_FILE})
+    set(EXAMPLE_PATH ${BUILD_KIND}/${ET_SRC_FILE}.${SRCEXT})
+    set(EXAMPLE_BUILD_DIR ${BUILDDIR}/${BUILD_KIND})
+    set(EXAMPLE_OUT_DIR ${OUT}/${BUILD_KIND})
+
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${ET_PROJECT_LIB_PATH}")
+
+    add_executable(${EXAMPLE_NAME} ${EXAMPLE_PATH})
+
+    set_target_properties(${EXAMPLE_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${OUT}/${BUILD_KIND}
+    )
+
+    install(TARGETS ${EXAMPLE_NAME} DESTINATION ${OUT}/${BUILD_KIND})
+
+    add_custom_target(example
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${EXAMPLE_NAME}
+        COMMENT "Building example ${EXAMPLE_NAME}"
+    )
+
+    foreach(lib ${LIBRARIES})
+        find_and_link_library(${lib} ${EXAMPLE_NAME})
+    endforeach()
+
+    include_directories(${ET_PROJECT_LIB_INCLUDE_PATH})
+    target_link_libraries(${EXAMPLE_NAME} ${PROJECT_NAME})
+endif()
 
 
 add_custom_target(clear
