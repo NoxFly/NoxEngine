@@ -23,6 +23,11 @@ namespace NoxEngine {
     // -------- STATIC --------
 
     void Shader::setShadersPath(const std::string& path) noexcept {
+        if (!fs::exists(path) || !fs::is_directory(path)) {
+            Console::error("Shader::setShadersPath", "The given path is not a valid folder.");
+            exit(EXIT_FAILURE);
+        }
+
         m_shadersPath = ((path[0] == '/') ? "." : "") + path;
     }
 

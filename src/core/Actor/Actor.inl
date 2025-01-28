@@ -1,8 +1,10 @@
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 
 #include "utils/utils.hpp"
 
+namespace fs = std::filesystem;
 
 namespace NoxEngine {
 
@@ -11,6 +13,11 @@ namespace NoxEngine {
 
     template <Dimension D>
     void Actor<D>::setObjectsPath(const std::string& objectsPath) noexcept {
+        if (!fs::exists(objectsPath) || !fs::is_directory(objectsPath)) {
+            Console::error("Actor::setObjectsPath", "The given path is not a valid folder.");
+            exit(EXIT_FAILURE);
+        }
+
         Actor<D>::m_objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
     }
 

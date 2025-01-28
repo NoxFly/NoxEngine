@@ -1,8 +1,11 @@
 #include "Texture.hpp"
 
 #include <memory>
+#include <filesystem>
 
 #include "Console/Console.hpp"
+
+namespace fs = std::filesystem;
 
 
 namespace NoxEngine {
@@ -12,6 +15,11 @@ namespace NoxEngine {
 
 
     void Texture::setTexturesPath(const std::string& texturesPath) noexcept {
+        if (!fs::exists(texturesPath) || !fs::is_directory(texturesPath)) {
+            Console::error("Texture::setTexturesPath", "The given path is not a valid folder.");
+            exit(EXIT_FAILURE);
+        }
+
         Texture::texturesPath = ((texturesPath[0] == '/')? "." : "") + texturesPath;
     }
 
