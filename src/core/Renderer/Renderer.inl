@@ -2,7 +2,7 @@ namespace NoxEngine {
 
     template <Dimension D>
 	void Renderer::render(Scene<D>& scene, Camera<D>& camera) {
-        Uint32 frameRate = 1000 / m_FPS;
+        Uint32 frameRate = 1000 / m_settings.fps;
         m_earlyLoop = SDL_GetTicks();
 
         camera.update();
@@ -24,7 +24,7 @@ namespace NoxEngine {
         m_endLoop = SDL_GetTicks();
         m_spentTime = m_endLoop - m_earlyLoop;
 
-        if (m_FPS == -1 && m_spentTime < frameRate)
+        if (m_settings.fps == -1 && m_spentTime < frameRate)
             SDL_Delay(frameRate - m_spentTime);
 	}
 

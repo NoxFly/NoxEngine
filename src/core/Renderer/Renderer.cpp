@@ -19,7 +19,9 @@ namespace NoxEngine {
         m_glContext(0),
         m_isInit(false),
         m_shouldClose(false),
-        m_FPS(30), m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
+        m_settings{},
+        m_maxCapabilities{},
+        m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
         m_clearColor{}
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))
@@ -56,9 +58,6 @@ namespace NoxEngine {
             return false;
         }
 
-        int sdl_maj_v = m_config.getIntValue("ENGINE", "OPENGL_MAJOR_VERSION", 1);
-        int sdl_min_v = m_config.getIntValue("ENGINE", "OPENGL_MINOR_VERSION", 1);
-
         std::string title = m_config.getValue("ENGINE", "title");
 
         int fullscreenMode = m_config.getIntValue("ENGINE", "fullscreen", 0);
@@ -84,28 +83,30 @@ namespace NoxEngine {
             flags |= SDL_WINDOW_BORDERLESS;
         }
 
-    #ifdef DEBUG
+        loadHardwareCapabilities();
+
+#ifdef DEBUG
         std::cout
-            <<"Init SDL with opengl version " << sdl_maj_v << "." << sdl_min_v
+            <<"Init SDL with opengl version " << m_settings.openglMajorVersion << "." << m_settings.openglMinorVersion
             << ", window size " << windowWidth << "x" << windowHeight
             << ", fullscreen mode = " << (fullscreenMode==0? "windowed" : fullscreenMode==1? "fullscreen" : "borderless")
             << std::endl;
-    #endif
+#endif
+
 
         // OpenGL version
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, m_settings.openglMajorVersion);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, m_settings.openglMinorVersion);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
         // Double Buffer
-        // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); // 1=enable, should always be 1
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_settings.depthSize); // (low) 16, (medium) 24, (hight) 32
 
-        // multi-sampling
-        // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_config.getIntValue("ENGINE", "multisampling_buffer", 1));
-        // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_config.getIntValue("ENGINE", "multisampling_amples", 16));
+        // Anti-aliasing
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_settings.hardwareAcceleration); // 1=enabled
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_settings.antiAliasingLevel); // (none) 0, (low) 2, (medium) 4, (high) 8, (ultra) 16
 
-        
         m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, flags);
 
         if(m_window == 0) {
@@ -156,11 +157,11 @@ namespace NoxEngine {
         }
 
         // GLEW init
-        GLenum initialisationGLEW(glewInit());
+        GLenum initializationGLEW(glewInit());
 
         // fail : quit window
-        if(initialisationGLEW != GLEW_OK) {
-            std::string err = (char*)glewGetErrorString(initialisationGLEW);
+        if(initializationGLEW != GLEW_OK) {
+            std::string err = (char*)glewGetErrorString(initializationGLEW);
             Console::error("Renderer::InitGL", "Failed to init GLEW : " + err);
             // quit SDL
             destroy();
@@ -189,15 +190,8 @@ namespace NoxEngine {
 
     // returns the opengl version as a string : for example, for version 1.1, returns "11"
     GLuint Renderer::getCompactGLversion() const noexcept {
-        GLuint major = m_config.getIntValue("ENGINE", "OPENGL_MAJOR_VERSION", 1);
-        GLuint minor = m_config.getIntValue("ENGINE", "OPENGL_MINOR_VERSION", 1);
-
-        return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
-    }
-
-    GLuint Renderer::getCompactGLversion() noexcept {
-        GLuint major = m_config.getIntValue("ENGINE", "OPENGL_MAJOR_VERSION", 1);
-        GLuint minor = m_config.getIntValue("ENGINE", "OPENGL_MINOR_VERSION", 1);
+        GLuint major = m_settings.openglMajorVersion;
+        GLuint minor = m_settings.openglMinorVersion;
 
         return (GLuint)std::stoul(std::to_string(major) + std::to_string(minor));
     }
@@ -291,11 +285,66 @@ namespace NoxEngine {
     }
 
     void Renderer::setFPS(int fps) noexcept {
-        // fps no limit
-        if(fps < 0)
-            fps = -1;
-        
-        m_FPS = fps;
+        // -1 = no limit
+        m_settings.fps = std::clamp(fps, -1, m_maxCapabilities.fps);
+    }
+
+
+    void Renderer::loadHardwareCapabilities() noexcept {
+        SDL_Window* tempWindow = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        SDL_Renderer* tempRenderer = SDL_CreateRenderer(tempWindow, -1, 0);
+
+        SDL_RendererInfo rendererInfo;
+        SDL_GetRendererInfo(tempRenderer, &rendererInfo);
+
+        int multiSampleBuffers = 0;
+
+        glGetIntegerv(GL_MULTISAMPLE, &multiSampleBuffers);
+        glGetIntegerv(GL_MAX_SAMPLES, &m_maxCapabilities.antiAliasingLevel);
+        glGetIntegerv(GL_MAJOR_VERSION, &m_maxCapabilities.openglMajorVersion);
+        glGetIntegerv(GL_MAJOR_VERSION, &m_maxCapabilities.openglMajorVersion);
+        glGetIntegerv(GL_DEPTH_BITS, &m_maxCapabilities.depthSize);
+
+        m_maxCapabilities.hardwareAcceleration = multiSampleBuffers > 0;
+
+        // get monitor max refresh rate
+        SDL_DisplayMode DM;
+        int displayIndex = SDL_GetWindowDisplayIndex(tempWindow);
+        SDL_GetCurrentDisplayMode(displayIndex, &DM);
+        m_maxCapabilities.fps = DM.refresh_rate;
+
+        SDL_DestroyRenderer(tempRenderer);
+        SDL_DestroyWindow(tempWindow);
+
+        auto oglMajor                   = m_config.getIntValue("ENGINE", "opengl_major_version", 3);
+        auto oglMinor                   = m_config.getIntValue("ENGINE", "opengl_minor_version", 1);
+        auto aaLevel                    = m_config.getIntValue("ENGINE", "multisampling_level", 2);
+        auto depthSize                  = m_config.getIntValue("ENGINE", "depth_size", 16);
+        auto askHardwareAcceleration    = m_config.getBoolValue("ENGINE", "hardware_acceleration", true);
+        auto fps                        = m_config.getIntValue("ENGINE", "fps", 30);
+
+        m_settings.openglMajorVersion   = std::clamp(oglMajor, 1, m_maxCapabilities.openglMajorVersion);
+        m_settings.openglMinorVersion   = std::clamp(oglMinor, 0, m_maxCapabilities.openglMinorVersion);
+        m_settings.hardwareAcceleration = m_maxCapabilities.hardwareAcceleration && askHardwareAcceleration;
+        m_settings.antiAliasingLevel    = std::clamp(aaLevel, 0, m_maxCapabilities.antiAliasingLevel);
+        m_settings.depthSize            = std::clamp(depthSize, 16, 32);
+        m_settings.fps                  = std::clamp(fps, -1, m_maxCapabilities.fps);
+
+        Console::info("----------- Hardware max capabilities -----------");
+        Console::info("OpenGL version\t\t"          + std::to_string(m_maxCapabilities.openglMajorVersion) + "." + std::to_string(m_maxCapabilities.openglMinorVersion));
+        Console::info("Hardware acceleration\t"     + std::string(m_maxCapabilities.hardwareAcceleration ? "available" : "not available"));
+        Console::info("Multisampling level\t"       + std::to_string(m_maxCapabilities.antiAliasingLevel));
+        Console::info("Depth buffer size\t"         + std::to_string(m_maxCapabilities.depthSize));
+        Console::info("Max refresh rate\t"          + std::to_string(m_maxCapabilities.fps) + " Hz");
+        Console::info("-------------------------------------------------");
+
+        Console::info("------------- Applied configuration -------------");
+        Console::info("OpenGL version\t\t"          + std::to_string(m_settings.openglMajorVersion) + "." + std::to_string(m_settings.openglMinorVersion));
+        Console::info("Hardware acceleration\t"     + std::string(m_settings.hardwareAcceleration? "enabled" : "disabled"));
+        Console::info("Multisampling level\t"       + std::to_string(m_settings.antiAliasingLevel));
+        Console::info("Depth buffer size\t"         + std::to_string(m_settings.depthSize));
+        Console::info("fps\t\t\t"                   + std::to_string(m_settings.fps));
+        Console::info("-------------------------------------------------");
     }
 
 }

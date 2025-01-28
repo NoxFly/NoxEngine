@@ -15,6 +15,15 @@
 
 namespace NoxEngine {
 
+    struct VideoSettings {
+        int antiAliasingLevel;
+        int depthSize;
+        int fps;
+        int openglMajorVersion;
+        int openglMinorVersion;
+        bool hardwareAcceleration;
+    };
+
     class Renderer {
         public:
             explicit Renderer(const IniSet& config);
@@ -40,7 +49,6 @@ namespace NoxEngine {
             bool isMouseFocused() const noexcept;
 
             GLuint getCompactGLversion() const noexcept;
-            GLuint getCompactGLversion() noexcept;
             V2D getSize() const noexcept;
             float getAspect() const noexcept;
 
@@ -58,9 +66,13 @@ namespace NoxEngine {
             SDL_GLContext m_glContext;
             bool m_isInit;
             bool m_shouldClose;
-            int m_FPS;
+            VideoSettings m_settings;
+            VideoSettings m_maxCapabilities;
             Uint32 m_earlyLoop, m_endLoop, m_spentTime;
             Color m_clearColor;
+
+        private:
+            void loadHardwareCapabilities() noexcept;
     };
 
 }

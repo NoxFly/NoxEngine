@@ -27,6 +27,7 @@ namespace NoxEngine {
         std::unique_ptr<Texture> tex = std::make_unique<Texture>(texturePath, textureName);
 
         if(tex->load()) {
+            Console::info("Texture " + textureName + " loaded");
             m_bank.set(textureName, std::move(tex));
             return true;
         }
