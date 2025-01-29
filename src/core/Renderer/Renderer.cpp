@@ -104,7 +104,7 @@ namespace NoxEngine {
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_settings.depthSize); // (low) 16, (medium) 24, (hight) 32
 
         // Anti-aliasing
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_settings.hardwareAcceleration); // 1=enabled
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_settings.hardwareAcceleration && m_settings.antiAliasingLevel > 0); // 1=enabled
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_settings.antiAliasingLevel); // (none) 0, (low) 2, (medium) 4, (high) 8, (ultra) 16
 
         m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, flags);

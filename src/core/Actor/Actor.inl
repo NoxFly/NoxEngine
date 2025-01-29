@@ -33,7 +33,8 @@ namespace NoxEngine {
         m_geometry(geometry), m_material(material),
         m_cullFace(GL_FRONT), m_polygonMode(GL_FILL),
         m_rotation{},
-        m_hasToTranslate(false), m_hasToRotate(false)
+        m_scale{},
+        m_hasToTranslate(false), m_hasToRotate(false), m_hasToScale(false)
     {}
 
     // template <Dimension D>
@@ -114,7 +115,7 @@ namespace NoxEngine {
     void Actor<D>::rotate(const float x, const float y) noexcept requires Is2D<D> {
         m_rotation.x += x;
         m_rotation.y += y;
-        m_hasToRotate = x != 0 || y != 0;
+        m_hasToRotate = x != 0.f || y != 0.f;
     }
 
     template <Dimension D>
@@ -122,7 +123,22 @@ namespace NoxEngine {
         m_rotation.x += x;
         m_rotation.y += y;
         m_rotation.z += z;
-        m_hasToRotate = x != 0 || y != 0 || z != 0;
+        m_hasToRotate = x != 0.f || y != 0.f || z != 0.f;
+    }
+
+    template <Dimension D>
+    void Actor<D>::scale(const float x, const float y) noexcept requires Is2D<D> {
+        m_scale.x = std::max(0.f, x);
+        m_scale.y = std::max(0.f, y);
+        m_hasToScale = m_scale.x != 1.f || m_scale.y != 1.f;
+    }
+
+    template <Dimension D>
+    void Actor<D>::scale(const float x, const float y, const float z) noexcept requires Is3D<D> {
+        m_scale.x = std::max(0.f, x);
+        m_scale.y = std::max(0.f, y);
+        m_scale.z = std::max(0.f, z);
+        m_hasToScale = m_scale.x != 1.f || m_scale.y != 1.f || m_scale.z != 1.f;
     }
 
     template <Dimension D>
@@ -135,7 +151,7 @@ namespace NoxEngine {
         Matrices<D>& mvp = camera->getMatrices();
 
         const bool hasTexture = m_material->getTextures().size() > 0;
-        const bool translateOrRotate = m_hasToTranslate || m_hasToRotate;
+        const bool translateOrRotate = m_hasToTranslate || m_hasToRotate || m_hasToScale;
 
         // apply matrix transformations
         // related to object's position / rotation
@@ -147,6 +163,9 @@ namespace NoxEngine {
 
             if(m_hasToRotate)
                 mvp.rotate(m_rotation);
+
+            if(m_hasToScale)
+                mvp.scale(m_scale);
         }
 
         // draw

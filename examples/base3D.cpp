@@ -1,6 +1,8 @@
 //!shared
 
 #include <iostream>
+#include <cmath>
+#include <chrono>
 
 #define __NOX_ENGINE_3D__
 
@@ -9,6 +11,22 @@
 #include "IniSet.hpp"
 
 using namespace NoxEngine;
+
+float easeInOutBack(float t, float s = 1.70158f) {
+	if(t > 0.5f)
+		t = 1.0f - t;
+
+	t *= 4.0f;
+
+	if (t < 1.0f) {
+        return 0.5f * (t * t * ((s + 1.0f) * t - s));
+    } else {
+        t -= 2.0f;
+        return 0.5f * (t * t * ((s + 1.0f) * t + s) + 2.0f);
+    }
+}
+
+
 
 int main(int argc, char** argv) {
 	(void)argc;
@@ -64,13 +82,38 @@ int main(int argc, char** argv) {
 	camera.setPosition(0.f, 2.f, 6.f);
 	camera.lookAt(0.f, 0.f, 0.f);
 
+	Uint64 previousTime = SDL_GetPerformanceCounter();
+	double totalElapsedTime = 0.0;
+
 	while (!renderer.shouldClose()) {
 		renderer.render(scene, camera);
 
-		cubeA->rotate(0.1f, 0.f, 0.05f);
-		cubeB->rotate(0.1f, 0.f, 0.05f);
-		cubeC->rotate(0.1f, 0.f, 0.05f);
-		cubeD->rotate(0.1f, 0.f, 0.05f);
+		// get elapsed time since last iteration
+		Uint64 now = SDL_GetPerformanceCounter();
+		double deltaTime = static_cast<double>(
+			(now - previousTime) / static_cast<double>(SDL_GetPerformanceFrequency())
+		);
+		previousTime = now;
+		totalElapsedTime += deltaTime;
+
+		// apply rotation to the cubes along the time and not an iteration counter
+		// because if performances drops, the cubes will rotate slower, but time
+		// continues at the same speed.
+		auto rotationX = deltaTime * 10.0f;
+		auto rotationY = 0;
+		auto rotationZ = deltaTime * 3.0f;
+
+		// apply scaling animation to one of the cubes
+		float animationDuration = 1.0f; // in seconds
+		float bounceTime = fmod(totalElapsedTime, animationDuration); // Repeat every x seconds
+    	float cubeDScaling = 1.0f + easeInOutBack(bounceTime / animationDuration) * 0.5f;
+
+		cubeA->rotate(rotationX, rotationY, rotationZ);
+		cubeB->rotate(rotationX, rotationY, rotationZ);
+		cubeC->rotate(rotationX, rotationY, rotationZ);
+		cubeD->rotate(rotationX, rotationY, rotationZ);
+
+		cubeD->scale(cubeDScaling, cubeDScaling, cubeDScaling);
 
 		renderer.updateInput();
 	}

@@ -39,17 +39,18 @@ namespace NoxEngine {
 
             void translate(const V3D& translation) noexcept requires Is3D<D>;
             void rotate(const V3D& rotation) noexcept requires Is3D<D>;
+            void scale(const V3D& scale) noexcept requires Is3D<D>;
 
             void translate(const V2D& translation) noexcept requires Is2D<D>;
             void rotate(const V2D& rotation) noexcept requires Is2D<D>;
-
-            
+            void scale(const V2D& scale) noexcept requires Is2D<D>;
 
         protected:
             void update() noexcept;
 
             void _translate(const V3D& translation) noexcept;
             void _rotate(const V3D& rotation) noexcept;
+            void _scale(const V3D& scale) noexcept;
 
             bool m_needsUpdate; // in get(), updates is any operation has been done before
             M4 m_model, m_view, m_mvp, m_projection;

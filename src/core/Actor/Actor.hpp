@@ -50,6 +50,9 @@ namespace NoxEngine {
             void rotate(const float x, const float y) noexcept requires Is2D<D>;
             void rotate(const float x, const float y, const float z) noexcept requires Is3D<D>;
 
+            void scale(const float x, const float y) noexcept requires Is2D<D>;
+            void scale(const float x, const float y, const float z) noexcept requires Is3D<D>;
+
             void setCullFace(const GLenum cullFace) noexcept;
             void setPolygonMode(const GLenum polygonMode) noexcept;
 
@@ -67,7 +70,8 @@ namespace NoxEngine {
             GLenum m_cullFace, m_polygonMode;
 
             D m_rotation;
-            bool m_hasToTranslate, m_hasToRotate;
+            D m_scale;
+            bool m_hasToTranslate, m_hasToRotate, m_hasToScale;
     };
 
 }

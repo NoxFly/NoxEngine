@@ -115,6 +115,11 @@ namespace NoxEngine {
     }
 
     template <Dimension D>
+    void Matrices<D>::scale(const V3D& scale) noexcept requires Is3D<D> {
+        _scale(scale);
+    }
+
+    template <Dimension D>
     void Matrices<D>::translate(const V2D& translation) noexcept requires Is2D<D> {
         _translate(V3D(translation, 0.f));
     }
@@ -122,6 +127,11 @@ namespace NoxEngine {
     template <Dimension D>
     void Matrices<D>::rotate(const V2D& rotation) noexcept requires Is2D<D> {
         _rotate(V3D(rotation, 0.f));
+    }
+
+    template <Dimension D>
+    void Matrices<D>::scale(const V2D& scale) noexcept requires Is2D<D> {
+        _scale(V3D(scale, 1.f));
     }
 
     template <Dimension D>
@@ -142,6 +152,12 @@ namespace NoxEngine {
         if(rotation.z != 0)
             m_model = glm::rotate(m_model, glm::radians(rotation.z), V3D(1, 0, 0));
 
+        m_needsUpdate = true;
+    }
+
+    template <Dimension D>
+    void Matrices<D>::_scale(const V3D& scale) noexcept {
+        m_model = glm::scale(m_model, scale);
         m_needsUpdate = true;
     }
 
