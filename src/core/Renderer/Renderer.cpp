@@ -19,15 +19,15 @@
 namespace NoxEngine {
 
     Renderer::Renderer(const IniSet& config):
+        m_isInit(false),
+        m_shouldClose(false),
         m_config(config),
         m_input(),
         m_window(0),
         m_glContext(0),
-        m_isInit(false),
-        m_shouldClose(false),
         m_settings{},
         m_maxCapabilities{},
-        m_earlyLoop(0), m_endLoop(0), m_spentTime(0),
+        m_previousTime(0), m_deltaTime(0), m_totalTime(0),
         m_clearColor{}
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))
@@ -290,11 +290,21 @@ namespace NoxEngine {
         return size.x / size.y;
     }
 
-    void Renderer::setFPS(int fps) noexcept {
-        // -1 = no limit
-        m_settings.fps = std::clamp(fps, -1, m_maxCapabilities.fps);
+    void Renderer::setFPS(uint fps) noexcept {
+        m_settings.fps = std::clamp(fps, (uint)0, (uint)m_maxCapabilities.fps);
     }
 
+    uint Renderer::getFrameRate() const noexcept {
+        return m_frameRate;
+    }
+
+    uint Renderer::getTotalTimeElapsed() const noexcept {
+        return m_totalTime;
+    }
+
+    uint Renderer::getDeltaTime() const noexcept {
+        return m_deltaTime;
+    }
 
     void Renderer::loadHardwareCapabilities() noexcept {
         SDL_Window* tempWindow = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
@@ -334,7 +344,7 @@ namespace NoxEngine {
         m_settings.hardwareAcceleration = m_maxCapabilities.hardwareAcceleration && askHardwareAcceleration;
         m_settings.antiAliasingLevel    = std::clamp(aaLevel, 0, m_maxCapabilities.antiAliasingLevel);
         m_settings.depthSize            = std::clamp(depthSize, 16, 32);
-        m_settings.fps                  = std::clamp(fps, -1, m_maxCapabilities.fps);
+        m_settings.fps                  = std::clamp(fps, 0, m_maxCapabilities.fps);
 
         Console::info("----------- Hardware max capabilities -----------");
         Console::info("OpenGL version\t\t"          + std::to_string(m_maxCapabilities.openglMajorVersion) + "." + std::to_string(m_maxCapabilities.openglMinorVersion));

@@ -69,6 +69,7 @@ namespace NoxEngine {
 #include "core/Actor/Light/AmbientLight/AmbientLight.hpp"
 #include "core/Actor/Materials/3D/Basic3DMaterial/Basic3DMaterial.hpp"
 #include "core/Actor/Materials/3D/PhongMaterial/PhongMaterial.hpp"
+#include "core/Controls/3D//PointerLockControl/PointerLockControl.hpp"
 
 
 

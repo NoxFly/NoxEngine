@@ -8,14 +8,11 @@ namespace NoxEngine {
 
     template <Dimension D>
 	void Renderer::render(Scene<D>& scene, Camera<D>& camera) {
-        Uint32 frameRate = 1000 / m_settings.fps;
-        m_earlyLoop = SDL_GetTicks();
+        camera.update(m_input, m_deltaTime);
 
-        camera.update();
+        auto earlyLoop = SDL_GetTicks();
 
         clear(m_clearColor);
-
-        // render the scene through camera
 
         const std::vector<std::shared_ptr<Actor<D>>> objects = scene.getActors();
 
@@ -23,15 +20,22 @@ namespace NoxEngine {
             o->render(&scene, &camera);
         }
 
-
         swapWindow();
 
+        Uint64 now = SDL_GetPerformanceCounter();
+        m_deltaTime = static_cast<double>(
+			(now - m_previousTime) / static_cast<double>(SDL_GetPerformanceFrequency())
+		);
+		m_previousTime = now;
+        m_totalTime += m_deltaTime;
 
-        m_endLoop = SDL_GetTicks();
-        m_spentTime = m_endLoop - m_earlyLoop;
+        m_frameRate = std::round(1.0f / m_deltaTime);
 
-        if (m_settings.fps == -1 && m_spentTime < frameRate)
-            SDL_Delay(frameRate - m_spentTime);
+        auto endLoop = SDL_GetTicks();
+        auto spentTime = endLoop - earlyLoop;
+
+        if (spentTime < m_frameRate)
+            SDL_Delay(m_frameRate - spentTime);
 	}
 
 }

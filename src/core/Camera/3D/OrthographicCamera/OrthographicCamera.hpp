@@ -19,7 +19,6 @@ namespace NoxEngine {
         public:
             explicit OrthographicCamera(const float left, const float right, const float top, const float bottom);
             explicit OrthographicCamera(const float left, const float right, const float top, const float bottom, const float near, const float far);
-            ~OrthographicCamera();
 
             void move(const V3D& offset, const unsigned int duration = 0);
             void moveTo(const V3D& position, const unsigned int duration = 0);

@@ -82,26 +82,18 @@ int main(int argc, char** argv) {
 	camera.setPosition(0.f, 2.f, 6.f);
 	camera.lookAt(0.f, 0.f, 0.f);
 
-	Uint64 previousTime = SDL_GetPerformanceCounter();
-	double totalElapsedTime = 0.0;
-
 	while (!renderer.shouldClose()) {
 		renderer.render(scene, camera);
 
-		// get elapsed time since last iteration
-		Uint64 now = SDL_GetPerformanceCounter();
-		double deltaTime = static_cast<double>(
-			(now - previousTime) / static_cast<double>(SDL_GetPerformanceFrequency())
-		);
-		previousTime = now;
-		totalElapsedTime += deltaTime;
+		auto delta = renderer.getDeltaTime();
+		auto totalElapsedTime = renderer.getTotalTimeElapsed();
 
 		// apply rotation to the cubes along the time and not an iteration counter
 		// because if performances drops, the cubes will rotate slower, but time
 		// continues at the same speed.
-		auto rotationX = deltaTime * 10.0f;
+		auto rotationX = delta * 10.0f;
 		auto rotationY = 0;
-		auto rotationZ = deltaTime * 3.0f;
+		auto rotationZ = delta * 3.0f;
 
 		// apply scaling animation to one of the cubes
 		float animationDuration = 1.0f; // in seconds

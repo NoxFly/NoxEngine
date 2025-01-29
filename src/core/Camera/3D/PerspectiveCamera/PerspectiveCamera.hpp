@@ -18,7 +18,6 @@ namespace NoxEngine {
     class PerspectiveCamera: public Camera3D {
         public:
             explicit PerspectiveCamera(const float fov, const float aspect, const float near, const float far);
-            ~PerspectiveCamera();
 
             void lookAt(const V3D eye, const V3D target, const V3D up) noexcept;
             void lookAt(const float x, const float y, const float z) noexcept;

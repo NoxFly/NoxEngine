@@ -47,8 +47,8 @@ namespace NoxEngine {
             bool shouldClose() const noexcept;
             bool isInitialized() const noexcept;
 
-            void setFPS(int fps) noexcept;
-            
+            void setFPS(const uint fps) noexcept;
+
             void setMouseGrab(const bool grabbed) noexcept;
             void setMouseFocus(const bool focus) noexcept;
             bool isMouseGrabbed() const noexcept;
@@ -58,6 +58,10 @@ namespace NoxEngine {
             V2D getSize() const noexcept;
             float getAspect() const noexcept;
 
+            uint getFrameRate() const noexcept;
+            uint getTotalTimeElapsed() const noexcept;
+            uint getDeltaTime() const noexcept;
+
         protected:
             void clear(Color clearColor) noexcept;
             void swapWindow() noexcept;
@@ -66,15 +70,16 @@ namespace NoxEngine {
             bool InitGL();
             void destroy();
 
+            bool m_isInit;
+            bool m_shouldClose;
             IniSet m_config;
             Input m_input;
             SDL_Window* m_window;
             SDL_GLContext m_glContext;
-            bool m_isInit;
-            bool m_shouldClose;
             VideoSettings m_settings;
             VideoSettings m_maxCapabilities;
-            Uint32 m_earlyLoop, m_endLoop, m_spentTime;
+	        Uint64 m_previousTime, m_deltaTime, m_totalTime;
+            uint m_frameRate;
             Color m_clearColor;
 
         private:

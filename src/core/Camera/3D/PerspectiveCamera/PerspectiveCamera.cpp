@@ -16,10 +16,6 @@ namespace NoxEngine {
         Camera3D(fov, aspect, near, far)
     {}
 
-    PerspectiveCamera::~PerspectiveCamera()
-    {}
-
-
     // Set's the camera's look at. The view matrix will be upated in the loop
     void PerspectiveCamera::lookAt(const V3D eye, const V3D target, const V3D up) noexcept {
         Camera::_setPosition(eye);

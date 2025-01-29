@@ -21,10 +21,6 @@ namespace NoxEngine {
 
 	}
 
-	OrthographicCamera::~OrthographicCamera() {
-
-	}
-
 	void OrthographicCamera::move(const V3D& offset, const unsigned int duration) {
 		(void)offset;
 		(void)duration;

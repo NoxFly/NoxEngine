@@ -32,8 +32,6 @@ namespace NoxEngine {
                 m_matrix = Matrices<V3D>(fov, aspect, m_near, m_far, m_position, m_verticalAxis);
             }
             
-            virtual ~Camera3D() {};
-
             V3D getPosition() const noexcept {
                 return m_position;
             }
