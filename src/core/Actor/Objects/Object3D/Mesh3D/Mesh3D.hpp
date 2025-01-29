@@ -1,3 +1,9 @@
+/**
+ * @copyright (c) 2025 NoxFly
+ * @date 2025-01-29
+ * @license AGPL-3.0
+ */
+
 #ifndef MESH3D_HPP
 #define MESH3D_HPP
 

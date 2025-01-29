@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(PROJECT_NAME "NoxEngine")
 
-project("${PROJECT_NAME}" VERSION 1.0.0 DESCRIPTION "No description provided." HOMEPAGE_URL "" LANGUAGES CXX)
+project("${PROJECT_NAME}" VERSION 1.0.0 DESCRIPTION "A C++ OpenGL 2D/3D Engine" HOMEPAGE_URL "https://github.com/NoxFly/NoxEngine" LANGUAGES CXX)
 
 # injectable variables
 set(BUILD_KIND "project" CACHE STRING "project or examples or tests")

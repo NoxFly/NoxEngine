@@ -1,3 +1,9 @@
+/**
+ * @copyright (c) 2025 NoxFly
+ * @date 2025-01-29
+ * @license AGPL-3.0
+ */
+
 template <class T>
 Octree<T>::Octree(const OctRect& bounds, unsigned int rootCapacity):
     m_capacity(rootCapacity),

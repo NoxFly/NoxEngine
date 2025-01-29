@@ -1,3 +1,9 @@
+/**
+ * @copyright (c) 2025 NoxFly
+ * @date 2025-01-29
+ * @license AGPL-3.0
+ */
+
 //#pragma warning (disable: 4244)
 
 #include "./Renderer.hpp"

@@ -1,3 +1,9 @@
+/**
+ * @copyright (c) 2025 NoxFly
+ * @date 2025-01-29
+ * @license AGPL-3.0
+ */
+
 #ifndef OBJECT_3D_HPP
 #define OBJECT_3D_HPP
 

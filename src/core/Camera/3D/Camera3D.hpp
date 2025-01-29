@@ -1,3 +1,9 @@
+/**
+ * @copyright (c) 2025 NoxFly
+ * @date 2025-01-29
+ * @license AGPL-3.0
+ */
+
 #ifndef CAMERA3D_HPP
 #define CAMERA3D_HPP
 

@@ -1,10 +1,10 @@
 project:
   name: NoxEngine
-  description: No description provided.
+  description: A C++ OpenGL 2D/3D Engine
   version: 1.0.0
-  author: 
-  url: 
-  license: 
+  author: NoxFly
+  url: https://github.com/NoxFly/NoxEngine
+  license: AGPL-3.0
 
 config:
   mode: 1

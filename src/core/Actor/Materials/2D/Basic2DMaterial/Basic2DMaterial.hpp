@@ -1,3 +1,9 @@
+/**
+ * @copyright (c) 2025 NoxFly
+ * @date 2025-01-29
+ * @license AGPL-3.0
+ */
+
 #ifndef BASIC_2D_MATERIAL_HPP
 #define BASIC_2D_MATERIAL_HPP
 
