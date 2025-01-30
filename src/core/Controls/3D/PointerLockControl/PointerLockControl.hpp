@@ -9,23 +9,15 @@
 
 #include "core/Controls/CameraControl.hpp"
 #include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
-#include "core/Renderer/Input/Input.hpp"
+#include "core/Renderer/Renderer.hpp"
 
 namespace NoxEngine {
 
-	// Specialization for PerspectiveCamera
-    template <>
-    class CameraControl<PerspectiveCamera> {
-        public:
-            virtual ~CameraControl() = default;
-            virtual void update(PerspectiveCamera& camera, const Input& input, const float deltaTime) = 0;
-    };
-
-	class PointerLockControl: public CameraControl<PerspectiveCamera> {
+	class PointerLockControl: public CameraControl<V3D, PerspectiveCamera> {
 		public:
 			explicit PointerLockControl();
 			
-			void update(PerspectiveCamera& camera, const Input& input, const float deltaTime) override;
+			void update(Renderer& renderer, Scene<V3D>& scene, PerspectiveCamera& camera) override;
 	};
 
 }

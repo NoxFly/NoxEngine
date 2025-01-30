@@ -12,10 +12,10 @@ namespace NoxEngine {
 
     }
 
-    void PointerLockControl::update(PerspectiveCamera &camera, const Input &input, float deltaTime) {
+    void PointerLockControl::update(Renderer& renderer, Scene<V3D>& scene, PerspectiveCamera& camera) {
+        (void)renderer;
         (void)camera;
-        (void)input;
-        (void)deltaTime;
+        (void)scene;
     }
 
 }

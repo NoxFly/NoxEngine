@@ -40,7 +40,6 @@ int main(int argc, char** argv) {
 
     while(!renderer.shouldClose()) {
         renderer.render(scene, camera);
-        renderer.updateInput();
     }
 
     return 0;

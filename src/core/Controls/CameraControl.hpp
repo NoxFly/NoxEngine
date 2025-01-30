@@ -8,16 +8,17 @@
 #define CAMERACONTROL_HPP
 
 #include "core/engine.typedef.hpp"
-#include "core/Camera/ICamera.hpp"
+#include "core/Camera/Camera.hpp"
 #include "core/Renderer/Input/Input.hpp"
+#include "core/Renderer/Renderer.hpp"
 
 namespace NoxEngine {
 
-	template <typename Cam, typename = std::enable_if_t<std::is_base_of_v<Camera<typename Cam::Type>, Cam>>>
+	template <Dimension D, typename C, typename = std::enable_if_t<std::is_base_of_v<Camera<D>, C>>>
 	class CameraControl {
 		public:
-			virtual ~CameraControl() = default;
-			virtual void update(Cam& camera, const Input& input, const float deltaTime) = 0;
+			virtual ~CameraControl() {}
+			virtual void update(Renderer& renderer, Scene<D>& scene, C& camera) = 0;
 	};
 
 }

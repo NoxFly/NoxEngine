@@ -27,7 +27,7 @@ namespace NoxEngine {
         m_glContext(0),
         m_settings{},
         m_maxCapabilities{},
-        m_previousTime(0), m_deltaTime(0), m_totalTime(0),
+        m_previousTime(0), m_deltaTime(0.0), m_totalTime(0.0),
         m_clearColor{}
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))
@@ -213,8 +213,6 @@ namespace NoxEngine {
         return &m_input;
     }
 
-
-
     void Renderer::show() noexcept {
         SDL_ShowWindow(m_window);
     }
@@ -298,11 +296,11 @@ namespace NoxEngine {
         return m_frameRate;
     }
 
-    uint Renderer::getTotalTimeElapsed() const noexcept {
+    double Renderer::getTotalTimeElapsed() const noexcept {
         return m_totalTime;
     }
 
-    uint Renderer::getDeltaTime() const noexcept {
+    double Renderer::getDeltaTime() const noexcept {
         return m_deltaTime;
     }
 

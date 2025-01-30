@@ -10,6 +10,7 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <vector>
 
 #include "core/engine.typedef.hpp"
 #include "core/Renderer/Input/Input.hpp"
@@ -17,7 +18,6 @@
 #include "utils/Color.hpp"
 #include "core/Scene/Scene.hpp"
 #include "core/Camera/Camera.hpp"
-
 
 namespace NoxEngine {
 
@@ -35,7 +35,6 @@ namespace NoxEngine {
             explicit Renderer(const IniSet& config);
             ~Renderer();
 
-            void updateInput() noexcept;
             Input* getInput() noexcept;
 
             template <Dimension D>
@@ -59,8 +58,8 @@ namespace NoxEngine {
             float getAspect() const noexcept;
 
             uint getFrameRate() const noexcept;
-            uint getTotalTimeElapsed() const noexcept;
-            uint getDeltaTime() const noexcept;
+            double getTotalTimeElapsed() const noexcept;
+            double getDeltaTime() const noexcept;
 
         protected:
             void clear(Color clearColor) noexcept;
@@ -70,6 +69,8 @@ namespace NoxEngine {
             bool InitGL();
             void destroy();
 
+            void updateInput() noexcept;
+
             bool m_isInit;
             bool m_shouldClose;
             IniSet m_config;
@@ -78,8 +79,9 @@ namespace NoxEngine {
             SDL_GLContext m_glContext;
             VideoSettings m_settings;
             VideoSettings m_maxCapabilities;
-	        Uint64 m_previousTime, m_deltaTime, m_totalTime;
+	        Uint64 m_previousTime;
             uint m_frameRate;
+            double m_deltaTime, m_totalTime;
             Color m_clearColor;
 
         private:

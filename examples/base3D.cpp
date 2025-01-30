@@ -106,8 +106,6 @@ int main(int argc, char** argv) {
 		cubeD->rotate(rotationX, rotationY, rotationZ);
 
 		cubeD->scale(cubeDScaling, cubeDScaling, cubeDScaling);
-
-		renderer.updateInput();
 	}
 
 	return EXIT_SUCCESS;

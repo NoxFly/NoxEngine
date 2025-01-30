@@ -13,7 +13,6 @@
 #include "core/engine.typedef.hpp"
 #include "core/MatricesMVP/Matrices.hpp"
 #include "core/Actor/Movable.hpp"
-#include "core/Controls/CameraControl.hpp"
 #include "utils/utils.hpp"
 
 namespace NoxEngine {
@@ -29,19 +28,14 @@ namespace NoxEngine {
                 m_needsUpdate(true),
                 m_target(target),
                 m_verticalAxis(verticalAxis),
-                m_matrix(),
-                m_control(nullptr)
+                m_matrix()
             {
                 _setPosition(position);
             }
 
-            virtual ~Camera() {};
+            virtual ~Camera() {}
 
-            void update(const Input& input, const float deltaTime) noexcept {
-                if(m_control != nullptr) {
-                    m_control->update(*this, input, deltaTime);
-                }
-
+            void update() noexcept {
                 if(m_needsUpdate) {
                     m_needsUpdate = false;
                     m_matrix.setView(glm::lookAt(m_position, m_target, m_verticalAxis));
@@ -50,10 +44,6 @@ namespace NoxEngine {
 
             Matrices<D>& getMatrices() noexcept {
                 return m_matrix;
-            }
-
-            void setControl(std::shared_ptr<CameraControl<Camera<D>>> control) {
-                m_control = control;
             }
 
             virtual void setPosition(const D& position) noexcept = 0;
@@ -77,7 +67,6 @@ namespace NoxEngine {
             bool m_needsUpdate;
             V3D m_target, m_verticalAxis;
             Matrices<D> m_matrix;
-            std::shared_ptr<CameraControl<Camera<D>>> m_control;
     };
 
 
