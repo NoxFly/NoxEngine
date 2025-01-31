@@ -76,32 +76,29 @@ namespace NoxEngine {
         if(input->isMouseMoving()) {
             auto mouseMov = input->getMouseMovement();
 
-            mouseMov.x *= m_sensitivity * deltaTime;
-            mouseMov.y *= m_sensitivity * deltaTime;
+            float deltaX = glm::radians(mouseMov.x * m_sensitivity * deltaTime);
+            float deltaY = glm::radians(mouseMov.y * m_sensitivity * deltaTime);
 
             // authorize the player to look up and down, left and right, but not to tilt his head
             // (usually done by keys [QA]/E)
-            m_camera.orientate(V3D(1.f, mouseMov.x, mouseMov.y));
+            m_camera.orientate(V3D(deltaX, deltaY, 0.0f));
         }
 
         // displacement
-        glm::vec3 position = m_camera.getPosition();
         float speed = m_speed * deltaTime;
 
         if (input->isKeyDown(SDL_SCANCODE_W)) { // forward
-            position += m_camera.getForward() * speed;
+            m_camera.move(m_camera.getForward() * speed);
         }
         if (input->isKeyDown(SDL_SCANCODE_S)) { // backward
-            position -= m_camera.getForward() * speed;
+            m_camera.move(-m_camera.getForward() * speed);
         }
         if (input->isKeyDown(SDL_SCANCODE_A)) { // left
-            position -= m_camera.getRight() * speed;
+            m_camera.move(-m_camera.getRight() * speed);
         }
         if (input->isKeyDown(SDL_SCANCODE_D)) { // right
-            position += m_camera.getRight() * speed;
+            m_camera.move(m_camera.getRight() * speed);
         }
-
-        m_camera.setPosition(position);
     }
 
 }

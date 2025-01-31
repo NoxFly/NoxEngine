@@ -38,13 +38,18 @@ namespace NoxEngine {
 
     void PerspectiveCamera::move(const V3D& offset, const unsigned int duration) {
         if(duration == 0) {
-            Camera3D::setPosition(m_position + offset);
+            // move in the direction of the quaternion
+            m_position += glm::rotate(m_orientation, offset);
+            m_target = m_position + getForward();
+            m_needsUpdate = true;
         }
     }
 
     void PerspectiveCamera::moveTo(const V3D& position, const unsigned int duration) {
         if(duration == 0) {
-            Camera3D::setPosition(position);
+            m_position = position;
+            m_target = m_position + getForward();
+            m_needsUpdate = true;
         }
     }
 
@@ -66,7 +71,7 @@ namespace NoxEngine {
         glm::quat qYaw = glm::angleAxis(offset.y, V3D(0, 1, 0));
         glm::quat qRoll = glm::angleAxis(offset.z, V3D(0, 0, 1));
 
-        m_orientation = glm::normalize(qPitch * qYaw * qRoll) * m_orientation;
+        m_orientation = glm::normalize(qYaw * qPitch * qRoll * m_orientation);
         m_needsUpdate = true;
     }
 
