@@ -1,11 +1,11 @@
 /**
  * @copyright (c) 2025 NoxFly
- * @date 2025-01-29
+ * @date 2025-01-31
  * @license AGPL-3.0
  */
 
-#ifndef POINTERLOCKCONTROL_HPP
-#define POINTERLOCKCONTROL_HPP
+#ifndef TRACKBALLCONTROLS_HPP
+#define TRACKBALLCONTROLS_HPP
 
 #include "core/Controls/CameraControl.hpp"
 #include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
@@ -13,18 +13,17 @@
 
 namespace NoxEngine {
 
-	class PointerLockControl: public CameraControl<V3D, PerspectiveCamera> {
+	class TrackballControls: public CameraControl<V3D, PerspectiveCamera> {
 		public:
-			explicit PointerLockControl(Renderer& renderer, PerspectiveCamera& camera);
-			
+			explicit TrackballControls(Renderer& renderer, PerspectiveCamera& camera);
+
 			void update() override;
 
 		private:
 			Renderer& m_renderer;
 			PerspectiveCamera& m_camera;
-			float m_sensitivity, m_speed;
 	};
 
 }
 
-#endif // POINTERLOCKCONTROL_HPP
+#endif // TRACKBALLCONTROLS_HPP

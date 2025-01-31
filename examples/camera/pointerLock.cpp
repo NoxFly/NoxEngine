@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
 	IniSet config;
 
-	if (!config.loadFromFile("res/config/config.ini")) {
+	if (!config.loadFromFile("res/config/config2.ini")) {
 		Console::error("main", "Failed to load configuration");
 		return EXIT_FAILURE;
 	}
@@ -26,15 +26,22 @@ int main(int argc, char** argv) {
 	Scene3D scene;
 	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
 
-	PointerLockControl controls(renderer, camera);
+	PointerLockControls controls(renderer, camera);
 
 	Texture::load("tile", "dev_tile_orange.png");
 
-	for(uint i=0; i < 10; i++) {
-		auto cubeA = std::make_shared<Cube>(1.2f, "tile");
-		cubeA->setPosition(-1.f, 0.f, (float)i);
-		scene.add(cubeA);
-	}
+	auto addCubes = [&](float x, float y, float z, float xOffset, float yOffset, float zOffset) {
+		for (uint i = 0; i < 10; i++) {
+			auto cube = std::make_shared<Cube>(1.f, "tile");
+			cube->setPosition(x + i * xOffset, y + i * yOffset, z + i * zOffset);
+			scene.add(cube);
+		}
+	};
+
+	addCubes(0.f, 0.f, 1.f, 0.f, 0.f, 1.f);  // Positive Z direction
+	addCubes(0.f, 0.f, -1.f, 0.f, 0.f, -1.f); // Negative Z direction
+	addCubes(1.f, 0.f, 0.f, 1.f, 0.f, 0.f);  // Positive X direction
+	addCubes(-1.f, 0.f, 0.f, -1.f, 0.f, 0.f); // Negative X direction
 
 
 	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 25.f);
@@ -46,8 +53,8 @@ int main(int argc, char** argv) {
 	camera.lookAt(0.f, 0.f, 0.f);
 
 	while (!renderer.shouldClose()) {
-		renderer.render(scene, camera);
 		controls.update();
+		renderer.render(scene, camera);
 	}
 
 	return EXIT_SUCCESS;

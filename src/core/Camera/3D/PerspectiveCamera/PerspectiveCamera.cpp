@@ -15,7 +15,7 @@ namespace NoxEngine {
 
     PerspectiveCamera::PerspectiveCamera(const float fov, const float aspect, const float near, const float far):
         Camera3D(fov, aspect, near, far),
-        m_orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f))
+        m_orientation()
     {}
 
     // Set's the camera's look at. The view matrix will be upated in the loop
@@ -73,7 +73,8 @@ namespace NoxEngine {
     void PerspectiveCamera::update() noexcept {
         if(m_needsUpdate) {
             m_needsUpdate = false;
-            m_matrix.setView(glm::mat4_cast(m_orientation) * glm::translate(glm::mat4(1.0f), -m_position));
+            auto view = glm::lookAt(m_position, m_position + getForward(), m_verticalAxis);
+            m_matrix.setView(view);
         }
     }
 
