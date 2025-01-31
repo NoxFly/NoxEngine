@@ -58,6 +58,18 @@ namespace NoxEngine {
         m_needsUpdate = true;
     }
 
+    /**
+     * Rotate from Euler angles (in radians)
+     */
+    void PerspectiveCamera::orientate(const V3D& offset) noexcept {
+        glm::quat qPitch = glm::angleAxis(offset.x, V3D(1, 0, 0));
+        glm::quat qYaw = glm::angleAxis(offset.y, V3D(0, 1, 0));
+        glm::quat qRoll = glm::angleAxis(offset.z, V3D(0, 0, 1));
+
+        m_orientation = glm::normalize(qPitch * qYaw * qRoll) * m_orientation;
+        m_needsUpdate = true;
+    }
+
     V3D PerspectiveCamera::getForward() const noexcept {
         return glm::rotate(m_orientation, V3D(0.0f, 0.0f, -1.0f));
     }
@@ -73,7 +85,13 @@ namespace NoxEngine {
     void PerspectiveCamera::update() noexcept {
         if(m_needsUpdate) {
             m_needsUpdate = false;
-            auto view = glm::lookAt(m_position, m_position + getForward(), m_verticalAxis);
+            
+            M4 rotate = glm::mat4_cast(m_orientation);
+            M4 translate = M4(1.0f);
+            translate = glm::translate(translate, -m_position);
+
+            M4 view = rotate * translate;
+
             m_matrix.setView(view);
         }
     }

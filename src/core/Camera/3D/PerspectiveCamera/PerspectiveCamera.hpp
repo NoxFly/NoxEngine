@@ -12,6 +12,18 @@
 #include "core/engine.typedef.hpp"
 #include "core/Camera/3D/Camera3D.hpp"
 
+/*
+
+The orientation of the camera is represented by a quaternion.
+a quaternion is [x, y, z, w] where x, y, z are the axis of rotation and w is the angle of rotation.
+
+roll : rotation around the camera's z-axis - to "return" an object by the side
+pitch : rotation around the camera's x-axis - like a flip/backflip
+yaw : rotation around the camera's y-axis - like a spin
+
+
+*/
+
 
 namespace NoxEngine {
 
@@ -28,6 +40,7 @@ namespace NoxEngine {
 
             glm::quat getOrientation() const noexcept;
             void setOrientation(const glm::quat& orientation) noexcept;
+            void orientate(const V3D& offset) noexcept;
 
             V3D getForward() const noexcept;
             V3D getRight() const noexcept;

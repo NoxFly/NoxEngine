@@ -16,7 +16,7 @@ namespace NoxEngine {
     PointerLockControls::PointerLockControls(Renderer& renderer, PerspectiveCamera& camera):
         m_renderer(renderer),
         m_camera(camera),
-        m_sensitivity(0.5f),
+        m_sensitivity(1.0f),
         m_speed(5.0f)
     {
     }
@@ -79,29 +79,25 @@ namespace NoxEngine {
             mouseMov.x *= m_sensitivity * deltaTime;
             mouseMov.y *= m_sensitivity * deltaTime;
 
-            glm::quat orientation = m_camera.getOrientation();
-            glm::quat pitch = glm::angleAxis(glm::radians(mouseMov.y), m_camera.getRight());
-            glm::quat yaw = glm::angleAxis(glm::radians(-mouseMov.x), glm::vec3(0.0f, 1.0f, 0.0f));
-
-            orientation = yaw * orientation * pitch;
-            orientation = glm::normalize(orientation);
-            m_camera.setOrientation(orientation);
+            // authorize the player to look up and down, left and right, but not to tilt his head
+            // (usually done by keys [QA]/E)
+            m_camera.orientate(V3D(1.f, mouseMov.x, mouseMov.y));
         }
 
         // displacement
         glm::vec3 position = m_camera.getPosition();
         float speed = m_speed * deltaTime;
 
-        if (input->isKeyDown(SDL_SCANCODE_Z)) {
+        if (input->isKeyDown(SDL_SCANCODE_W)) { // forward
             position += m_camera.getForward() * speed;
         }
-        if (input->isKeyDown(SDL_SCANCODE_S)) {
+        if (input->isKeyDown(SDL_SCANCODE_S)) { // backward
             position -= m_camera.getForward() * speed;
         }
-        if (input->isKeyDown(SDL_SCANCODE_Q)) {
+        if (input->isKeyDown(SDL_SCANCODE_A)) { // left
             position -= m_camera.getRight() * speed;
         }
-        if (input->isKeyDown(SDL_SCANCODE_D)) {
+        if (input->isKeyDown(SDL_SCANCODE_D)) { // right
             position += m_camera.getRight() * speed;
         }
 
