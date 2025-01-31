@@ -21,8 +21,8 @@ namespace NoxEngine {
     // Set's the camera's look at. The view matrix will be upated in the loop
     void PerspectiveCamera::lookAt(const V3D eye, const V3D target, const V3D up) noexcept {
         Camera::_setPosition(eye);
-        lookAt(target);
         m_verticalAxis = up;
+        lookAt(target);
     }
 
     void PerspectiveCamera::lookAt(const V3D& target) noexcept {
@@ -53,10 +53,6 @@ namespace NoxEngine {
         }
     }
 
-    glm::quat PerspectiveCamera::getOrientation() const noexcept {
-        return m_orientation;
-    }
-
     void PerspectiveCamera::setOrientation(const glm::quat& orientation) noexcept {
         m_orientation = orientation;
         m_target = m_position + getForward();
@@ -73,6 +69,10 @@ namespace NoxEngine {
 
         m_orientation = glm::normalize(qYaw * qPitch * qRoll * m_orientation);
         m_needsUpdate = true;
+    }
+
+    glm::quat PerspectiveCamera::getOrientation() const noexcept {
+        return m_orientation;
     }
 
     V3D PerspectiveCamera::getForward() const noexcept {

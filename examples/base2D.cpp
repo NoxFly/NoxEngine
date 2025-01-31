@@ -14,33 +14,29 @@ int main(int argc, char** argv) {
     (void)argc;
 	(void)argv;
 
-    std::string configPath = "res/config/config.ini";
+	IniSet config;
 
-    if(argc > 1) {
-        configPath = argv[1];
-    }
+    if (!config.loadFromFile("res/config/config.ini")) {
+		Console::error("main", "Failed to load configuration");
+		return EXIT_FAILURE;
+	}
     
-    IniSet config;
-
-    if(!config.loadFromFile(configPath)) {
-        Console::error("Failed to load the configuration.\nExiting.");
-        return 1;
-    }
-
     Renderer renderer(config);
-
     Scene2D scene;
     Camera2D camera;
 
     Texture::load("stone", "stonebrick_cracked.png");
 
-    auto rect = std::make_shared<Rectangle>();
+    auto rect = std::make_shared<Rectangle>(10.0f, 5.f);
 
     scene.add(rect);
+
+    camera.setPosition(0.f, 0.f);
+    camera.zoomOut(-10.f);
 
     while(!renderer.shouldClose()) {
         renderer.render(scene, camera);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

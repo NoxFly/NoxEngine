@@ -16,7 +16,7 @@ namespace NoxEngine {
     PointerLockControls::PointerLockControls(Renderer& renderer, PerspectiveCamera& camera):
         m_renderer(renderer),
         m_camera(camera),
-        m_sensitivity(1.0f),
+        m_sensitivity(2.0f),
         m_speed(5.0f)
     {
     }

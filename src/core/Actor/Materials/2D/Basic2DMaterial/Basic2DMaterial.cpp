@@ -14,17 +14,19 @@
 namespace NoxEngine {
 
     Basic2DMaterial::Basic2DMaterial():
-        Material(Shader::get("color2D"))
+        Material(Shader::get("basic2D"))
     {}
 
     Basic2DMaterial::Basic2DMaterial(const Color& color):
-        Material(Shader::get("color2D"), color)
+        Material(Shader::get("basic2D"), color)
     {}
 
+    // OUTDATED
     Basic2DMaterial::Basic2DMaterial(const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName))
     {}
 
+    // OUTDATED
     Basic2DMaterial::Basic2DMaterial(const Color& color, const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName), color)
     {}

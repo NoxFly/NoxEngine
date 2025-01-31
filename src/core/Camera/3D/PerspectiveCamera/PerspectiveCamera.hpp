@@ -17,9 +17,9 @@
 The orientation of the camera is represented by a quaternion.
 a quaternion is [x, y, z, w] where x, y, z are the axis of rotation and w is the angle of rotation.
 
-roll : rotation around the camera's z-axis - to "return" an object by the side
 pitch : rotation around the camera's x-axis - like a flip/backflip
 yaw : rotation around the camera's y-axis - like a spin
+roll : rotation around the camera's z-axis - to "return" an object by the side
 
 
 */
