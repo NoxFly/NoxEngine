@@ -15,9 +15,14 @@ namespace NoxEngine {
 
 	class PointerLockControl: public CameraControl<V3D, PerspectiveCamera> {
 		public:
-			explicit PointerLockControl();
+			explicit PointerLockControl(Renderer& renderer, PerspectiveCamera& camera);
 			
-			void update(Renderer& renderer, Scene<V3D>& scene, PerspectiveCamera& camera) override;
+			void update() override;
+
+		private:
+			Renderer& m_renderer;
+			PerspectiveCamera& m_camera;
+			float m_sensitivity, m_speed;
 	};
 
 }

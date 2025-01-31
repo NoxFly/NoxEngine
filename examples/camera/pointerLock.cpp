@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	Scene3D scene;
 	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
 
-	PointerLockControl controls;
+	PointerLockControl controls(renderer, camera);
 
 	Texture::load("tile", "dev_tile_orange.png");
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
 	while (!renderer.shouldClose()) {
 		renderer.render(scene, camera);
-		controls.update(renderer, scene, camera);
+		controls.update();
 	}
 
 	return EXIT_SUCCESS;

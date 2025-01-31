@@ -24,7 +24,7 @@ namespace NoxEngine {
                 Camera(V3D(0, 0, 0), V3D(0, 0, 0), V3D(0, 1, 0))
             {}
 
-            explicit Camera(const V3D& position, const V3D& target, const V3D& verticalAxis):
+            explicit inline Camera(const V3D& position, const V3D& target, const V3D& verticalAxis):
                 m_needsUpdate(true),
                 m_target(target),
                 m_verticalAxis(verticalAxis),
@@ -33,16 +33,16 @@ namespace NoxEngine {
                 _setPosition(position);
             }
 
-            virtual ~Camera() {}
+            inline virtual ~Camera() {}
 
-            void update() noexcept {
+            inline virtual void update() noexcept {
                 if(m_needsUpdate) {
                     m_needsUpdate = false;
                     m_matrix.setView(glm::lookAt(m_position, m_target, m_verticalAxis));
                 }
             }
 
-            Matrices<D>& getMatrices() noexcept {
+            inline Matrices<D>& getMatrices() noexcept {
                 return m_matrix;
             }
 
@@ -54,12 +54,12 @@ namespace NoxEngine {
             virtual void moveTo(const D& position, const unsigned int duration = 0) = 0;
 
         protected:
-            void _setPosition(const float x, const float y, const float z) noexcept {
+            inline void _setPosition(const float x, const float y, const float z) noexcept {
                 m_position = V3D(x, y, z);
                 m_needsUpdate = true;
             }
 
-            void _setPosition(const V3D& position) noexcept {
+            inline void _setPosition(const V3D& position) noexcept {
                 m_position = position;
                 m_needsUpdate = true;
             }

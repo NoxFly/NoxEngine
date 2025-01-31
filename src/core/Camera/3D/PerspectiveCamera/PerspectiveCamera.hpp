@@ -23,10 +23,20 @@ namespace NoxEngine {
             void lookAt(const float x, const float y, const float z) noexcept;
             void lookAt(const V3D& target) noexcept;
 
-            void orientate(const V2D& dir) noexcept;
-
             void move(const V3D& offset, const unsigned int duration = 0);
             void moveTo(const V3D& position, const unsigned int duration = 0);
+
+            glm::quat getOrientation() const noexcept;
+            void setOrientation(const glm::quat& orientation) noexcept;
+
+            V3D getForward() const noexcept;
+            V3D getRight() const noexcept;
+            V3D getUp() const noexcept;
+
+            void update() noexcept override;
+
+        private:
+            glm::quat m_orientation;
     };
 
 }

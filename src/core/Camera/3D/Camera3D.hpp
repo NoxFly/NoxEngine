@@ -47,6 +47,10 @@ namespace NoxEngine {
             virtual void move(const V3D& offset, const unsigned int duration = 0) = 0;
             virtual void moveTo(const V3D& position, const unsigned int duration = 0) = 0;
 
+            inline virtual void update() noexcept override {
+                Camera::update();
+            }
+
         protected:
             double m_near, m_far;
     };

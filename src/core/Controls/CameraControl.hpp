@@ -18,7 +18,7 @@ namespace NoxEngine {
 	class CameraControl {
 		public:
 			virtual ~CameraControl() {}
-			virtual void update(Renderer& renderer, Scene<D>& scene, C& camera) = 0;
+			virtual void update() = 0;
 	};
 
 }

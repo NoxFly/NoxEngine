@@ -97,7 +97,7 @@ namespace NoxEngine {
     }
 
     bool Input::isMouseMoving() const noexcept {
-        V2D v = getMouseDir();
+        V2D v = getMouseMovement();
         return v.x != 0 && v.y != 0;
     }
 
@@ -114,11 +114,11 @@ namespace NoxEngine {
         return m_wheelEvent;
     }
 
-    V2D Input::getMouseDir() const noexcept {
+    V2D Input::getMouseMovement() const noexcept {
         return mouseMotion;
     }
 
-    V2D Input::getMousePoint() const noexcept {
+    V2D Input::getMousePosition() const noexcept {
         return V2D(m_mouseX, m_mouseY);
     }
 

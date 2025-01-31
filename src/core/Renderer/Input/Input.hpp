@@ -28,8 +28,8 @@ namespace NoxEngine {
             int getMouseX() const noexcept;
             int getMouseY() const noexcept;
             int wheelScroll() const noexcept;
-            V2D getMouseDir() const noexcept;
-            V2D getMousePoint() const noexcept;
+            V2D getMouseMovement() const noexcept;
+            V2D getMousePosition() const noexcept;
             V2D getMousePointFromCenter(SDL_Window* window) const noexcept;
 
         private:

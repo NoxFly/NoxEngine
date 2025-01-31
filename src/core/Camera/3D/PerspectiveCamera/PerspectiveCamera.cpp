@@ -6,6 +6,7 @@
 
 #include "PerspectiveCamera.hpp"
 
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <algorithm>
 
@@ -13,7 +14,8 @@
 namespace NoxEngine {
 
     PerspectiveCamera::PerspectiveCamera(const float fov, const float aspect, const float near, const float far):
-        Camera3D(fov, aspect, near, far)
+        Camera3D(fov, aspect, near, far),
+        m_orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f))
     {}
 
     // Set's the camera's look at. The view matrix will be upated in the loop
@@ -25,6 +27,8 @@ namespace NoxEngine {
 
     void PerspectiveCamera::lookAt(const V3D& target) noexcept {
         m_target = target;
+        V3D direction = glm::normalize(m_target - m_position);
+        m_orientation = glm::quatLookAt(direction, m_verticalAxis);
         m_needsUpdate = true;
     }
 
@@ -44,9 +48,33 @@ namespace NoxEngine {
         }
     }
 
-    void PerspectiveCamera::orientate(const V2D& dir) noexcept {
-        // TODO
-        (void)dir;
+    glm::quat PerspectiveCamera::getOrientation() const noexcept {
+        return m_orientation;
+    }
+
+    void PerspectiveCamera::setOrientation(const glm::quat& orientation) noexcept {
+        m_orientation = orientation;
+        m_target = m_position + getForward();
+        m_needsUpdate = true;
+    }
+
+    V3D PerspectiveCamera::getForward() const noexcept {
+        return glm::rotate(m_orientation, V3D(0.0f, 0.0f, -1.0f));
+    }
+
+    V3D PerspectiveCamera::getRight() const noexcept {
+        return glm::rotate(m_orientation, V3D(1.0f, 0.0f, 0.0f));
+    }
+
+    V3D PerspectiveCamera::getUp() const noexcept {
+        return glm::rotate(m_orientation, V3D(0.0f, 1.0f, 0.0f));
+    }
+
+    void PerspectiveCamera::update() noexcept {
+        if(m_needsUpdate) {
+            m_needsUpdate = false;
+            m_matrix.setView(glm::mat4_cast(m_orientation) * glm::translate(glm::mat4(1.0f), -m_position));
+        }
     }
 
 }
