@@ -40,6 +40,8 @@ int main(int argc, char** argv) {
 	addCubes(0.f, 0.f, -1.f, 0.f, 0.f, -1.f); // Negative Z direction
 	addCubes(1.f, 0.f, 0.f, 1.f, 0.f, 0.f);  // Positive X direction
 	addCubes(-1.f, 0.f, 0.f, -1.f, 0.f, 0.f); // Negative X direction
+	addCubes(0.f, 1.f, 0.f, 0.f, 1.f, 0.f);  // Positive Y direction
+	addCubes(0.f, -1.f, 0.f, 0.f, -1.f, 0.f); // Negative Y direction
 
 
 	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 25.f);

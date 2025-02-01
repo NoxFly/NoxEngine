@@ -16,7 +16,7 @@ namespace NoxEngine {
     PointerLockControls::PointerLockControls(Renderer& renderer, PerspectiveCamera& camera):
         m_renderer(renderer),
         m_camera(camera),
-        m_sensitivity(2.0f),
+        m_sensitivity(20.0f),
         m_speed(5.0f)
     {
     }
@@ -76,12 +76,15 @@ namespace NoxEngine {
         if(input->isMouseMoving()) {
             auto mouseMov = input->getMouseMovement();
 
-            float deltaX = glm::radians(mouseMov.x * m_sensitivity * deltaTime);
-            float deltaY = glm::radians(mouseMov.y * m_sensitivity * deltaTime);
+            auto mx = mouseMov.x * m_sensitivity * deltaTime;
+            auto my = mouseMov.y * m_sensitivity * deltaTime;
+
+            float deltaX = glm::radians(mx);
+            float deltaY = glm::radians(my);
 
             // authorize the player to look up and down, left and right, but not to tilt his head
             // (usually done by keys [QA]/E)
-            m_camera.orientate(V3D(deltaX, deltaY, 0.0f));
+            m_camera.orientate(V3D(-deltaY, -deltaX, 0.f));
         }
 
         // displacement
