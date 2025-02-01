@@ -115,7 +115,9 @@ namespace NoxEngine {
     }
 
     V2D Input::getMouseMovement() const noexcept {
-        return mouseMotion;
+        int x, y;
+        SDL_GetRelativeMouseState(&x, &y);
+        return V2D(x, y);
     }
 
     V2D Input::getMousePosition() const noexcept {

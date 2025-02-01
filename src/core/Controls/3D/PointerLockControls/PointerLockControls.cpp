@@ -73,17 +73,15 @@ namespace NoxEngine {
             return;
 
         // orientation (look)
-        if(input->isMouseMoving()) {
-            auto mouseMov = input->getMouseMovement();
+        auto mouseMov = input->getMouseMovement();
 
+        if(mouseMov.x != 0 || mouseMov.y != 0) {
             auto mx = mouseMov.x * m_sensitivity * deltaTime;
             auto my = mouseMov.y * m_sensitivity * deltaTime;
 
             float deltaX = glm::radians(mx);
             float deltaY = glm::radians(my);
 
-            // authorize the player to look up and down, left and right, but not to tilt his head
-            // (usually done by keys [QA]/E)
             m_camera.orientate(V3D(-deltaY, -deltaX, 0.f));
         }
 
