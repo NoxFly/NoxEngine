@@ -4,7 +4,7 @@
  * @license AGPL-3.0
  */
 
-#include "Basic2DMaterial.hpp"
+#include "BasicMaterial.hpp"
 
 #include "core/Actor/Shader/Shader.hpp"
 #include "core/Actor/Texture/Texture.hpp"
@@ -13,24 +13,24 @@
 
 namespace NoxEngine {
 
-    Basic2DMaterial::Basic2DMaterial():
-        Material(Shader::get("basic2D"))
+    BasicMaterial::BasicMaterial():
+        Material(Shader::get("basic3D"))
     {}
 
-    Basic2DMaterial::Basic2DMaterial(const Color& color):
-        Material(Shader::get("basic2D"), color)
+    BasicMaterial::BasicMaterial(const Color& color):
+        Material(Shader::get("basic3D"), color)
     {}
-
+    
     // OUTDATED
-    Basic2DMaterial::Basic2DMaterial(const std::string& textureName):
+    BasicMaterial::BasicMaterial(const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName))
     {}
 
     // OUTDATED
-    Basic2DMaterial::Basic2DMaterial(const Color& color, const std::string& textureName):
+    BasicMaterial::BasicMaterial(const Color& color, const std::string& textureName):
         Material(Shader::get("texture"), Texture::get(textureName), color)
     {}
 
-    Basic2DMaterial::~Basic2DMaterial() {}
+    BasicMaterial::~BasicMaterial() {}
 
 }

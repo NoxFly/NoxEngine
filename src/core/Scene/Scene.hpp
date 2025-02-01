@@ -17,31 +17,27 @@
 
 namespace NoxEngine {
 
-    template <Dimension D>
     class Actor;
 
-    template <Dimension D>
     class Scene {
         public:
             explicit Scene();
-            Scene(Scene<D>&) = delete;
+            Scene(Scene&) = delete;
             ~Scene();
 
-            Scene<D>& operator=(const Scene<D>&) = delete;
+            Scene& operator=(const Scene&) = delete;
 
-            void add(std::shared_ptr<Actor<D>> object) noexcept;
+            void add(std::shared_ptr<Actor> object) noexcept;
             void add(std::shared_ptr<Light> light) noexcept;
 
-            std::vector<std::shared_ptr<Actor<D>>> getActors() const noexcept;
+            std::vector<std::shared_ptr<Actor>> getActors() const noexcept;
             std::vector<std::shared_ptr<Light>> getLights() const noexcept;
 
         protected:
-            std::vector<std::shared_ptr<Actor<D>>> m_objects;
+            std::vector<std::shared_ptr<Actor>> m_objects;
             std::vector<std::shared_ptr<Light>> m_lights;
     };
 
 }
-
-#include "./Scene.inl"
 
 #endif // SCENE_HPP

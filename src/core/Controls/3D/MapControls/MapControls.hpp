@@ -8,12 +8,12 @@
 #define MAPCONTROLS_HPP
 
 #include "core/Controls/CameraControl.hpp"
-#include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "core/Camera/PerspectiveCamera/PerspectiveCamera.hpp"
 #include "core/Renderer/Renderer.hpp"
 
 namespace NoxEngine {
 
-	class MapControls: public CameraControl<V3D, PerspectiveCamera> {
+	class MapControls: public CameraControl<PerspectiveCamera> {
 		public:
 			explicit MapControls(Renderer& renderer, PerspectiveCamera& camera);
 

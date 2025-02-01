@@ -8,6 +8,8 @@
 #define CAMERA_HPP
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <memory>
 
 #include "core/engine.typedef.hpp"
@@ -17,21 +19,36 @@
 
 namespace NoxEngine {
 
-    template <Dimension D>
-    class Camera: public Movable<V3D, false> {
+    class Camera: public Movable<true> {
         public:
             explicit Camera():
-                Camera(V3D(0, 0, 0), V3D(0, 0, 0), V3D(0, 1, 0))
+                Camera(V3D(0, 0, 0), V3D(0, 0, 0), V3D(0, 1, 0), 0.1f, 1000.f)
             {}
 
-            explicit inline Camera(const V3D& position, const V3D& target, const V3D& verticalAxis):
+            explicit inline Camera(const V3D& position, const V3D& target, const V3D& verticalAxis, const float near, const float far):
                 m_needsUpdate(true),
+                m_near(near), m_far(far),
                 m_target(target),
                 m_verticalAxis(verticalAxis),
                 m_matrix()
             {
                 _setPosition(position);
             }
+
+            explicit Camera(const float left, const float right, const float top, const float bottom, const float near, const float far):
+                m_needsUpdate(true),
+                m_near(near), m_far(far),
+                m_target(V3D(0, 0, 0)),
+                m_verticalAxis(V3D(0, 1, 0)),
+                m_matrix(left, right, top, bottom, m_near, m_far, m_position, m_verticalAxis)
+            {
+                _setPosition(0, 0, 0);
+            }
+
+            explicit Camera(const float fov, const float aspect, const float near, const float far) :
+                m_near(near), m_far(far),
+                m_matrix(fov, aspect, m_near, m_far, m_position, m_verticalAxis)
+            {}
 
             inline virtual ~Camera() {}
 
@@ -42,16 +59,12 @@ namespace NoxEngine {
                 }
             }
 
-            inline Matrices<D>& getMatrices() noexcept {
+            inline Matrices& getMatrices() noexcept {
                 return m_matrix;
             }
 
-            virtual void setPosition(const D& position) noexcept = 0;
-            
-            virtual D getPosition() const noexcept = 0;
-
-            virtual void move(const D& offset, const unsigned int duration = 0) = 0;
-            virtual void moveTo(const D& position, const unsigned int duration = 0) = 0;
+            virtual void move(const V3D& offset, const unsigned int duration = 0) = 0;
+            virtual void moveTo(const V3D& position, const unsigned int duration = 0) = 0;
 
         protected:
             inline void _setPosition(const float x, const float y, const float z) noexcept {
@@ -65,8 +78,9 @@ namespace NoxEngine {
             }
 
             bool m_needsUpdate;
+            double m_near, m_far;
             V3D m_target, m_verticalAxis;
-            Matrices<D> m_matrix;
+            Matrices m_matrix;
     };
 
 

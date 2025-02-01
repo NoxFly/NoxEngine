@@ -48,7 +48,7 @@ namespace NoxEngine {
         Shader::loadFolder();
 
         Texture::setTexturesPath(m_config.getValue("PATH", "textures"));
-        Actor<V3D>::setObjectsPath(m_config.getValue("PATH", "models"));
+        Actor::setObjectsPath(m_config.getValue("PATH", "models"));
     }
 
     Renderer::~Renderer() {
@@ -360,5 +360,48 @@ namespace NoxEngine {
         Console::info("fps\t\t\t"                   + std::to_string(m_settings.fps));
         Console::info("-------------------------------------------------");
     }
+
+
+    void Renderer::render(Scene& scene, Camera& camera) {
+        // --- Time management ---
+
+        Uint64 now = SDL_GetPerformanceCounter();
+
+        m_deltaTime = static_cast<double>((now - m_previousTime) / static_cast<double>(SDL_GetPerformanceFrequency()));
+		m_previousTime = now;
+        m_totalTime += m_deltaTime;
+
+        m_frameRate = std::round(1.0f / m_deltaTime);
+
+        // --- pre-update ---
+
+        camera.update();
+
+        // --- draw ---
+
+        auto earlyLoop = SDL_GetTicks64();
+
+        clear(m_clearColor);
+
+        const std::vector<std::shared_ptr<Actor>> objects = scene.getActors();
+
+        for (std::shared_ptr<Actor> o : objects) {
+            o->render(&scene, &camera);
+        }
+
+        swapWindow();
+
+        //
+
+        auto endLoop = SDL_GetTicks64();
+        auto spentTime = endLoop - earlyLoop;
+
+        if (spentTime < m_frameRate)
+            SDL_Delay(m_frameRate - spentTime);
+
+        // --- post-update ---
+
+        updateInput();
+	}
 
 }

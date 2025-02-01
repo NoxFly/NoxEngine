@@ -19,7 +19,6 @@
 
 namespace NoxEngine {
 
-    template <Dimension D>
     class Material {
         public:
             explicit Material();
@@ -50,7 +49,7 @@ namespace NoxEngine {
             float getColorOpacity() const;
             float getTextureOpacity() const;
 
-            virtual void transferUniforms(Matrices<D>& mvp, const Scene<D>* scene) {
+            virtual void transferUniforms(Matrices& mvp, const Scene* scene) {
                 (void)mvp;
                 (void)scene;
             };
@@ -71,7 +70,5 @@ namespace NoxEngine {
     };
 
 }
-
-#include "Material.inl"
 
 #endif // MATERIAL_HPP

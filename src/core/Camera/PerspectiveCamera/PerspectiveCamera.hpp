@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 
 #include "core/engine.typedef.hpp"
-#include "core/Camera/3D/Camera3D.hpp"
+#include "core/Camera/Camera.hpp"
 
 /*
 
@@ -27,7 +27,7 @@ roll : rotation around the camera's z-axis - to "return" an object by the side
 
 namespace NoxEngine {
 
-    class PerspectiveCamera: public Camera3D {
+    class PerspectiveCamera: public Camera {
         public:
             explicit PerspectiveCamera(const float fov, const float aspect, const float near, const float far);
 

@@ -4,8 +4,6 @@
 #include <cmath>
 #include <chrono>
 
-#define __NOX_ENGINE_3D__
-
 #include "core/engine.hpp"
 #include "Console.hpp"
 #include "IniSet.hpp"
@@ -40,7 +38,7 @@ int main(int argc, char** argv) {
 	}
 
 	Renderer renderer(config);
-	Scene3D scene;
+	Scene scene;
 	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
 
 	Texture::load("stone", "stonebrick_cracked.png");

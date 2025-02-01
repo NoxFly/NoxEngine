@@ -10,12 +10,12 @@
 #include <glm/glm.hpp>
 
 #include "core/engine.typedef.hpp"
-#include "core/Camera/3D/Camera3D.hpp"
+#include "core/Camera/Camera.hpp"
 
 
 namespace NoxEngine {
 
-    class OrthographicCamera : public Camera3D {
+    class OrthographicCamera : public Camera {
         public:
             explicit OrthographicCamera(const float left, const float right, const float top, const float bottom);
             explicit OrthographicCamera(const float left, const float right, const float top, const float bottom, const float near, const float far);

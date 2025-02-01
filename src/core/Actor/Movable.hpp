@@ -11,41 +11,37 @@
 
 namespace NoxEngine {
 
-    template <Dimension D, bool PublicSetter = true>
+    template <bool PublicSetter>
     class Movable {
 
         public:
             explicit Movable(): m_position() {}
-            explicit Movable(const D& position): m_position(position) {}
+            explicit Movable(const V3D& position): m_position(position) {}
 
             virtual ~Movable() = 0;
 
             // GETTERS
-            D getPosition() const noexcept {
+            V3D getPosition() const noexcept {
                 return m_position;
             }
 
 
             // SETTERS
-            void setPosition(const float x, const float y) noexcept requires (Is2D<D> && PublicSetter) {
-                m_position = V2D(x, y);
-            }
-
-            void setPosition(const float x, const float y, const float z) noexcept requires (Is3D<D> && PublicSetter) {
+            void setPosition(const float x, const float y, const float z) noexcept requires PublicSetter {
                 m_position = V3D(x, y, z);
             }
 
-            void setPosition(const D& position) noexcept requires PublicSetter {
+            void setPosition(const V3D& position) noexcept requires PublicSetter {
                 m_position = position;
             }
 
 
         protected:
-            D m_position;
+            V3D m_position;
     };
 
-    template <Dimension D, bool P>
-    inline Movable<D, P>::~Movable() {}
+    template <bool P>
+    inline Movable<P>::~Movable() {}
 
 }
 

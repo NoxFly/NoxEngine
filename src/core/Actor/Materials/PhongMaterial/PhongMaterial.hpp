@@ -17,7 +17,7 @@
 
 namespace NoxEngine {
 
-    class PhongMaterial : public Material<V3D> {
+    class PhongMaterial : public Material {
         public:
             explicit PhongMaterial();
             explicit PhongMaterial(const Color& color);
@@ -25,7 +25,7 @@ namespace NoxEngine {
             explicit PhongMaterial(const Color& color, const std::string& textureName);
             ~PhongMaterial();
 
-            void transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) override {
+            void transferUniforms(Matrices& mvp, const Scene* scene) override {
                 const auto lights = scene->getLights();
 
                 // sends the matrices

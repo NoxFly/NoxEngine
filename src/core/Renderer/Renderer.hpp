@@ -37,8 +37,7 @@ namespace NoxEngine {
 
             Input* getInput() noexcept;
 
-            template <Dimension D>
-            void render(Scene<D>& scene, Camera<D>& camera);
+            void render(Scene& scene, Camera& camera);
 
             void show() noexcept;
             void hide() noexcept;
@@ -89,7 +88,5 @@ namespace NoxEngine {
     };
 
 }
-
-#include "./Renderer.inl"
 
 #endif // RENDERER_HPP

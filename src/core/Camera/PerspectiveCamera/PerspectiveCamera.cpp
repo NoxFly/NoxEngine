@@ -14,7 +14,7 @@
 namespace NoxEngine {
 
     PerspectiveCamera::PerspectiveCamera(const float fov, const float aspect, const float near, const float far):
-        Camera3D(fov, aspect, near, far),
+        Camera(fov, aspect, near, far),
         m_orientation()
     {}
 

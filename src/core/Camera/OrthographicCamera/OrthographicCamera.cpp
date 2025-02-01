@@ -16,7 +16,7 @@ namespace NoxEngine {
 	}
 
 	OrthographicCamera::OrthographicCamera(const float left, const float right, const float top, const float bottom, const float near, const float far):
-		Camera3D(left, right, top, bottom, near, far)
+		Camera(left, right, top, bottom, near, far)
 	{
 
 	}

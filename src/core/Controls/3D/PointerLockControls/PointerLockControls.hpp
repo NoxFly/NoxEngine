@@ -8,12 +8,12 @@
 #define POINTERLOCKCONTROL_HPP
 
 #include "core/Controls/CameraControl.hpp"
-#include "core/Camera/3D/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "core/Camera/PerspectiveCamera/PerspectiveCamera.hpp"
 #include "core/Renderer/Renderer.hpp"
 
 namespace NoxEngine {
 
-	class PointerLockControls: public CameraControl<V3D, PerspectiveCamera> {
+	class PointerLockControls: public CameraControl<PerspectiveCamera> {
 		public:
 			explicit PointerLockControls(Renderer& renderer, PerspectiveCamera& camera);
 

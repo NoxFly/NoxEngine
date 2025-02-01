@@ -14,15 +14,15 @@
 
 namespace NoxEngine {
 
-    class Basic3DMaterial: public Material<V3D> {
+    class BasicMaterial: public Material {
         public:
-            explicit Basic3DMaterial();
-            explicit Basic3DMaterial(const Color& color);
-            explicit Basic3DMaterial(const std::string& textureName);
-            explicit Basic3DMaterial(const Color& color, const std::string& textureName);
-            ~Basic3DMaterial();
+            explicit BasicMaterial();
+            explicit BasicMaterial(const Color& color);
+            explicit BasicMaterial(const std::string& textureName);
+            explicit BasicMaterial(const Color& color, const std::string& textureName);
+            ~BasicMaterial();
 
-            void transferUniforms(Matrices<V3D>& mvp, const Scene<V3D>* scene) override {
+            void transferUniforms(Matrices& mvp, const Scene* scene) override {
                 (void)scene;
                 m_shader->setMat4("MVP", mvp.get());
                 m_shader->setVec3("objectColor", m_color.vec3());

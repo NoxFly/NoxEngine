@@ -6,6 +6,8 @@
 
 //#pragma warning (disable: 4244 4312 4996 6031 6054)
 
+#include "BufferGeometry.hpp"
+
 #include <string>
 
 #include "core/engine.typedef.hpp"
@@ -14,24 +16,20 @@
 
 namespace NoxEngine {
 
-	template <Dimension D>
-	BufferGeometry<D>::BufferGeometry()
+	BufferGeometry::BufferGeometry()
 	{
 
 	}
 
-	template <Dimension D>
-	BufferGeometry<D>::~BufferGeometry() {
+	BufferGeometry::~BufferGeometry() {
 
 	}
 
-	template <Dimension D>
-	bool BufferGeometry<D>::loadFromData(const GeometryData& data) {
+	bool BufferGeometry::loadFromData(const GeometryData& data) {
 		return load(data);
 	}
 
-	template <Dimension D>
-	bool BufferGeometry<D>::load(const GeometryData& data)
+	bool BufferGeometry::load(const GeometryData& data)
 	{
 		if(m_hasLoaded) {
 			// unload previous data
@@ -148,11 +146,10 @@ namespace NoxEngine {
 		return true;
 	}
 
-	template <Dimension D>
-	void BufferGeometry<D>::indexData(
-		const GeometryIndexedData<V3D>& data,
+	void BufferGeometry::indexData(
+		const GeometryIndexedData& data,
 		GeometryData& out
-	) requires Is3D<D> {
+	) {
 
 		// step 1 : duplicate data by their array of indices
 
@@ -216,13 +213,13 @@ namespace NoxEngine {
 			return;
 		}
 
-		std::map<PackedVertex<D>, GLushort> VertexToOutIndex;
+		std::map<PackedVertex, GLushort> VertexToOutIndex;
 		GLushort outVsize = 0;
 
 		// For each input vertex
 		for (unsigned int i = 0; i < vSize; i++) {
 
-			PackedVertex<D> packed;
+			PackedVertex packed;
 
 			packed.position = tempV[i];
 
@@ -277,21 +274,12 @@ namespace NoxEngine {
 
 	}
 
-	template <Dimension D>
-	void BufferGeometry<D>::indexData(
-		const GeometryIndexedData<V2D>& data,
-		GeometryData& out
-	) requires Is2D<D> {
-		// TODO
-	}
-
-	template<Dimension D>
-	bool BufferGeometry<D>::getSimilarVertexIndex(
-		PackedVertex<D>& packed,
-		std::map<PackedVertex<D>, GLushort>& vertexToOutIndex,
+	bool BufferGeometry::getSimilarVertexIndex(
+		PackedVertex& packed,
+		std::map<PackedVertex, GLushort>& vertexToOutIndex,
 		GLushort& result
 	) {
-		typename std::map<PackedVertex<D>, GLushort>::iterator it = vertexToOutIndex.find(packed);
+		typename std::map<PackedVertex, GLushort>::iterator it = vertexToOutIndex.find(packed);
 
 		if (it == vertexToOutIndex.end()) {
 			return false;

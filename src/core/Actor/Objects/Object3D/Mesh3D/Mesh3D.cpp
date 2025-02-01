@@ -171,7 +171,7 @@ namespace NoxEngine {
 			vIndices
 		};
 
-        auto geometry = new BufferGeometry<V3D>();
+        auto geometry = new BufferGeometry();
         
         if(geometry->loadFromData(data)) {
             m_geometry = geometry;

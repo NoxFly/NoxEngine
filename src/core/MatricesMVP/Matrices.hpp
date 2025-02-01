@@ -14,7 +14,6 @@
 
 namespace NoxEngine {
 
-    template <Dimension D>
     class Matrices {
 
         public:
@@ -22,8 +21,8 @@ namespace NoxEngine {
             explicit Matrices(const M4& view);
             explicit Matrices(const M4& view, const std::stack<M4>& saves);
 
-            explicit Matrices(const float left, const float right, const float top, const float bottom, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
-            explicit Matrices(const float fov, const float aspect, const float near, const float far, const V3D& position, const V3D& verticalAxis) requires Is3D<D>;
+            explicit Matrices(const float left, const float right, const float top, const float bottom, const float near, const float far, const V3D& position, const V3D& verticalAxis);
+            explicit Matrices(const float fov, const float aspect, const float near, const float far, const V3D& position, const V3D& verticalAxis);
 
             virtual ~Matrices() {};
 
@@ -33,8 +32,8 @@ namespace NoxEngine {
             M4& getModel() noexcept;
             M4& getView() noexcept;
 
-            M4 getProjection() const noexcept requires Is3D<D>;
-            M4& getProjection() noexcept requires Is3D<D>;
+            M4 getProjection() const noexcept;
+            M4& getProjection() noexcept;
 
             M4& get() noexcept;
 
@@ -43,13 +42,9 @@ namespace NoxEngine {
             void push() noexcept;
             void pop() noexcept;
 
-            void translate(const V3D& translation) noexcept requires Is3D<D>;
-            void rotate(const V3D& rotation) noexcept requires Is3D<D>;
-            void scale(const V3D& scale) noexcept requires Is3D<D>;
-
-            void translate(const V2D& translation) noexcept requires Is2D<D>;
-            void rotate(const V2D& rotation) noexcept requires Is2D<D>;
-            void scale(const V2D& scale) noexcept requires Is2D<D>;
+            void translate(const V3D& translation) noexcept;
+            void rotate(const V3D& rotation) noexcept;
+            void scale(const V3D& scale) noexcept;
 
         protected:
             void update() noexcept;
@@ -64,7 +59,5 @@ namespace NoxEngine {
     };
 
 }
-
-#include "Matrices.inl"
 
 #endif // MATRICES_HPP

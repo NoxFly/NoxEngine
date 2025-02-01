@@ -24,7 +24,7 @@ namespace NoxEngine {
 
 
         GeometryData data;
-        GeometryIndexedData<V3D> indexedData;
+        GeometryIndexedData indexedData;
 
         indexedData.vertices = {
             // front

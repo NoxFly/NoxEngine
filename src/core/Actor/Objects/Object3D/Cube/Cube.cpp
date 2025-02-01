@@ -6,7 +6,7 @@
 
 #include "Cube.hpp"
 
-#include "core/Actor/Materials/3D/PhongMaterial/PhongMaterial.hpp"
+#include "core/Actor/Materials/PhongMaterial/PhongMaterial.hpp"
 #include "core/Actor/Geometries/3D/BoxGeometry/BoxGeometry.hpp"
 
 

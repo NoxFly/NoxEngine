@@ -13,7 +13,7 @@
 
 namespace NoxEngine {
 	
-	class Light: public Movable<V3D> {
+	class Light: public Movable<true> {
 		public:
 			explicit Light(const Color color, const float intensity);
 			virtual ~Light();

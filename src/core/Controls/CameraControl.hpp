@@ -14,7 +14,7 @@
 
 namespace NoxEngine {
 
-	template <Dimension D, typename C, typename = std::enable_if_t<std::is_base_of_v<Camera<D>, C>>>
+	template <typename C, typename = std::enable_if_t<std::is_base_of_v<Camera, C>>>
 	class CameraControl {
 		public:
 			virtual ~CameraControl() {}

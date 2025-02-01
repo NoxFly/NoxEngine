@@ -15,7 +15,7 @@
 
 namespace NoxEngine {
 
-    class SphereGeometry: public BufferGeometry<V3D> {
+    class SphereGeometry: public BufferGeometry {
         public:
             explicit SphereGeometry(const float radius, const unsigned short nbPointsH=70, const unsigned short nbPointsV=70);
             ~SphereGeometry();

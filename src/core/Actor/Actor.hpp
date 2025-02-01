@@ -14,74 +14,63 @@
 #include <memory>
 
 #include "core/engine.typedef.hpp"
+#include "core/MatricesMVP/Matrices.hpp"
+#include "core/Camera/Camera.hpp"
 #include "Geometries/Geometry.hpp"
 #include "Materials/Material.hpp"
-#include "core/MatricesMVP/Matrices.hpp"
 #include "Movable.hpp"
 
 
 namespace NoxEngine {
 
-    template <Dimension D>
     class Scene;
-    template <Dimension D>
-    class Camera;
 
-    template <Dimension D>
-    class Actor: public Movable<D> {
+    class Actor: public Movable<true> {
         public:
             static void setObjectsPath(const std::string& objectsPath) noexcept;
 
             explicit Actor();
-            explicit Actor(Geometry* geometry, Material<D>* material);
-            // Actor(const Actor<D>& copy);
-            // const Actor<D>& operator=(const Actor<D>& copy);
+            explicit Actor(Geometry* geometry, Material* material);
+            // Actor(const Actor& copy);
+            // const Actor& operator=(const Actor& copy);
             virtual ~Actor();
 
             const std::string& getUUID() const noexcept;
 
             Geometry* getGeometry() noexcept;
-            Material<D>* getMaterial() noexcept;
+            Material* getMaterial() noexcept;
 
-            const D& getRotation() const noexcept;
+            const V3D& getRotation() const noexcept;
 
-            void setPosition(const D& position) noexcept;
-            void setRotation(const D& rotation) noexcept;
+            void setPosition(const V3D& position) noexcept;
+            void setRotation(const V3D& rotation) noexcept;
 
-            void setPosition(const float x, const float y) noexcept requires Is2D<D>;
-            void setPosition(const float x, const float y, const float z) noexcept requires Is3D<D>;
-            void setRotation(const float rx, const float ry) noexcept requires Is2D<D>;
-            void setRotation(const float rx, const float ry, const float rz) noexcept requires Is3D<D>;
+            void setPosition(const float x, const float y, const float z) noexcept;
+            void setRotation(const float rx, const float ry, const float rz) noexcept;
 
-            void rotate(const float x, const float y) noexcept requires Is2D<D>;
-            void rotate(const float x, const float y, const float z) noexcept requires Is3D<D>;
+            void rotate(const float x, const float y, const float z) noexcept;
 
-            void scale(const float x, const float y) noexcept requires Is2D<D>;
-            void scale(const float x, const float y, const float z) noexcept requires Is3D<D>;
+            void scale(const float x, const float y, const float z) noexcept;
 
             void setCullFace(const GLenum cullFace) noexcept;
             void setPolygonMode(const GLenum polygonMode) noexcept;
 
-            void render(Scene<D>* scene, Camera<D>* camera);
+            void render(Scene* scene, Camera* camera);
 
         protected:
             static std::string m_objectsPath;
 
             const std::string m_uuid;
-            const unsigned int m_dimension;
-            const bool m_is3D;
 
             Geometry* m_geometry;
-            Material<D>* m_material;
+            Material* m_material;
             GLenum m_cullFace, m_polygonMode;
 
-            D m_rotation;
-            D m_scale;
+            V3D m_rotation;
+            V3D m_scale;
             bool m_hasToTranslate, m_hasToRotate, m_hasToScale;
     };
 
 }
-
-#include "Actor.inl"
 
 #endif // ACTOR_HPP
