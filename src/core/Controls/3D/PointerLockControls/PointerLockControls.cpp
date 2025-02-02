@@ -17,9 +17,12 @@ namespace NoxEngine {
         m_renderer(renderer),
         m_camera(camera),
         m_sensitivity(20.0f),
-        m_speed(5.0f)
-    {
-    }
+        m_speed(5.0f),
+        m_velocity(0.0f),
+        m_acceleration(10.0f),
+        m_deceleration(5.0f),
+        m_displacement(0.0f, 0.0f)
+    {}
 
     void PointerLockControls::setSpeed(const float speed) noexcept {
         m_speed = speed;
@@ -56,49 +59,73 @@ namespace NoxEngine {
 
         if(isLocked() && input->isKeyDown(SDL_SCANCODE_ESCAPE)) {
             unlockPointer();
-            return;
         }
-
-        if(!isLocked() && input->isMouseButtonDown(SDL_BUTTON_LEFT)) {
+        else if(!isLocked() && input->isMouseButtonDown(SDL_BUTTON_LEFT)) {
             lockPointer();
-            return;
         }
-
-        if(!m_renderer.isMouseFocused())
-            return;
 
         auto deltaTime = m_renderer.getDeltaTime();
+        const float dt = static_cast<float>(deltaTime);
+        bool isMoving = false;
 
-        if(deltaTime == 0.0)
-            return;
+        if(m_renderer.isMouseFocused() && deltaTime > 0.0) {
+            // orientation (look)
+            const auto mouseMov = input->getMouseMovement();
 
-        // orientation (look)
-        auto mouseMov = input->getMouseMovement();
+            if(mouseMov.x != 0 || mouseMov.y != 0) {
+                const auto mx = mouseMov.x * m_sensitivity * deltaTime;
+                const auto my = mouseMov.y * m_sensitivity * deltaTime;
 
-        if(mouseMov.x != 0 || mouseMov.y != 0) {
-            auto mx = mouseMov.x * m_sensitivity * deltaTime;
-            auto my = mouseMov.y * m_sensitivity * deltaTime;
+                const float deltaX = glm::radians(mx);
+                const float deltaY = glm::radians(my);
 
-            float deltaX = glm::radians(mx);
-            float deltaY = glm::radians(my);
+                m_camera.orientate(V3D(-deltaY, -deltaX, 0.f));
+            }
 
-            m_camera.orientate(V3D(-deltaY, -deltaX, 0.f));
+            // displacement
+            if(input->isKeyDown(SDL_SCANCODE_W) || input->isKeyDown(SDL_SCANCODE_S) ||
+            input->isKeyDown(SDL_SCANCODE_A) || input->isKeyDown(SDL_SCANCODE_D)) {
+                isMoving = true;
+            }
         }
 
-        // displacement
-        float speed = m_speed * deltaTime;
+        // acceleration
+        if(isMoving) {
+            if(m_velocity < m_speed) {
+                m_velocity = std::min(m_velocity + m_acceleration * dt, m_speed);
+            }
 
-        if (input->isKeyDown(SDL_SCANCODE_W)) { // forward
-            m_camera.move(m_camera.getForward() * speed);
+            if(input->isKeyDown(SDL_SCANCODE_W))
+                m_displacement.y += 1.0f;
+            if(input->isKeyDown(SDL_SCANCODE_S))
+                m_displacement.y -= 1.0f;
+            if(input->isKeyDown(SDL_SCANCODE_A))
+                m_displacement.x -= 1.0f;
+            if(input->isKeyDown(SDL_SCANCODE_D))
+                m_displacement.x += 1.0f;
+
+            m_displacement.x = std::clamp(m_displacement.x, -1.0f, 1.0f);
+            m_displacement.y = std::clamp(m_displacement.y, -1.0f, 1.0f);
         }
-        if (input->isKeyDown(SDL_SCANCODE_S)) { // backward
-            m_camera.move(-m_camera.getForward() * speed);
+        // deceleration
+        else {
+            if(m_velocity > 0.0f) {
+                m_velocity = std::max(0.0f, m_velocity - m_deceleration * dt);
+            }
+            else {
+                m_displacement.x = 0;
+                m_displacement.y = 0;
+            }
         }
-        if (input->isKeyDown(SDL_SCANCODE_A)) { // left
-            m_camera.move(-m_camera.getRight() * speed);
-        }
-        if (input->isKeyDown(SDL_SCANCODE_D)) { // right
-            m_camera.move(m_camera.getRight() * speed);
+
+        const float speed = m_velocity * dt;
+
+        if(speed > 0.0f) {
+            const auto forward = m_camera.getForward();
+            const auto right = m_camera.getRight();
+
+            const auto displacement = right * m_displacement.x + forward * m_displacement.y;
+            m_camera.move(displacement * speed);
         }
     }
 

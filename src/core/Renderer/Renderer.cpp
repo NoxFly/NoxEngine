@@ -179,6 +179,8 @@ namespace NoxEngine {
         glEnable(GL_DEPTH_TEST);
         // anti-aliasing
         glEnable(GL_MULTISAMPLE);
+        // culling
+        glEnable(GL_CULL_FACE);
 
         return true;
     }

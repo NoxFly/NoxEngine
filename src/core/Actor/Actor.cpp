@@ -34,7 +34,7 @@ namespace NoxEngine {
     Actor::Actor(Geometry* geometry, Material* material):
         m_uuid(generateUUID()),
         m_geometry(geometry), m_material(material),
-        m_cullFace(GL_FRONT), m_polygonMode(GL_FILL),
+        m_cullFace(GL_BACK), m_polygonMode(GL_FILL),
         m_rotation{},
         m_scale{},
         m_hasToTranslate(false), m_hasToRotate(false), m_hasToScale(false)

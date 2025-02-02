@@ -33,6 +33,11 @@ namespace NoxEngine {
 			Renderer& m_renderer;
 			PerspectiveCamera& m_camera;
 			float m_sensitivity, m_speed;
+
+			float m_velocity;
+			float m_acceleration;
+			float m_deceleration;
+			V2D m_displacement;
 	};
 
 }
