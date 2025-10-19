@@ -22,6 +22,7 @@ namespace NoxEngine {
         m_acceleration(10.0f),
         m_deceleration(5.0f),
         m_displacement(0.0f, 0.0f),
+        m_smoothRotation(0.0f, 0.0f),
         m_ignoreNextMouseMove(false)
     {}
 
@@ -82,11 +83,22 @@ namespace NoxEngine {
                     const auto mx = mouseMov.x * m_sensitivity * deltaTime;
                     const auto my = mouseMov.y * m_sensitivity * deltaTime;
 
-                    const float deltaX = glm::radians(mx);
-                    const float deltaY = glm::radians(my);
-
-                    m_camera.orientate(V3D(deltaY, deltaX, 0.f));
+                    // Accumulate raw rotation input
+                    m_smoothRotation.x += my;
+                    m_smoothRotation.y += mx;
                 }
+            }
+
+            // Apply smoothed rotation with interpolation
+            const float rotationLerpFactor = 15.0f * deltaTime; // Adjust for camera rotation smoothness
+            if(glm::length(m_smoothRotation) > 0.001f) {
+                const float deltaX = glm::radians(m_smoothRotation.y * rotationLerpFactor);
+                const float deltaY = glm::radians(m_smoothRotation.x * rotationLerpFactor);
+
+                m_camera.orientate(V3D(deltaY, deltaX, 0.f));
+
+                // Decay the smooth rotation
+                m_smoothRotation *= (1.0f - rotationLerpFactor);
             }
 
             // displacement
@@ -96,32 +108,40 @@ namespace NoxEngine {
             }
         }
 
+        // Target displacement based on input
+        V2D targetDisplacement(0.0f, 0.0f);
+        
+        if(isMoving) {
+            if(input->isKeyDown(SDL_SCANCODE_W))
+                targetDisplacement.y += 1.0f;
+            if(input->isKeyDown(SDL_SCANCODE_S))
+                targetDisplacement.y -= 1.0f;
+            if(input->isKeyDown(SDL_SCANCODE_A))
+                targetDisplacement.x -= 1.0f;
+            if(input->isKeyDown(SDL_SCANCODE_D))
+                targetDisplacement.x += 1.0f;
+
+            // Normalize diagonal movement
+            if(targetDisplacement.x != 0.0f && targetDisplacement.y != 0.0f) {
+                targetDisplacement = glm::normalize(targetDisplacement);
+            }
+        }
+
+        // Smooth interpolation of displacement (lerp)
+        const float lerpFactor = 10.0f * deltaTime; // Adjust for smoothness
+        m_displacement.x = glm::mix(m_displacement.x, targetDisplacement.x, lerpFactor);
+        m_displacement.y = glm::mix(m_displacement.y, targetDisplacement.y, lerpFactor);
+
         // acceleration
         if(isMoving) {
             if(m_velocity < m_speed) {
                 m_velocity = std::min(m_velocity + m_acceleration * deltaTime, m_speed);
             }
-
-            if(input->isKeyDown(SDL_SCANCODE_W))
-                m_displacement.y += 1.0f;
-            if(input->isKeyDown(SDL_SCANCODE_S))
-                m_displacement.y -= 1.0f;
-            if(input->isKeyDown(SDL_SCANCODE_A))
-                m_displacement.x -= 1.0f;
-            if(input->isKeyDown(SDL_SCANCODE_D))
-                m_displacement.x += 1.0f;
-
-            m_displacement.x = std::clamp(m_displacement.x, -1.0f, 1.0f);
-            m_displacement.y = std::clamp(m_displacement.y, -1.0f, 1.0f);
         }
         // deceleration
         else {
             if(m_velocity > 0.0f) {
                 m_velocity = std::max(0.0f, m_velocity - m_deceleration * deltaTime);
-            }
-            else {
-                m_displacement.x = 0;
-                m_displacement.y = 0;
             }
         }
 

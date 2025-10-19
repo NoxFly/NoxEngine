@@ -37,12 +37,23 @@ int main(int argc, char** argv) {
 
 	Renderer renderer(config);
 	Scene scene;
-	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
+	PerspectiveCamera camera(
+		config.getFloatValue("CAMERA", "fov", 45.0f),
+		renderer.getAspect(),
+		0.1f,
+		config.getFloatValue("CAMERA", "far", 1000.f)
+	);
 
 	PointerLockControls controls(renderer, camera);
 
+	controls.setSensitivity(config.getFloatValue("CAMERA", "sensitivity", 0.1f));
+	controls.setSpeed(config.getFloatValue("CAMERA", "speed", 5.0f));
 
-	Texture::load("stone", "stonebrick_cracked.png");
+
+	if(!Texture::load("stone", "stonebrick_cracked.png")) {
+		Console::error("main", "Failed to load texture");
+		return EXIT_FAILURE;
+	}
 
 
 	// color only

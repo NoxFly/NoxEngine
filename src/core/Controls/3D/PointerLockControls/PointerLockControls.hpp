@@ -38,6 +38,7 @@ namespace NoxEngine {
 			float m_acceleration;
 			float m_deceleration;
 			V2D m_displacement;
+			V2D m_smoothRotation; // Smoothed rotation accumulator for interpolation
 			bool m_ignoreNextMouseMove; // Flag to ignore first mouse move after locking pointer
 	};
 

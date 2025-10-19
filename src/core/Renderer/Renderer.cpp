@@ -27,7 +27,7 @@ namespace NoxEngine {
         m_glContext(0),
         m_settings{},
         m_maxCapabilities{},
-        m_previousTime(0), m_deltaTime(0.0f), m_totalTime(0.0f),
+        m_previousTime(SDL_GetPerformanceCounter()), m_deltaTime(0.0f), m_totalTime(0.0f),
         m_clearColor{}
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))

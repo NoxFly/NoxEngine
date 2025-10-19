@@ -23,6 +23,8 @@
         "istream": "cpp",
         "fstream": "cpp",
         "xstring": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "ios": "cpp",
+        "vector": "cpp"
     }
 }

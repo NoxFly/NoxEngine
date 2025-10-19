@@ -60,15 +60,15 @@ bool IniSet::loadFromFile(const string& filepath) {
     m_iniMap = {};
     m_rootMap = {};
 
-    const unsigned int m = content.size();
+    const size_t m = content.size();
 
     if(m == 0)
         return true;
 
-    vector<pair<int, string>> sectionDetails = {};
+    vector<pair<size_t, string>> sectionDetails = {};
 
     // detect sections
-    for(unsigned int i=0; i < m; i++) {
+    for(size_t i=0; i < m; i++) {
         string line = content[i];
 
         if(startsWith(line, ";"))
@@ -86,21 +86,25 @@ bool IniSet::loadFromFile(const string& filepath) {
 
     m_sectionCount = sectionDetails.size();
 
-    unsigned int n = (m_sectionCount == 0)? m : sectionDetails[0].first;
-    unsigned int j, k;
-    unsigned int i;
+    size_t n = (m_sectionCount == 0)
+        ? m
+        : sectionDetails[0].first;
 
-    i = -1;
+    size_t j, k;
+    size_t i;
 
-    while(++i < n)
+    // Parse root-level keys (before first section)
+    for(i = 0; i < n; i++)
         assignFromRawString("", content[i]);
 
     // get all keys
     for(i=0; i < m_sectionCount; i++) {
-        pair<int, string> section = sectionDetails[i];
+        pair<size_t, string> section = sectionDetails[i];
         j = section.first;
-        const unsigned int idx = i + 1;
-        k = (i < m_sectionCount-1)? sectionDetails[idx].first : m;
+        const size_t idx = i + 1;
+        k = (i < m_sectionCount-1)
+            ? sectionDetails[idx].first 
+            : m;
         
         while(++j < k)
             assignFromRawString(section.second, content[j]);
@@ -146,9 +150,16 @@ unsigned int IniSet::stringIsValidPair(const string& str) const {
 
 void IniSet::assignFromRawString(const string& section, const string& str) {
     if(stringIsValidPair(str) == 0) {
-        string key = str.substr(0, str.find(IniSet::pairSeparator));
-        string value = str.substr(str.find(IniSet::pairSeparator)+1, str.size());
-        string valueType = isInteger(value)? "number" : isFloat(value)? "float" : (value == "true" || value == "false")? "boolean": "string";
+        string key = trim(str.substr(0, str.find(IniSet::pairSeparator)));
+        string value = trim(str.substr(str.find(IniSet::pairSeparator)+1, str.size()));
+        string valueType = "string";
+        
+        if(isInteger(value))
+            valueType = "integer";
+        else if(isFloat(value))
+            valueType = "float";
+        else if(value == "true" || value == "false")
+            valueType = "boolean";
 
         if(section == "")
             m_rootMap[key] = pair(valueType, value);
@@ -177,14 +188,17 @@ map<string, pair<string, string>> IniSet::getEntries() const {
 map<string, pair<string, string>> IniSet::getEntries(const string& section) const {
     if(m_iniMap.count(section) == 0)
         return {};
+    
     return m_iniMap.at(section);
 }
 
 vector<string> IniSet::getKeys() const {
     vector<string> keys;
+    
     for(pair<string, pair<string, string>> p : m_rootMap)
         keys.push_back(p.first);
-    return keys;
+    
+        return keys;
 }
 
 vector<string> IniSet::getKeys(const string& section) const {
@@ -192,16 +206,20 @@ vector<string> IniSet::getKeys(const string& section) const {
         return {};
     
     vector<string> keys;
+    
     for(pair<string, pair<string, string>> p : m_iniMap.at(section))
         keys.push_back(p.first);
+   
     return keys;
 }
 
 vector<string> IniSet::getValues() const {
     vector<string> values;
+    
     for(pair<string, pair<string, string>> p : m_rootMap)
         values.push_back(p.second.second);
-    return values;
+    
+        return values;
 }
 
 vector<string> IniSet::getValues(const string& section) const {
@@ -209,9 +227,11 @@ vector<string> IniSet::getValues(const string& section) const {
         return {};
 
     vector<string> values;
+    
     for(pair<string, pair<string, string>> p : m_iniMap.at(section))
         values.push_back(p.second.second);
-    return values;
+    
+        return values;
 }
 
 string IniSet::getValue(const string& section, const string& key) const {
@@ -219,22 +239,32 @@ string IniSet::getValue(const string& section, const string& key) const {
 }
 
 pair<string, string> IniSet::getPairValue(const string& section, const string& key) const {
-    return hasKey(section, key)? m_iniMap.at(section).at(key) : pair("", "");
+    return hasKey(section, key)
+        ? m_iniMap.at(section).at(key)
+        : pair("", "");
 }
 
 int IniSet::getIntValue(const string& section, const string& key, int defaultValue) const {
     pair<string, string> value = getPairValue(section, key);
-    return (value.second == "" || value.first != "number")? defaultValue : stoi(value.second);
+    return (value.second == "" || value.first != "integer")
+        ? defaultValue
+        : stoi(value.second);
 }
 
 float IniSet::getFloatValue(const string& section, const string& key, float defaultValue) const {
     pair<string, string> value = getPairValue(section, key);
-    return (value.second == "" || value.first != "number")? defaultValue : stof(value.second);
+    
+    return (value.second == "" || (value.first != "integer" && value.first != "float"))
+        ? defaultValue
+        : stof(value.second);
 }
 
 bool IniSet::getBoolValue(const string& section, const string& key, bool defaultValue) const {
     pair<string, string> value = getPairValue(section, key);
-    return (value.second == "" || value.first != "boolean")? defaultValue : value.second == "true";
+    
+    return (value.second == "" || value.first != "boolean")
+        ? defaultValue
+        : value.second == "true";
 }
 
 string IniSet::getValue(const string& key) const {
@@ -242,26 +272,37 @@ string IniSet::getValue(const string& key) const {
 }
 
 string IniSet::getType(const string &section, const string &key) const {
-    return hasKey(section, key)? m_iniMap.at(section).at(key).first : "string";
+    return hasKey(section, key)
+        ? m_iniMap.at(section).at(key).first
+        : "string";
 }
 
 pair<string, string> IniSet::getPairValue(const string& key) const {
-    return hasKey(key)? m_rootMap.at(key) : pair("", "");
+    return hasKey(key)
+        ? m_rootMap.at(key)
+        : pair("", "");
 }
 
 int IniSet::getIntValue(const string& key, int defaultValue) const {
     pair<string, string> value = getPairValue(key);
-    return (value.second == "" || value.first != "number")? defaultValue : stoi(value.second);
+    
+    return (value.second == "" || value.first != "integer")
+        ? defaultValue
+        : stoi(value.second);
 }
 
 float IniSet::getFloatValue(const string& key, float defaultValue) const {
     pair<string, string> value = getPairValue(key);
-    return (value.second == "" || value.first != "number")? defaultValue : stof(value.second);
+    return (value.second == "" || (value.first != "integer" && value.first != "float"))
+        ? defaultValue
+        : stof(value.second);
 }
 
 bool IniSet::getBoolValue(const string& key, bool defaultValue) const {
     pair<string, string> value = getPairValue(key);
-    return (value.second == "" || value.first != "boolean")? defaultValue : value.second == "true";
+    return (value.second == "" || value.first != "boolean")
+        ? defaultValue
+        : value.second == "true";
 }
 
 bool IniSet::hasSection(const string& section) const {
@@ -277,7 +318,9 @@ bool IniSet::hasKey(const string& section, const string& key) const {
 }
 
 string IniSet::getType(const string &key) const {
-    return hasKey(key)? m_rootMap.at(key).first : "string";
+    return hasKey(key)
+        ? m_rootMap.at(key).first
+        : "string";
 }
 
 
@@ -290,8 +333,8 @@ string IniSet::toString() const {
     for(auto &p : m_iniMap) {
         str += "\n[" + p.first + "]\n";
 
-        unsigned int j = 0;
-        unsigned int size = p.second.size();
+        size_t j = 0;
+        size_t size = p.second.size();
         
         for(auto &sp : p.second) {
             str += "  " + sp.first + "=" + sp.second.second;
@@ -308,14 +351,17 @@ string IniSet::toString() const {
 
 string IniSet::toJSONString() const {
     string str = "{";
-    unsigned int i = 0;
+    size_t i = 0;
 
     if(m_rootMap.size() > 0 || m_iniMap.size() > 0)
         str += "\n";
 
     for(auto &p : m_rootMap) {
-        string g = p.second.first == "string" ? "\"" : "";
-        str += "  \"" + p.first + "\": " + g + p.second.second + g + ((++i < (unsigned int)m_rootMap.size())? "," : "") + "\n";
+        string g = p.second.first == "string"
+            ? "\""
+            : "";
+
+        str += "  \"" + p.first + "\": " + g + p.second.second + g + ((++i < m_rootMap.size())? "," : "") + "\n";
     }
 
     i = 0;
@@ -323,13 +369,16 @@ string IniSet::toJSONString() const {
     for(auto &p : m_iniMap) {
         str += "  \"" + p.first + "\": {\n";
 
-        unsigned int j = 0;
+        size_t j = 0;
         
         for(auto &sp : p.second) {
-            string g = sp.second.first == "string" ? "\"" : "";
+            string g = sp.second.first == "string"
+                ? "\""
+                : "";
+
             str += "    \"" + sp.first + "\": " + g + sp.second.second + g;
 
-            if(++j < (unsigned int)p.second.size())
+            if(++j < p.second.size())
                 str += ",";
             
             str += "\n";
@@ -337,7 +386,7 @@ string IniSet::toJSONString() const {
 
         str += "  }";
 
-        if(++i < (unsigned int)m_iniMap.size())
+        if(++i < m_iniMap.size())
             str += ",";
         
         str += "\n";
