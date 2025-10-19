@@ -7,6 +7,8 @@
 #ifndef ENGINE_TYPEDEF_HPP
 #define ENGINE_TYPEDEF_HPP
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <type_traits>
 #include <glm/glm.hpp>
 #include <concepts>
@@ -14,6 +16,15 @@
 
 
 namespace NoxEngine {
+
+    #ifndef UINT_DEFINED
+    #if !defined(uint) && !defined(_UINT_DEFINED)
+    
+    typedef unsigned int uint;
+    #define UINT_DEFINED
+    
+    #endif
+    #endif
 
     const float PI = static_cast<float>(3.14159265358979323846);
 
