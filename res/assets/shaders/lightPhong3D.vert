@@ -24,17 +24,17 @@ void main()
 
     gl_Position = MVP * vertexPos;
 
-
-
     fragPos_worldspace = (M * vertexPos).xyz;
 
     vec3 vertexPos_cameraspace = (MV * vertexPos).xyz;
     eyeDir_cameraspace = vec3(0, 0, 0) - vertexPos_cameraspace;
 
     vec3 lightPos_cameraspace = (V * vec4(lightPos, 1)).xyz;
-    lightDir_cameraspace = lightPos_cameraspace - eyeDir_cameraspace;
+    lightDir_cameraspace = lightPos_cameraspace - vertexPos_cameraspace;
 
-    normal_cameraspace = (MV * vec4(in_Normal, 0.0)).xyz;
+    // Use the normal matrix (transpose of inverse of MV) to correctly transform normals
+    mat3 normalMatrix = transpose(inverse(mat3(MV)));
+    normal_cameraspace = normalMatrix * in_Normal;
     
     color = in_Color;
     coordTexture = in_TexCoord0;

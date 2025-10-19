@@ -9,7 +9,8 @@ out vec4 out_Color;
 
 void main()
 {
-    vec3 materialTexture = mix(vec4(1.0), texture(tex, coordTexture), textureAndColorOpacity.x).rgb;
+    // Mix texture (vec4 to vec4 for correct interpolation)
+    vec3 materialTexture = mix(vec3(1.0), texture(tex, coordTexture).rgb, textureAndColorOpacity.x);
     vec3 materialAmbientColor = mix(vec3(1.0), objectColor, textureAndColorOpacity.y) * materialTexture;
 
     out_Color = vec4(materialAmbientColor, 1.0);

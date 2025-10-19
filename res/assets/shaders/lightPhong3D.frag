@@ -26,7 +26,7 @@ void main()
 
     
     float distance = length(lightPos - fragPos_worldspace);
-    distance *= distance;
+    distance = max(distance * distance, 0.01); // Prevent division by zero or very small values
 
     vec3 lightColPow = lightColor * lightPower;
     
@@ -50,7 +50,8 @@ void main()
 
     vec3 specular = materialSpecularColor * lightColPow * pow(cosAlpha, 5.0) / distance;
 
+    // Clamp final color to prevent oversaturation
+    vec3 finalColor = clamp(ambiante + diffuse + specular, 0.0, 1.0);
 
-
-    out_Color = vec4(ambiante + diffuse + specular, 1.0);
+    out_Color = vec4(finalColor, 1.0);
 }
