@@ -2,6 +2,46 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build Current Example",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-debug",
+                "--config",
+                "Debug",
+                "--target",
+                "${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/d",
+                        "/c",
+                        "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat\"",
+                        "-no_logo",
+                        "-arch=x64",
+                        "&&"
+                    ]
+                }
+            },
+            "dependsOn": [
+                "CMake Configure Debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "focus": false
+            }
+        },
+        {
             "label": "CMake Clean Configuration",
             "type": "shell",
             "command": "cmake",

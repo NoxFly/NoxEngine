@@ -70,16 +70,20 @@ file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 # No need to deduce them - they're already set!
 
 # Create bin/include/NoxEngine directory for public headers
-# Remove if exists, then recreate fresh
-file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/bin/include")
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/include")
 set(PUBLIC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/include")
 set(PUBLIC_INCLUDE_SUBDIR "${PUBLIC_INCLUDE_DIR}/NoxEngine")
+set(HEADERS_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/headers_copied.stamp")
 
-# Copy all header files (.hpp, .inl, .h) to bin/include/NoxEngine after building the library
-# This provides a clean public API for examples and external projects
+# Ensure the directory exists for configuration time
+file(MAKE_DIRECTORY ${PUBLIC_INCLUDE_DIR})
+
+# Get all header files to track dependencies
+file(GLOB_RECURSE HEADER_FILES "${PROJECT_INCLUDE_DIR}/*.hpp" "${PROJECT_INCLUDE_DIR}/*.h" "${PROJECT_INCLUDE_DIR}/*.inl")
+
+# Create a custom command that copies headers and creates a stamp file
 add_custom_command(
-    TARGET ${LIB_NAME} POST_BUILD
+    OUTPUT ${HEADERS_STAMP_FILE}
+    DEPENDS ${HEADER_FILES}
     COMMAND ${CMAKE_COMMAND} -E echo "Copying public headers to bin/include/NoxEngine/"
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${PUBLIC_INCLUDE_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${PUBLIC_INCLUDE_SUBDIR}
@@ -88,12 +92,16 @@ add_custom_command(
             ${PUBLIC_INCLUDE_SUBDIR}
     # Remove .cpp files from public headers using our cleanup script
     COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_SOURCE_DIR}/scripts/remove_cpp_from_headers.cmake"
+    # Create stamp file to mark completion
+    COMMAND ${CMAKE_COMMAND} -E touch ${HEADERS_STAMP_FILE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Installing public headers to bin/include/NoxEngine/"
+    VERBATIM
 )
 
-# Ensure the directory exists for configuration time
-file(MAKE_DIRECTORY ${PUBLIC_INCLUDE_DIR})
+# Create a custom target that depends on the stamp file
+add_custom_target(CopyHeaders ALL DEPENDS ${HEADERS_STAMP_FILE})
+
 
 # Copy GLEW DLL based on build configuration
 add_custom_command(

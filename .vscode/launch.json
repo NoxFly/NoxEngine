@@ -1,32 +1,17 @@
 {
     "configurations": [
         {
-            "name": "(Windows) Launch base3D",
+            "name": "(Windows) Launch Current Example",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/examples/base3D.exe",
+            "program": "${workspaceFolder}/bin/examples/${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "internalConsole",
-            "preLaunchTask": "Build base3D Example",
-            "logging": {
-                "moduleLoad": false,
-                "trace": false
-            }
-        },
-        {
-            "name": "(Windows) Launch camera_pointerLock",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/bin/examples/camera_pointerLock.exe",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "console": "internalConsole",
-            "preLaunchTask": "Build camera_pointerLock Example",
+            "internalConsoleOptions": "openOnSessionStart",
+            "preLaunchTask": "Build Current Example",
             "logging": {
                 "moduleLoad": false,
                 "trace": false
