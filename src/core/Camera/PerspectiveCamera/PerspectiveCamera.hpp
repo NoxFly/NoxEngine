@@ -49,7 +49,11 @@ namespace NoxEngine {
             void update() noexcept override;
 
         private:
+            void extractPitchYawFromOrientation() noexcept; // Extract pitch/yaw from quaternion
+            
             glm::quat m_orientation;
+            float m_pitch; // Rotation around X axis (up/down) - stored as angle for FPS controls
+            float m_yaw;   // Rotation around Y axis (left/right) - stored as angle for FPS controls
     };
 
 }

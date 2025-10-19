@@ -4,13 +4,6 @@
 #include <cmath>
 #include <chrono>
 
-#ifdef _WIN32
-#include <direct.h>
-#define getcwd _getcwd
-#else
-#include <unistd.h>
-#endif
-
 #include "NoxEngine/core/engine.hpp"
 
 using namespace NoxEngine;
@@ -35,12 +28,6 @@ int main(int argc, char** argv) {
 	(void)argc;
 	(void)argv;
 
-	// Debug: Print current working directory
-	char cwd[1024];
-	if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-		std::cout << "Current working directory: " << cwd << std::endl;
-	}
-
 	IniSet config;
 
 	if (!config.loadFromFile("res/config/config.ini")) {
@@ -51,6 +38,9 @@ int main(int argc, char** argv) {
 	Renderer renderer(config);
 	Scene scene;
 	PerspectiveCamera camera(45.f, renderer.getAspect(), 0.1f, 1000.f);
+
+	PointerLockControls controls(renderer, camera);
+
 
 	Texture::load("stone", "stonebrick_cracked.png");
 
@@ -92,6 +82,7 @@ int main(int argc, char** argv) {
 	camera.lookAt(0.f, 0.f, 0.f);
 
 	while (!renderer.shouldClose()) {
+		controls.update();
 		renderer.render(scene, camera);
 
 		auto delta = renderer.getDeltaTime();

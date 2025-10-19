@@ -8,6 +8,7 @@
 
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <algorithm>
 
 
@@ -15,7 +16,9 @@ namespace NoxEngine {
 
     PerspectiveCamera::PerspectiveCamera(const float fov, const float aspect, const float near, const float far):
         Camera(fov, aspect, near, far),
-        m_orientation()
+        m_orientation(),
+        m_pitch(0.0f),
+        m_yaw(0.0f)
     {}
 
     // Set's the camera's look at. The view matrix will be upated in the loop
@@ -29,6 +32,10 @@ namespace NoxEngine {
         m_target = target;
         V3D direction = glm::normalize(m_target - m_position);
         m_orientation = glm::quatLookAt(direction, m_verticalAxis);
+        
+        // Extract pitch and yaw from the quaternion to keep them in sync
+        extractPitchYawFromOrientation();
+        
         m_needsUpdate = true;
     }
 
@@ -56,6 +63,10 @@ namespace NoxEngine {
     void PerspectiveCamera::setOrientation(const glm::quat& orientation) noexcept {
         m_orientation = orientation;
         m_target = m_position + getForward();
+        
+        // Extract pitch and yaw from the quaternion to keep them in sync
+        extractPitchYawFromOrientation();
+        
         m_needsUpdate = true;
     }
 
@@ -63,11 +74,24 @@ namespace NoxEngine {
      * Rotate from Euler angles (in radians)
      */
     void PerspectiveCamera::orientate(const V3D& offset) noexcept {
-        glm::quat qPitch = glm::angleAxis(offset.x, V3D(1, 0, 0));
-        glm::quat qYaw = glm::angleAxis(offset.y, V3D(0, 1, 0));
-        glm::quat qRoll = glm::angleAxis(offset.z, V3D(0, 0, 1));
-
-        m_orientation = glm::normalize(qYaw * qPitch * qRoll * m_orientation);
+        // For FPS controls without drift, we store pitch and yaw as angles
+        // and reconstruct the quaternion each time
+        
+        // Update yaw (rotation around global Y axis)
+        m_yaw += offset.y;
+        
+        // Update pitch (rotation around local X axis) and clamp to avoid gimbal lock
+        m_pitch += offset.x;
+        m_pitch = glm::clamp(m_pitch, -glm::half_pi<float>() + 0.01f, glm::half_pi<float>() - 0.01f);
+        
+        // Reconstruct orientation from pitch and yaw
+        // Yaw first (around global Y), then pitch (around local X)
+        glm::quat qYaw = glm::angleAxis(m_yaw, V3D(0, 1, 0));
+        glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1, 0, 0));
+        
+        // Combine: yaw in global space, pitch in local space
+        m_orientation = glm::normalize(qYaw * qPitch);
+        
         m_needsUpdate = true;
     }
 
@@ -85,6 +109,21 @@ namespace NoxEngine {
 
     V3D PerspectiveCamera::getUp() const noexcept {
         return glm::rotate(m_orientation, V3D(0.0f, 1.0f, 0.0f));
+    }
+
+    void PerspectiveCamera::extractPitchYawFromOrientation() noexcept {
+        // Extract Euler angles from quaternion
+        // We need to extract pitch and yaw to keep them synchronized with m_orientation
+        
+        // Convert quaternion to Euler angles
+        glm::vec3 euler = glm::eulerAngles(m_orientation);
+        
+        // euler.x = pitch (rotation around X axis)
+        // euler.y = yaw (rotation around Y axis)
+        // euler.z = roll (rotation around Z axis)
+        
+        m_pitch = euler.x;
+        m_yaw = euler.y;
     }
 
     void PerspectiveCamera::update() noexcept {

@@ -21,7 +21,8 @@ namespace NoxEngine {
         m_velocity(0.0f),
         m_acceleration(10.0f),
         m_deceleration(5.0f),
-        m_displacement(0.0f, 0.0f)
+        m_displacement(0.0f, 0.0f),
+        m_ignoreNextMouseMove(false)
     {}
 
     void PointerLockControls::setSpeed(const float speed) noexcept {
@@ -47,6 +48,7 @@ namespace NoxEngine {
     void PointerLockControls::lockPointer() noexcept {
         m_renderer.setMouseFocus(true);
         m_renderer.setMouseGrab(true);
+        m_ignoreNextMouseMove = true; // Ignore the first mouse movement after locking
     }
 
     void PointerLockControls::unlockPointer() noexcept {
@@ -72,13 +74,19 @@ namespace NoxEngine {
             const auto mouseMov = input->getMouseMovement();
 
             if(mouseMov.x != 0 || mouseMov.y != 0) {
-                const auto mx = mouseMov.x * m_sensitivity * deltaTime;
-                const auto my = mouseMov.y * m_sensitivity * deltaTime;
+                // Ignore first mouse movement after locking to prevent camera jump
+                if(m_ignoreNextMouseMove) {
+                    m_ignoreNextMouseMove = false;
+                }
+                else {
+                    const auto mx = mouseMov.x * m_sensitivity * deltaTime;
+                    const auto my = mouseMov.y * m_sensitivity * deltaTime;
 
-                const float deltaX = glm::radians(mx);
-                const float deltaY = glm::radians(my);
+                    const float deltaX = glm::radians(mx);
+                    const float deltaY = glm::radians(my);
 
-                m_camera.orientate(V3D(-deltaY, -deltaX, 0.f));
+                    m_camera.orientate(V3D(deltaY, deltaX, 0.f));
+                }
             }
 
             // displacement
