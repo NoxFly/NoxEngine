@@ -40,11 +40,11 @@ set(SDL_LIBRARY
     "${SDL2_ROOT}/VisualC/x64/Debug/SDL2_ttf.lib"
 )
 
-# DLL paths (relative to root)
-# Adjust paths based on your SDL2 installation structure
-set(SDL2_DLL "${SDL2_ROOT}/VisualC/x64/Debug/SDL2.dll")
-set(SDL2_IMAGE_DLL "${SDL2_ROOT}/VisualC/x64/Debug/SDL2_image.dll")
-set(SDL2_TTF_DLL "${SDL2_ROOT}/VisualC/x64/Debug/SDL2_ttf.dll")
+# DLL paths
+# For pre-built SDL2, DLLs are typically in bin/ directory
+set(SDL2_DLL "${SDL2_ROOT}/bin/SDL2.dll")
+set(SDL2_IMAGE_DLL "${SDL2_ROOT}/bin/SDL2_image.dll")
+set(SDL2_TTF_DLL "${SDL2_ROOT}/bin/SDL2_ttf.dll")
 
 
 # -----------------------------------------------------------------------------

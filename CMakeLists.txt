@@ -50,16 +50,50 @@ endif()
 # Create the shared library
 add_library(${LIB_NAME} SHARED ${LIB_SOURCES})
 
+# Windows-specific: Export all symbols automatically
+if(WIN32)
+    set_target_properties(${LIB_NAME} PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS TRUE
+    )
+endif()
+
 # Set the library output directory
 set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${LIBRARY_OUTPUT_PATH}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${LIBRARY_OUTPUT_PATH}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${LIBRARY_OUTPUT_PATH}")  # For .dll on Windows
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${LIBRARY_OUTPUT_PATH}")  # For .so on Unix
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${LIBRARY_OUTPUT_PATH}")  # For .lib on Windows (import library)
 
 # Create the "bin/" directory if it doesn't exist
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
 # DLL paths are now defined directly in config.cmake
 # No need to deduce them - they're already set!
+
+# Create bin/include/NoxEngine directory for public headers
+# Remove if exists, then recreate fresh
+file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/bin/include")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/include")
+set(PUBLIC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/include")
+set(PUBLIC_INCLUDE_SUBDIR "${PUBLIC_INCLUDE_DIR}/NoxEngine")
+
+# Copy all header files (.hpp, .inl, .h) to bin/include/NoxEngine after building the library
+# This provides a clean public API for examples and external projects
+add_custom_command(
+    TARGET ${LIB_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying public headers to bin/include/NoxEngine/"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PUBLIC_INCLUDE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${PUBLIC_INCLUDE_SUBDIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${PROJECT_INCLUDE_DIR}
+            ${PUBLIC_INCLUDE_SUBDIR}
+    # Remove .cpp files from public headers using our cleanup script
+    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_SOURCE_DIR}/scripts/remove_cpp_from_headers.cmake"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Installing public headers to bin/include/NoxEngine/"
+)
+
+# Ensure the directory exists for configuration time
+file(MAKE_DIRECTORY ${PUBLIC_INCLUDE_DIR})
 
 # Copy GLEW DLL based on build configuration
 add_custom_command(
@@ -103,15 +137,23 @@ if(EXISTS ${SDL2_TTF_DLL})
 endif()
 
 # Include directories for the library
-target_include_directories(${LIB_NAME} PUBLIC 
-    $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include>
+# PRIVATE: Only for building the library itself, not propagated to consumers
+target_include_directories(${LIB_NAME} PRIVATE
+    ${PROJECT_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIR} 
     ${SDL_INCLUDE_DIR} 
     ${GLM_INCLUDE_DIR}
 )
 
+# Define NOXENGINE_EXPORTS when building the library (for __declspec(dllexport))
+# Define DEBUG macro for Debug builds
+target_compile_definitions(${LIB_NAME} PRIVATE 
+    NOXENGINE_EXPORTS
+    $<$<CONFIG:Debug>:DEBUG>
+)
+
 # Link against the external libraries
+# Keep PUBLIC for propagation (examples need these libraries too)
 target_link_libraries(${LIB_NAME} PUBLIC
     $<$<CONFIG:Debug>:${GLEW_LIBRARY_DEBUG};${SDL_LIBRARY};OpenGL32.lib>
     $<$<CONFIG:Release>:${GLEW_LIBRARY_RELEASE};${SDL_LIBRARY};OpenGL32.lib>
@@ -145,8 +187,20 @@ if(BUILD_EXAMPLES)
         # Create executable for this example
         add_executable(${EXAMPLE_TARGET} ${EXAMPLE_FILE})
         
-        # Link against the NoxEngine library
+        # Examples depend on the library being built first (to generate headers)
+        add_dependencies(${EXAMPLE_TARGET} ${LIB_NAME})
+        
+        # Link against the NoxEngine library (PRIVATE to avoid inheriting build includes)
         target_link_libraries(${EXAMPLE_TARGET} PRIVATE ${LIB_NAME})
+        
+        # Use ONLY the public headers from bin/include, not src/
+        # This simulates using the library as an external package
+        target_include_directories(${EXAMPLE_TARGET} PRIVATE 
+            ${PUBLIC_INCLUDE_DIR}
+            ${GLEW_INCLUDE_DIR}
+            ${SDL_INCLUDE_DIR}
+            ${GLM_INCLUDE_DIR}
+        )
         
         # Set working directory to project root (for resource access)
         set_target_properties(${EXAMPLE_TARGET} PROPERTIES

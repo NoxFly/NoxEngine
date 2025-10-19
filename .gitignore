@@ -3,6 +3,8 @@ bin/
 bin/debug
 bin/release
 bin/lib
+bin/include
+bin/examples
 out/
 
 # User-specific configuration (contains local paths)
@@ -12,7 +14,7 @@ config.cmake
 
 .old/
 
-.vscode/
+
 .vscode/*.log
 .vs/
 x86/

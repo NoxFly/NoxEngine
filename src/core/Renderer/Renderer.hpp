@@ -57,8 +57,8 @@ namespace NoxEngine {
             float getAspect() const noexcept;
 
             uint getFrameRate() const noexcept;
-            double getTotalTimeElapsed() const noexcept;
-            double getDeltaTime() const noexcept;
+            float getTotalTimeElapsed() const noexcept;
+            float getDeltaTime() const noexcept;
 
         protected:
             void clear(Color clearColor) noexcept;
@@ -80,7 +80,7 @@ namespace NoxEngine {
             VideoSettings m_maxCapabilities;
 	        Uint64 m_previousTime;
             uint m_frameRate;
-            double m_deltaTime, m_totalTime;
+            float m_deltaTime, m_totalTime;
             Color m_clearColor;
 
         private:

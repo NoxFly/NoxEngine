@@ -7,6 +7,8 @@
 #ifndef ENGINE_TYPEDEF_HPP
 #define ENGINE_TYPEDEF_HPP
 
+#include "engine.export.hpp"
+
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <type_traits>

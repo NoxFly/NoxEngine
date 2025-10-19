@@ -1,0 +1,28 @@
+{
+    "cmake.configureOnOpen": false,
+    "cmake.buildDirectory": "${workspaceFolder}/out/build/${presetName}",
+    "cmake.generator": "Ninja",
+    "cmake.configureSettings": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+    },
+    "search.exclude": {
+        "**/bin": true,
+        "**/out": true
+    },
+    "files.associations": {
+        "*.ejs": "html",
+        "*.sql": "sql",
+        "locale": "cpp",
+        "thread": "cpp",
+        "xlocale": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "memory": "cpp",
+        "istream": "cpp",
+        "fstream": "cpp",
+        "xstring": "cpp",
+        "cmath": "cpp"
+    }
+}

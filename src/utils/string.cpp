@@ -4,7 +4,7 @@
  * @license AGPL-3.0
  */
 
-#include "utils.hpp"
+#include "string.hpp"
 
 #include <random>
 #include <algorithm>

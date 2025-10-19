@@ -3,9 +3,7 @@
 #include <iostream>
 #include <chrono>
 
-#include "core/engine.hpp"
-#include "Console.hpp"
-#include "IniSet.hpp"
+#include "NoxEngine/core/engine.hpp"
 
 using namespace NoxEngine;
 

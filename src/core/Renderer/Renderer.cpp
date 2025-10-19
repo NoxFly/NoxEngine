@@ -13,7 +13,7 @@
 
 #include "Console/Console.hpp"
 #include "core/Actor/Actor.hpp"
-#include "utils/utils.hpp"
+#include "utils/string.hpp"
 
 
 namespace NoxEngine {
@@ -27,7 +27,7 @@ namespace NoxEngine {
         m_glContext(0),
         m_settings{},
         m_maxCapabilities{},
-        m_previousTime(0), m_deltaTime(0.0), m_totalTime(0.0),
+        m_previousTime(0), m_deltaTime(0.0f), m_totalTime(0.0f),
         m_clearColor{}
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))
@@ -266,7 +266,7 @@ namespace NoxEngine {
         v.x /= 2;
         v.y /= 2;
 
-        SDL_WarpMouseInWindow(m_window, v.x, v.y);
+        SDL_WarpMouseInWindow(m_window, static_cast<int>(v.x), static_cast<int>(v.y));
     }
 
 
@@ -291,34 +291,35 @@ namespace NoxEngine {
     }
 
     void Renderer::setFPS(uint fps) noexcept {
-        m_settings.fps = std::clamp(fps, (uint)0, (uint)m_maxCapabilities.fps);
+        m_settings.fps = std::clamp(fps, (uint)0, std::max((uint)0, (uint)m_maxCapabilities.fps));
     }
 
     uint Renderer::getFrameRate() const noexcept {
         return m_frameRate;
     }
 
-    double Renderer::getTotalTimeElapsed() const noexcept {
+    float Renderer::getTotalTimeElapsed() const noexcept {
         return m_totalTime;
     }
 
-    double Renderer::getDeltaTime() const noexcept {
+    float Renderer::getDeltaTime() const noexcept {
         return m_deltaTime;
     }
 
     void Renderer::loadHardwareCapabilities() noexcept {
+        // Create a temporary window with OpenGL context to query capabilities
         SDL_Window* tempWindow = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-        SDL_Renderer* tempRenderer = SDL_CreateRenderer(tempWindow, -1, 0);
+        SDL_GLContext tempContext = SDL_GL_CreateContext(tempWindow);
 
-        SDL_RendererInfo rendererInfo;
-        SDL_GetRendererInfo(tempRenderer, &rendererInfo);
+        // Initialize GLEW for the temp context
+        glewInit();
 
         int multiSampleBuffers = 0;
 
         glGetIntegerv(GL_MULTISAMPLE, &multiSampleBuffers);
         glGetIntegerv(GL_MAX_SAMPLES, &m_maxCapabilities.antiAliasingLevel);
         glGetIntegerv(GL_MAJOR_VERSION, &m_maxCapabilities.openglMajorVersion);
-        glGetIntegerv(GL_MAJOR_VERSION, &m_maxCapabilities.openglMajorVersion);
+        glGetIntegerv(GL_MINOR_VERSION, &m_maxCapabilities.openglMinorVersion); // FIX: was GL_MAJOR_VERSION
         glGetIntegerv(GL_DEPTH_BITS, &m_maxCapabilities.depthSize);
 
         m_maxCapabilities.hardwareAcceleration = multiSampleBuffers > 0;
@@ -329,7 +330,7 @@ namespace NoxEngine {
         SDL_GetCurrentDisplayMode(displayIndex, &DM);
         m_maxCapabilities.fps = DM.refresh_rate;
 
-        SDL_DestroyRenderer(tempRenderer);
+        SDL_GL_DeleteContext(tempContext);
         SDL_DestroyWindow(tempWindow);
 
         auto oglMajor                   = m_config.getIntValue("ENGINE", "opengl_major_version", 3);
@@ -339,12 +340,12 @@ namespace NoxEngine {
         auto askHardwareAcceleration    = m_config.getBoolValue("ENGINE", "hardware_acceleration", true);
         auto fps                        = m_config.getIntValue("ENGINE", "fps", 30);
 
-        m_settings.openglMajorVersion   = std::clamp(oglMajor, 1, m_maxCapabilities.openglMajorVersion);
-        m_settings.openglMinorVersion   = std::clamp(oglMinor, 0, m_maxCapabilities.openglMinorVersion);
+        m_settings.openglMajorVersion   = std::clamp(oglMajor, 1, std::max(1, m_maxCapabilities.openglMajorVersion));
+        m_settings.openglMinorVersion   = std::clamp(oglMinor, 0, std::max(0, m_maxCapabilities.openglMinorVersion));
         m_settings.hardwareAcceleration = m_maxCapabilities.hardwareAcceleration && askHardwareAcceleration;
-        m_settings.antiAliasingLevel    = std::clamp(aaLevel, 0, m_maxCapabilities.antiAliasingLevel);
+        m_settings.antiAliasingLevel    = std::clamp(aaLevel, 0, std::max(0, m_maxCapabilities.antiAliasingLevel));
         m_settings.depthSize            = std::clamp(depthSize, 16, 32);
-        m_settings.fps                  = std::clamp(fps, 0, m_maxCapabilities.fps);
+        m_settings.fps                  = std::clamp(fps, 0, std::max(0, m_maxCapabilities.fps));
 
         Console::info("----------- Hardware max capabilities -----------");
         Console::info("OpenGL version\t\t"          + std::to_string(m_maxCapabilities.openglMajorVersion) + "." + std::to_string(m_maxCapabilities.openglMinorVersion));
@@ -369,11 +370,11 @@ namespace NoxEngine {
 
         Uint64 now = SDL_GetPerformanceCounter();
 
-        m_deltaTime = static_cast<double>((now - m_previousTime) / static_cast<double>(SDL_GetPerformanceFrequency()));
+        m_deltaTime = static_cast<float>(now - m_previousTime) / static_cast<float>(SDL_GetPerformanceFrequency());
 		m_previousTime = now;
         m_totalTime += m_deltaTime;
 
-        m_frameRate = std::round(1.0f / m_deltaTime);
+        m_frameRate = static_cast<uint>(std::round(1.0 / m_deltaTime));
 
         // --- pre-update ---
 
@@ -399,7 +400,7 @@ namespace NoxEngine {
         auto spentTime = endLoop - earlyLoop;
 
         if (spentTime < m_frameRate)
-            SDL_Delay(m_frameRate - spentTime);
+            SDL_Delay(static_cast<Uint32>(m_frameRate - spentTime));
 
         // --- post-update ---
 

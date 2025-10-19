@@ -65,7 +65,6 @@ namespace NoxEngine {
         }
 
         auto deltaTime = m_renderer.getDeltaTime();
-        const float dt = static_cast<float>(deltaTime);
         bool isMoving = false;
 
         if(m_renderer.isMouseFocused() && deltaTime > 0.0) {
@@ -92,7 +91,7 @@ namespace NoxEngine {
         // acceleration
         if(isMoving) {
             if(m_velocity < m_speed) {
-                m_velocity = std::min(m_velocity + m_acceleration * dt, m_speed);
+                m_velocity = std::min(m_velocity + m_acceleration * deltaTime, m_speed);
             }
 
             if(input->isKeyDown(SDL_SCANCODE_W))
@@ -110,7 +109,7 @@ namespace NoxEngine {
         // deceleration
         else {
             if(m_velocity > 0.0f) {
-                m_velocity = std::max(0.0f, m_velocity - m_deceleration * dt);
+                m_velocity = std::max(0.0f, m_velocity - m_deceleration * deltaTime);
             }
             else {
                 m_displacement.x = 0;
@@ -118,7 +117,7 @@ namespace NoxEngine {
             }
         }
 
-        const float speed = m_velocity * dt;
+        const float speed = m_velocity * deltaTime;
 
         if(speed > 0.0f) {
             const auto forward = m_camera.getForward();

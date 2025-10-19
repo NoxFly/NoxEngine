@@ -12,7 +12,7 @@
 
 #include "core/engine.typedef.hpp"
 #include "Console/Console.hpp"
-#include "utils/utils.hpp"
+#include "utils/string.hpp"
 
 namespace NoxEngine {
 

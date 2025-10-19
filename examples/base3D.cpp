@@ -4,9 +4,14 @@
 #include <cmath>
 #include <chrono>
 
-#include "core/engine.hpp"
-#include "Console.hpp"
-#include "IniSet.hpp"
+#ifdef _WIN32
+#include <direct.h>
+#define getcwd _getcwd
+#else
+#include <unistd.h>
+#endif
+
+#include "NoxEngine/core/engine.hpp"
 
 using namespace NoxEngine;
 
@@ -29,6 +34,12 @@ float easeInOutBack(float t, float s = 1.70158f) {
 int main(int argc, char** argv) {
 	(void)argc;
 	(void)argv;
+
+	// Debug: Print current working directory
+	char cwd[1024];
+	if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+		std::cout << "Current working directory: " << cwd << std::endl;
+	}
 
 	IniSet config;
 
@@ -90,7 +101,7 @@ int main(int argc, char** argv) {
 		// because if performances drops, the cubes will rotate slower, but time
 		// continues at the same speed.
 		auto rotationX = delta * 10.0f;
-		auto rotationY = 0;
+		auto rotationY = 0.0f;
 		auto rotationZ = delta * 3.0f;
 
 		// apply scaling animation to one of the cubes

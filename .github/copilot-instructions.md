@@ -31,6 +31,15 @@ The CMake configuration builds a **shared library** (`NoxEngine.dll` on Windows,
 
 Examples in the `examples/` folder are built as separate executables that link against the NoxEngine shared library, and are placed in `bin/examples/`.
 
+### Public Headers
+After building the library, public headers are automatically copied to `bin/include/NoxEngine/` with optimizations:
+- All `.cpp` files are removed
+- Redundant directory structures are flattened (e.g., `Actor/Actor.hpp` → `Actor.hpp`)
+- All `#include` paths are converted to be relative to `bin/include/NoxEngine/` (not relative between files)
+- Empty directories are cleaned up
+
+**Usage in examples**: `#include "NoxEngine/core/engine.hpp"`
+
 ### Library Names (MinGW64 vs Unix)
 - **GLEW**: `glew32` (Windows) vs `GLEW` (Unix)
 - **OpenGL**: `opengl32` (Windows) vs `OpenGL` (Unix)

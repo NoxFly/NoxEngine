@@ -15,7 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Console/Console.hpp"
-#include "utils/utils.hpp"
+#include "utils/string.hpp"
 
 // GLSL versions :
 // 1.10, 1.20, 1.30, 1.40, 1.50, 3.30, 4.00, 4.10, 4.20, 4.30, 4.40, 4.50, 4.60, 1.00 ES, 3.00 ES, 3.10 ES, and 3.20 ES
@@ -105,7 +105,7 @@ namespace NoxEngine {
         searchShadersRec(path, shaderPaths);
 
 #ifdef DEBUG
-        unsigned int done = 0, total = shaderPaths.size();
+        size_t done = 0, total = shaderPaths.size();
 
         std::cout << "Loading shaders... " << done << "/" << total << std::flush;
 #endif
@@ -128,6 +128,12 @@ namespace NoxEngine {
     }
 
     Shader* Shader::get(const std::string& shaderName) noexcept {
+        if (!m_bank.has(shaderName)) {
+            Console::error("Shader::get", "Shader '" + shaderName + "' not found. Available shaders:");
+            // List available shaders for debugging
+            // Note: ResourceHolder doesn't have an iterator, so we can't list them here
+            // But at least we know which shader is missing
+        }
         return &m_bank.get(shaderName);
     }
 
@@ -307,6 +313,9 @@ namespace NoxEngine {
                 return false;
             }
 
+            // Désactiver les exceptions pour EOF pendant la lecture
+            shaderFile.exceptions(std::ifstream::badbit);
+
             std::string lineBuffer;
 
             // ENHANCEMENT : for scaling, could be defined by rules and splitted and managed by an external entity
@@ -339,12 +348,18 @@ namespace NoxEngine {
         }
 
         catch(std::ifstream::failure const& e) {
-            if(e.code().value() == 1) {
+            std::string what = e.what();
+            
+            Console::error(
+                "Shader::compileShader",
+                "File stream error: " + what
+            );
+
+            if (shaderFile.is_open()) {
                 shaderFile.close();
             }
-            else {
-                throw std::runtime_error(e.what());
-            }
+
+            return false;
         }
 
         catch(std::runtime_error const& e) {
@@ -354,6 +369,10 @@ namespace NoxEngine {
                 "Shader::compileShader",
                 "Failed to read and parse file " + filepath + " : " + what
             );
+
+            if (shaderFile.is_open()) {
+                shaderFile.close();
+            }
             
             return false;
         }

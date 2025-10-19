@@ -11,6 +11,9 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
+#include "IniSet/IniSet.hpp"
+#include "Console/Console.hpp"
+
 #include "core/engine.typedef.hpp"
 
 #include "core/Actor/Actor.hpp"

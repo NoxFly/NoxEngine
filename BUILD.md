@@ -34,7 +34,37 @@ Le projet NoxEngine compile désormais une **bibliothèque partagée** (`NoxEngi
 ### Structure de compilation
 
 - **Bibliothèque** : `src/` → `bin/NoxEngine.dll`
+- **Headers publics** : `src/` → `bin/include/NoxEngine/` (copie automatique et optimisée)
+  - Copie des fichiers `.hpp`, `.h`, `.inl` (pas de `.cpp`)
+  - Remontée des fichiers redondants (ex: `BoxGeometry/BoxGeometry.hpp` → `BoxGeometry.hpp`)
+  - Conversion des `#include` pour être relatifs à `bin/include/NoxEngine/`
+  - Suppression des dossiers vides
 - **Exemples** : `examples/` → `bin/examples/<nom>.exe`
+
+**Important** : Les exemples utilisent les headers de `bin/include/NoxEngine/` et non directement ceux de `src/`. Cela simule l'utilisation de la bibliothèque comme si elle était installée sur le système. Les headers sont automatiquement copiés et optimisés lors de la compilation de la bibliothèque.
+
+#### Exemple de transformation des headers
+
+**Source (`src/`)** :
+```
+src/core/Actor/Light/AmbientLight/
+├── AmbientLight.cpp  (implémentation)
+└── AmbientLight.hpp  (interface)
+```
+
+**Headers publics (`bin/include/NoxEngine/`)** :
+```
+bin/include/NoxEngine/core/Actor/Light/
+└── AmbientLight.hpp  (interface uniquement, remonté d'un niveau)
+```
+
+Cela permet des includes plus simples et évite les conflits de noms :
+```cpp
+// Dans vos exemples ou projets externes
+#include "NoxEngine/core/Actor/Light/AmbientLight.hpp"  // ✅ Simplifié avec namespace
+// au lieu de
+#include "core/Actor/Light/AmbientLight/AmbientLight.hpp"  // ❌ Redondant
+```
 
 ## Utilisation avec VS Code et l'extension CMake
 
@@ -131,6 +161,18 @@ bin/
 ├── SDL2.dll               # Dépendance SDL2
 ├── SDL2_image.dll         # Extension SDL2 pour les images
 ├── SDL2_ttf.dll           # Extension SDL2 pour les fonts
+├── include/               # Headers publics (copie de src/)
+│   ├── core/
+│   │   ├── engine.hpp
+│   │   ├── engine.typedef.hpp
+│   │   ├── Actor/
+│   │   ├── Camera/
+│   │   ├── Controls/
+│   │   ├── Renderer/
+│   │   └── Scene/
+│   ├── Console/
+│   ├── IniSet/
+│   └── utils/
 └── examples/              # Exécutables des exemples
     ├── base3D.exe
     ├── camera_pointerLock.exe
@@ -140,3 +182,5 @@ bin/
     ├── SDL2_image.dll
     └── SDL2_ttf.dll
 ```
+
+**Note** : Les exemples incluent les headers depuis `bin/include/NoxEngine/`, pas directement depuis `src/`. Cela garantit qu'ils utilisent l'API publique de la bibliothèque avec le namespace approprié (`#include "NoxEngine/core/engine.hpp"`).

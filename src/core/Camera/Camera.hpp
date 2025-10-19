@@ -15,7 +15,7 @@
 #include "core/engine.typedef.hpp"
 #include "core/MatricesMVP/Matrices.hpp"
 #include "core/Actor/Movable.hpp"
-#include "utils/utils.hpp"
+#include "utils/string.hpp"
 
 namespace NoxEngine {
 
@@ -78,7 +78,7 @@ namespace NoxEngine {
             }
 
             bool m_needsUpdate;
-            double m_near, m_far;
+            float m_near, m_far;
             V3D m_target, m_verticalAxis;
             Matrices m_matrix;
     };
