@@ -3,6 +3,10 @@ bin/
 bin/debug
 bin/release
 bin/lib
+out/
+
+# User-specific configuration (contains local paths)
+config.cmake
 
 **/*.o
 
