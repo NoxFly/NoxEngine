@@ -80,6 +80,7 @@ namespace NoxEngine {
             VideoSettings m_maxCapabilities;
 	        Uint64 m_previousTime;
             uint m_frameRate;
+            Uint32 m_targetFrameTime; // Target time per frame in milliseconds
             float m_deltaTime, m_totalTime;
             Color m_clearColor;
 

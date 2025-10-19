@@ -27,7 +27,11 @@ namespace NoxEngine {
         m_glContext(0),
         m_settings{},
         m_maxCapabilities{},
-        m_previousTime(SDL_GetPerformanceCounter()), m_deltaTime(0.0f), m_totalTime(0.0f),
+        m_previousTime(SDL_GetPerformanceCounter()), 
+        m_frameRate(0),
+        m_targetFrameTime(0),
+        m_deltaTime(0.0f), 
+        m_totalTime(0.0f),
         m_clearColor{}
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))
@@ -39,6 +43,14 @@ namespace NoxEngine {
         }
 
         m_isInit = true;
+        
+        // Calculate target frame time based on configured FPS
+        if(m_settings.fps > 0) {
+            m_targetFrameTime = 1000 / m_settings.fps; // Convert FPS to milliseconds per frame
+        } else {
+            m_targetFrameTime = 0; // No frame limiting
+        }
+        
         // get a black screen before the rest of the code
         // loads a lot of things, and then we get a bugged window.
         swapWindow();
@@ -292,6 +304,13 @@ namespace NoxEngine {
 
     void Renderer::setFPS(uint fps) noexcept {
         m_settings.fps = std::clamp(fps, (uint)0, std::max((uint)0, (uint)m_maxCapabilities.fps));
+        
+        // Recalculate target frame time
+        if(m_settings.fps > 0) {
+            m_targetFrameTime = 1000 / m_settings.fps;
+        } else {
+            m_targetFrameTime = 0;
+        }
     }
 
     uint Renderer::getFrameRate() const noexcept {
@@ -394,13 +413,15 @@ namespace NoxEngine {
 
         swapWindow();
 
-        //
-
+        // --- Frame limiting ---
+        
         auto endLoop = SDL_GetTicks64();
-        auto spentTime = endLoop - earlyLoop;
+        auto spentTime = endLoop - earlyLoop; // Time spent rendering this frame in milliseconds
 
-        if (spentTime < m_frameRate)
-            SDL_Delay(static_cast<Uint32>(m_frameRate - spentTime));
+        // Limit framerate if a target FPS is set
+        if (m_targetFrameTime > 0 && spentTime < m_targetFrameTime) {
+            SDL_Delay(static_cast<Uint32>(m_targetFrameTime - spentTime));
+        }
 
         // --- post-update ---
 
