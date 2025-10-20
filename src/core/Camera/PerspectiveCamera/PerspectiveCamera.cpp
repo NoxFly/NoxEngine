@@ -36,7 +36,7 @@ namespace NoxEngine {
         // Extract pitch and yaw from the quaternion to keep them in sync
         extractPitchYawFromOrientation();
         
-        m_needsUpdate = true;
+        m_dirty = true;
     }
 
     void PerspectiveCamera::lookAt(const float x, const float y, const float z) noexcept {
@@ -48,7 +48,7 @@ namespace NoxEngine {
             // move in the direction of the quaternion
             m_position += glm::rotate(m_orientation, offset);
             m_target = m_position + getForward();
-            m_needsUpdate = true;
+            m_dirty = true;
         }
     }
 
@@ -56,7 +56,7 @@ namespace NoxEngine {
         if(duration == 0) {
             m_position = position;
             m_target = m_position + getForward();
-            m_needsUpdate = true;
+            m_dirty = true;
         }
     }
 
@@ -67,7 +67,7 @@ namespace NoxEngine {
         // Extract pitch and yaw from the quaternion to keep them in sync
         extractPitchYawFromOrientation();
         
-        m_needsUpdate = true;
+        m_dirty = true;
     }
 
     /**
@@ -85,17 +85,21 @@ namespace NoxEngine {
         m_pitch = glm::clamp(m_pitch, -glm::half_pi<float>() + 0.01f, glm::half_pi<float>() - 0.01f);
         
         // Reconstruct orientation from pitch and yaw
-        // Yaw first (around global Y), then pitch (around local X)
+        // For proper FPS controls: pitch * yaw (pitch in local space, yaw in global)
         glm::quat qYaw = glm::angleAxis(m_yaw, V3D(0, 1, 0));
         glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1, 0, 0));
         
-        // Combine: yaw in global space, pitch in local space
-        m_orientation = glm::normalize(qYaw * qPitch);
+        // Combine: pitch first, then yaw (reverse order for quaternion multiplication)
+        m_orientation = glm::normalize(qPitch * qYaw);
         
-        m_needsUpdate = true;
+        m_dirty = true;
     }
 
-    glm::quat PerspectiveCamera::getOrientation() const noexcept {
+    const V3D& PerspectiveCamera::getPosition() const noexcept {
+        return m_position;
+    }
+
+    const glm::quat& PerspectiveCamera::getOrientation() const noexcept {
         return m_orientation;
     }
 
@@ -127,8 +131,8 @@ namespace NoxEngine {
     }
 
     void PerspectiveCamera::update() noexcept {
-        if(m_needsUpdate) {
-            m_needsUpdate = false;
+        if(m_dirty) {
+            m_dirty = false;
             
             M4 rotate = glm::mat4_cast(m_orientation);
             M4 translate = M4(1.0f);

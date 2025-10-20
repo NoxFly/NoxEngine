@@ -49,7 +49,7 @@ namespace NoxEngine {
 			char header[8];
 			auto cline = line.c_str();
 
-			sscanf(cline, "%s", header);
+			sscanf_s(cline, "%s", header, (unsigned)sizeof(header));
 
 			// comment
 			if(strcmp(header, "#") == 0) {
@@ -59,7 +59,7 @@ namespace NoxEngine {
 			else if(strcmp(header, "v") == 0) {
 				float x, y, z;
 
-				sscanf(cline, "%f %f %f\n", &x, &y, &z);
+				sscanf_s(cline, "%f %f %f\n", &x, &y, &z);
 
 				vertices.push_back(x);
 				vertices.push_back(y);
@@ -73,7 +73,7 @@ namespace NoxEngine {
 			else if(strcmp(header, "vn") == 0) {
 				float x, y, z;
 
-				sscanf(cline, "%f %f %f\n", &x, &y, &z);
+				sscanf_s(cline, "%f %f %f\n", &x, &y, &z);
 
 				normals.push_back(x);
 				normals.push_back(y);
@@ -87,7 +87,7 @@ namespace NoxEngine {
 			else if(strcmp(header, "vc") == 0) {
 				float r, g, b;
 				
-				sscanf(cline, "%f %f %f\n", &r, &g, &b);
+				sscanf_s(cline, "%f %f %f\n", &r, &g, &b);
 				
 				colors.push_back(r);
 				colors.push_back(g);
@@ -101,7 +101,7 @@ namespace NoxEngine {
 			else if(strcmp(header, "vt") == 0) {
 				float x, y;
 				
-				sscanf(cline, "%f %f\n", &x, &y);
+				sscanf_s(cline, "%f %f\n", &x, &y);
 				
 				uvs.push_back(x);
 				uvs.push_back(y);
@@ -117,7 +117,7 @@ namespace NoxEngine {
 						GLushort v;
 						
                         std::cout << "cline : " << cline;
-						if(!sscanf(cline, "%hu", &v)) {
+						if(!sscanf_s(cline, "%hu", &v)) {
 							Console::error("Mesh3D::loadFromFile", "Syntax error on vertex indice (line " + std::to_string(lineIndex) + ")");
 							return false;
 						}
@@ -128,7 +128,7 @@ namespace NoxEngine {
 					if(nC) {
 						GLushort n;
 
-						if(!sscanf(cline, "/%hu", &n)) {
+						if(!sscanf_s(cline, "/%hu", &n)) {
 							Console::error("Mesh3D::loadFromFile", "Syntax error on normal indice (line " + std::to_string(lineIndex) + ")");
 							return false;
 						}
@@ -139,7 +139,7 @@ namespace NoxEngine {
 					if(uC) {
 						GLushort uv;
 						
-						if(!sscanf(cline, "/%hu", &uv)) {
+						if(!sscanf_s(cline, "/%hu", &uv)) {
 							Console::error("Mesh3D::loadFromFile", "Syntax error on texture indice (line " + std::to_string(lineIndex) + ")");
 							return false;
 						}
@@ -150,7 +150,7 @@ namespace NoxEngine {
 					if(cC) {
 						GLushort c;
 
-						if(!sscanf(cline, "/%hu", &c)) {
+						if(!sscanf_s(cline, "/%hu", &c)) {
 							Console::error("Mesh3D::loadFromFile", "Syntax error on color indice (line " + std::to_string(lineIndex) + ")");
 							return false;
 						}

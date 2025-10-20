@@ -53,7 +53,7 @@ namespace NoxEngine {
             void _rotate(const V3D& rotation) noexcept;
             void _scale(const V3D& scale) noexcept;
 
-            bool m_needsUpdate; // in get(), updates is any operation has been done before
+            bool m_dirty; // in get(), updates is any operation has been done before
             M4 m_model, m_view, m_mvp, m_projection;
             std::stack<M4> m_saves; // stack trace of the pushed mvp versions
     };

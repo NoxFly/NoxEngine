@@ -28,7 +28,7 @@ namespace NoxEngine {
     {}
 
     Matrices::Matrices(const M4& view, const std::stack<M4>& saves):
-        m_needsUpdate(true),
+        m_dirty(true),
         m_model(1.0f),
         m_view(view),
         m_mvp(),
@@ -57,7 +57,7 @@ namespace NoxEngine {
         if(!m_saves.empty()) {
             m_model = m_saves.top();
             m_saves.pop();
-            m_needsUpdate = true;
+            m_dirty = true;
         }
     }
 
@@ -86,7 +86,7 @@ namespace NoxEngine {
     }
 
     M4& Matrices::get() noexcept {
-        if(m_needsUpdate)
+        if(m_dirty)
             update();
 
         return m_mvp;
@@ -94,7 +94,7 @@ namespace NoxEngine {
 
     void Matrices::setView(const M4& lookAt) noexcept {
         m_view = lookAt;
-        m_needsUpdate = true;
+        m_dirty = true;
     }
 
     void Matrices::translate(const V3D& translation) noexcept {
@@ -111,7 +111,7 @@ namespace NoxEngine {
 
     void Matrices::_translate(const V3D& translation) noexcept {
         m_model = glm::translate(m_model, translation);
-        m_needsUpdate = true;
+        m_dirty = true;
     }
     
 
@@ -125,17 +125,17 @@ namespace NoxEngine {
         if(rotation.z != 0)
             m_model = glm::rotate(m_model, glm::radians(rotation.z), V3D(1, 0, 0));
 
-        m_needsUpdate = true;
+        m_dirty = true;
     }
 
     void Matrices::_scale(const V3D& scale) noexcept {
         m_model = glm::scale(m_model, scale);
-        m_needsUpdate = true;
+        m_dirty = true;
     }
 
     void Matrices::update() noexcept {
         m_mvp = m_projection * m_view * m_model;
-        m_needsUpdate = false;
+        m_dirty = false;
     }
 
 }

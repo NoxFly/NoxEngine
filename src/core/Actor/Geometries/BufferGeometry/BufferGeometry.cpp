@@ -57,8 +57,8 @@ namespace NoxEngine {
 		const auto vElementSize		= vElementCount * fsize;
 
 
-		m_vertexCount	= verticesCount;
-		m_vElementCount = vElementCount;
+		m_vertexCount	= static_cast<GLuint>(verticesCount);
+		m_vElementCount = static_cast<GLuint>(vElementCount);
 
 		const auto totalSize = verticesSize + normalsSize + colorsSize + uvSize;
 
@@ -158,9 +158,9 @@ namespace NoxEngine {
 		std::vector<V3D> tempN;
 		std::vector<V3D> tempC;
 
-		const unsigned int count = data.indexes.size();
+		const size_t count = data.indexes.size();
 
-		for (unsigned int i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 
 			// Get the indices of its attributes
 			const auto indices = data.indexes[i];
@@ -175,21 +175,21 @@ namespace NoxEngine {
 			// Get the attributes thanks to the index
 
 			// vertex
-			tempV.push_back(data.vertices[indices[0] - 1]);
+			tempV.push_back(data.vertices[static_cast<size_t>(indices[0] - 1)]);
 
 			// uv
 			if (indices[1] > 0) {
-				tempUV.push_back(data.uvs[indices[1] - 1]);
+				tempUV.push_back(data.uvs[static_cast<size_t>(indices[1] - 1)]);
 			}
 
 			// normal
 			if (indices[2] > 0) {
-				tempN.push_back(data.normals[indices[2] - 1]);
+				tempN.push_back(data.normals[static_cast<size_t>(indices[2] - 1)]);
 			}
 
 			// color
 			if (indices[3] > 0) {
-				tempC.push_back(data.colors[indices[3] - 1]);
+				tempC.push_back(data.colors[static_cast<size_t>(indices[3] - 1)]);
 			}
 
 		}
@@ -198,10 +198,10 @@ namespace NoxEngine {
 
 		// step 2 : remove duplicate combinations (vert/uv/norm/col)
 
-		const unsigned int vSize = tempV.size();
-		const unsigned int uvSize = tempUV.size();
-		const unsigned int nSize = tempN.size();
-		const unsigned int cSize = tempC.size();
+		const size_t vSize = tempV.size();
+		const size_t uvSize = tempUV.size();
+		const size_t nSize = tempN.size();
+		const size_t cSize = tempC.size();
 
 		if (vSize == 0
 			|| (uvSize > 0 && uvSize != vSize)

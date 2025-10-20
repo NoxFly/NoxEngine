@@ -25,6 +25,7 @@
         "xstring": "cpp",
         "cmath": "cpp",
         "ios": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "xiosbase": "cpp"
     }
 }

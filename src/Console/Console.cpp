@@ -8,8 +8,12 @@
 
 #include <thread>
 #include <mutex>
+#include <string>
+#include <chrono>
 
 std::mutex consoleMutex;
+
+std::string getCurrentTimestamp();
 
 void Console::log(const std::string& where, const std::string& message) {
     Console::message(LOG, where, message);
@@ -35,16 +39,21 @@ void Console::message(Console::method method, const std::string& where, const st
     std::string spaces = " ";
     std::string sMethod = coloredName(method);
 
-    int sSize = sMethod.size();
+    size_t sSize = sMethod.size();
 
-    for(int i=10; i > sSize; i--) {
+    for(size_t i=10; i > sSize; i--) {
         spaces += " ";
     }
 
-    std::string sep = (where == "")? " " : " : ";
+    std::string sep = (where == "")
+        ? " "
+        : " : ";
+
+    std::string timestamp = "[" + getCurrentTimestamp() + "]";
 
     std::lock_guard<std::mutex> guard(consoleMutex);
-    stream << sMethod << spaces << where << sep << message << std::endl;
+
+    stream << timestamp << " " << sMethod << spaces << where << sep << message << std::endl;
 }
 #else
 void Console::message(Console::method method, const std::string& where, const std::string& message) {
@@ -93,4 +102,20 @@ std::string Console::coloredName(Console::method method) {
     }
 
     return str + CONSOLE_END_COLOR + "]";
+}
+
+std::string getCurrentTimestamp() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
+
+    char buffer[20];
+    std::tm timeinfo;
+#ifdef _WIN32
+    localtime_s(&timeinfo, &now_time_t);
+#else
+    localtime_r(&now_time_t, &timeinfo);
+#endif
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
+
+    return std::string(buffer);
 }

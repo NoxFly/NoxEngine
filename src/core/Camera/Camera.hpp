@@ -26,7 +26,7 @@ namespace NoxEngine {
             {}
 
             explicit inline Camera(const V3D& position, const V3D& target, const V3D& verticalAxis, const float near, const float far):
-                m_needsUpdate(true),
+                m_dirty(true),
                 m_near(near), m_far(far),
                 m_target(target),
                 m_verticalAxis(verticalAxis),
@@ -36,7 +36,7 @@ namespace NoxEngine {
             }
 
             explicit Camera(const float left, const float right, const float top, const float bottom, const float near, const float far):
-                m_needsUpdate(true),
+                m_dirty(true),
                 m_near(near), m_far(far),
                 m_target(V3D(0, 0, 0)),
                 m_verticalAxis(V3D(0, 1, 0)),
@@ -53,8 +53,8 @@ namespace NoxEngine {
             inline virtual ~Camera() {}
 
             inline virtual void update() noexcept {
-                if(m_needsUpdate) {
-                    m_needsUpdate = false;
+                if(m_dirty) {
+                    m_dirty = false;
                     m_matrix.setView(glm::lookAt(m_position, m_target, m_verticalAxis));
                 }
             }
@@ -69,15 +69,15 @@ namespace NoxEngine {
         protected:
             inline void _setPosition(const float x, const float y, const float z) noexcept {
                 m_position = V3D(x, y, z);
-                m_needsUpdate = true;
+                m_dirty = true;
             }
 
             inline void _setPosition(const V3D& position) noexcept {
                 m_position = position;
-                m_needsUpdate = true;
+                m_dirty = true;
             }
 
-            bool m_needsUpdate;
+            bool m_dirty;
             float m_near, m_far;
             V3D m_target, m_verticalAxis;
             Matrices m_matrix;

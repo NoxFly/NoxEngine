@@ -70,7 +70,7 @@ namespace NoxEngine {
         auto deltaTime = m_renderer.getDeltaTime();
         bool isMoving = false;
 
-        if(m_renderer.isMouseFocused() && deltaTime > 0.0) {
+        if(m_renderer.isMouseFocused() && deltaTime > 0.0f) {
             // orientation (look)
             const auto mouseMov = input->getMouseMovement();
 
@@ -91,6 +91,7 @@ namespace NoxEngine {
 
             // Apply smoothed rotation with interpolation
             const float rotationLerpFactor = 15.0f * deltaTime; // Adjust for camera rotation smoothness
+            
             if(glm::length(m_smoothRotation) > 0.001f) {
                 const float deltaX = glm::radians(m_smoothRotation.y * rotationLerpFactor);
                 const float deltaY = glm::radians(m_smoothRotation.x * rotationLerpFactor);
@@ -102,8 +103,10 @@ namespace NoxEngine {
             }
 
             // displacement
-            if(input->isKeyDown(SDL_SCANCODE_W) || input->isKeyDown(SDL_SCANCODE_S) ||
-            input->isKeyDown(SDL_SCANCODE_A) || input->isKeyDown(SDL_SCANCODE_D)) {
+            if(
+                input->isKeyDown(SDL_SCANCODE_W) || input->isKeyDown(SDL_SCANCODE_S)
+                || input->isKeyDown(SDL_SCANCODE_A) || input->isKeyDown(SDL_SCANCODE_D)
+            ) {
                 isMoving = true;
             }
         }
@@ -128,7 +131,7 @@ namespace NoxEngine {
         }
 
         // Smooth interpolation of displacement (lerp)
-        const float lerpFactor = 10.0f * deltaTime; // Adjust for smoothness
+        const float lerpFactor = 10.0f * deltaTime;
         m_displacement.x = glm::mix(m_displacement.x, targetDisplacement.x, lerpFactor);
         m_displacement.y = glm::mix(m_displacement.y, targetDisplacement.y, lerpFactor);
 
@@ -147,12 +150,41 @@ namespace NoxEngine {
 
         const float speed = m_velocity * deltaTime;
 
-        if(speed > 0.0f) {
+        if(glm::length(m_displacement) > 0.001f) {
             const auto forward = m_camera.getForward();
             const auto right = m_camera.getRight();
 
             const auto displacement = right * m_displacement.x + forward * m_displacement.y;
-            m_camera.move(displacement * speed);
+            
+            if(input->isKeyDown(SDL_SCANCODE_LCTRL)) {
+                Console::log("Forward: " + std::to_string(forward.x) + ", " + std::to_string(forward.y) + ", " + std::to_string(forward.z));
+                Console::log("Right: " + std::to_string(right.x) + ", " + std::to_string(right.y) + ", " + std::to_string(right.z));
+                Console::log("Displacement input: " + std::to_string(m_displacement.x) + ", " + std::to_string(m_displacement.y));
+                Console::log("Final displacement: " + std::to_string(displacement.x) + ", " + std::to_string(displacement.y) + ", " + std::to_string(displacement.z));
+            }
+            
+            // Move the camera directly without applying rotation again
+            // (forward and right vectors already account for camera orientation)
+            const auto newPosition = m_camera.getPosition() + displacement * speed;
+            m_camera.moveTo(newPosition);
+        }
+
+        if(input->isKeyDown(SDL_SCANCODE_LCTRL)) {
+            auto pos = m_camera.getPosition();
+            auto ori = m_camera.getOrientation();
+
+            Console::log("Position : " +
+                std::to_string(pos.x) + ", " +
+                std::to_string(pos.y) + ", " +
+                std::to_string(pos.z)
+            );
+
+            Console::log("Orientation (quat) : " +
+                std::to_string(ori.x) + ", " +
+                std::to_string(ori.y) + ", " +
+                std::to_string(ori.z) + ", " +
+                std::to_string(ori.w)
+            );
         }
     }
 
