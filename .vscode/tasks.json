@@ -118,10 +118,7 @@
                     ]
                 }
             },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "dependsOn": [
                 "CMake Configure Debug"
             ],
@@ -226,7 +223,10 @@
                     ]
                 }
             },
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "dependsOn": [
                 "CMake Configure Debug"
             ],
