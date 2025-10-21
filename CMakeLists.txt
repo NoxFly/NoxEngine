@@ -181,16 +181,9 @@ if(BUILD_EXAMPLES)
         # Get the filename without extension
         get_filename_component(EXAMPLE_NAME ${EXAMPLE_FILE} NAME_WE)
         
-        # Get the relative directory path
-        file(RELATIVE_PATH EXAMPLE_REL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/examples ${EXAMPLE_FILE})
-        get_filename_component(EXAMPLE_DIR ${EXAMPLE_REL_PATH} DIRECTORY)
-        
-        # Create a unique target name
-        if(EXAMPLE_DIR)
-            string(REPLACE "/" "_" EXAMPLE_TARGET "${EXAMPLE_DIR}_${EXAMPLE_NAME}")
-        else()
-            set(EXAMPLE_TARGET ${EXAMPLE_NAME})
-        endif()
+        # Use just the filename as the target name (no directory prefix)
+        # This makes it consistent with tasks.json and launch.json expectations
+        set(EXAMPLE_TARGET ${EXAMPLE_NAME})
         
         # Create executable for this example
         add_executable(${EXAMPLE_TARGET} ${EXAMPLE_FILE})

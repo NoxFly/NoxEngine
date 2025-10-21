@@ -4,8 +4,8 @@
  * @license AGPL-3.0
  */
 
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef STRING_HPP
+#define STRING_HPP
 
 #include <string_view>
 #include <string>
@@ -152,4 +152,4 @@ const std::string vecToString(const glm::vec2& v);
  */
 const std::string vecToString(const glm::vec3& v);
 
-#endif // UTILS_HPP
+#endif // STRING_HPP

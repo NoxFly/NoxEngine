@@ -11,6 +11,8 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <algorithm>
 
+#include "utils/quat.hpp"
+
 
 namespace NoxEngine {
 
@@ -29,12 +31,29 @@ namespace NoxEngine {
     }
 
     void PerspectiveCamera::lookAt(const V3D& target) noexcept {
-        m_target = target;
-        V3D direction = glm::normalize(m_target - m_position);
-        m_orientation = glm::quatLookAt(direction, m_verticalAxis);
+        V3D dir = glm::normalize(target - m_position);
+
+        if (glm::length2(dir) < 1e-8f) {
+            m_dirty = true;
+            return;
+        }
+
+        // yaw : orientation horizontale
+        m_yaw = std::atan2(dir.x, -dir.z);
+
+        // pitch : orientation verticale
+        m_pitch = std::atan2(dir.y, std::sqrt(dir.x * dir.x + dir.z * dir.z));
+
+        // clamp comme dans orientate()
+        m_pitch = glm::clamp(m_pitch, -glm::half_pi<float>() + 0.01f, glm::half_pi<float>() - 0.01f);
+
+        // reconstruction quaternion cohérente
+        glm::quat qYaw   = glm::angleAxis(m_yaw, V3D(0.0f, 1.0f, 0.0f));
+        glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1.0f, 0.0f, 0.0f));
         
-        // Extract pitch and yaw from the quaternion to keep them in sync
-        extractPitchYawFromOrientation();
+        m_orientation = glm::normalize(qYaw * qPitch);
+
+        m_target = m_position + getForward();
         
         m_dirty = true;
     }
@@ -61,12 +80,17 @@ namespace NoxEngine {
     }
 
     void PerspectiveCamera::setOrientation(const glm::quat& orientation) noexcept {
-        m_orientation = orientation;
+        glm::vec3 forward = glm::rotate(orientation, V3D(0, 0, -1));
+
+        m_yaw = atan2(forward.x, forward.z);
+        m_pitch = asin(-forward.y);
+
+        // Puis on reconstruit le quaternion comme partout ailleurs
+        glm::quat qYaw = glm::angleAxis(m_yaw, V3D(0,1,0));
+        glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1,0,0));
+        m_orientation = glm::normalize(qPitch * qYaw);
+
         m_target = m_position + getForward();
-        
-        // Extract pitch and yaw from the quaternion to keep them in sync
-        extractPitchYawFromOrientation();
-        
         m_dirty = true;
     }
 
@@ -115,28 +139,12 @@ namespace NoxEngine {
         return glm::rotate(m_orientation, V3D(0.0f, 1.0f, 0.0f));
     }
 
-    void PerspectiveCamera::extractPitchYawFromOrientation() noexcept {
-        // Extract Euler angles from quaternion
-        // We need to extract pitch and yaw to keep them synchronized with m_orientation
-        
-        // Convert quaternion to Euler angles
-        glm::vec3 euler = glm::eulerAngles(m_orientation);
-        
-        // euler.x = pitch (rotation around X axis)
-        // euler.y = yaw (rotation around Y axis)
-        // euler.z = roll (rotation around Z axis)
-        
-        m_pitch = euler.x;
-        m_yaw = euler.y;
-    }
-
     void PerspectiveCamera::update() noexcept {
         if(m_dirty) {
             m_dirty = false;
             
-            M4 rotate = glm::mat4_cast(m_orientation);
-            M4 translate = M4(1.0f);
-            translate = glm::translate(translate, -m_position);
+            M4 rotate = glm::mat4_cast(glm::conjugate(m_orientation));
+            M4 translate = glm::translate(M4(1.0f), -m_position);
 
             M4 view = rotate * translate;
 

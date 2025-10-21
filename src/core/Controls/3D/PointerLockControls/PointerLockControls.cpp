@@ -83,9 +83,9 @@ namespace NoxEngine {
                     const auto mx = mouseMov.x * m_sensitivity * deltaTime;
                     const auto my = mouseMov.y * m_sensitivity * deltaTime;
 
-                    // Accumulate raw rotation input
-                    m_smoothRotation.x += my;
-                    m_smoothRotation.y += mx;
+                    // Accumulate raw rotation input (inverted for natural camera movement)
+                    m_smoothRotation.x -= my;
+                    m_smoothRotation.y -= mx;
                 }
             }
 
@@ -156,35 +156,10 @@ namespace NoxEngine {
 
             const auto displacement = right * m_displacement.x + forward * m_displacement.y;
             
-            if(input->isKeyDown(SDL_SCANCODE_LCTRL)) {
-                Console::log("Forward: " + std::to_string(forward.x) + ", " + std::to_string(forward.y) + ", " + std::to_string(forward.z));
-                Console::log("Right: " + std::to_string(right.x) + ", " + std::to_string(right.y) + ", " + std::to_string(right.z));
-                Console::log("Displacement input: " + std::to_string(m_displacement.x) + ", " + std::to_string(m_displacement.y));
-                Console::log("Final displacement: " + std::to_string(displacement.x) + ", " + std::to_string(displacement.y) + ", " + std::to_string(displacement.z));
-            }
-            
             // Move the camera directly without applying rotation again
             // (forward and right vectors already account for camera orientation)
             const auto newPosition = m_camera.getPosition() + displacement * speed;
             m_camera.moveTo(newPosition);
-        }
-
-        if(input->isKeyDown(SDL_SCANCODE_LCTRL)) {
-            auto pos = m_camera.getPosition();
-            auto ori = m_camera.getOrientation();
-
-            Console::log("Position : " +
-                std::to_string(pos.x) + ", " +
-                std::to_string(pos.y) + ", " +
-                std::to_string(pos.z)
-            );
-
-            Console::log("Orientation (quat) : " +
-                std::to_string(ori.x) + ", " +
-                std::to_string(ori.y) + ", " +
-                std::to_string(ori.z) + ", " +
-                std::to_string(ori.w)
-            );
         }
     }
 
