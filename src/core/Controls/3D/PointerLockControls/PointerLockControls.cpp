@@ -13,7 +13,7 @@
 
 namespace NoxEngine {
 
-    PointerLockControls::PointerLockControls(Renderer& renderer, PerspectiveCamera& camera):
+    PointerLockControls::PointerLockControls(Renderer& renderer, PerspectiveCamera& camera, const bool enableInterpolation):
         m_renderer(renderer),
         m_camera(camera),
         m_sensitivity(20.0f),
@@ -23,8 +23,21 @@ namespace NoxEngine {
         m_deceleration(5.0f),
         m_displacement(0.0f, 0.0f),
         m_smoothRotation(0.0f, 0.0f),
-        m_ignoreNextMouseMove(false)
+        m_ignoreNextMouseMove(false),
+        m_enableInterpolation(enableInterpolation)
     {}
+
+    void PointerLockControls::enableInterpolation() noexcept {
+        m_enableInterpolation = true;
+    }
+
+    void PointerLockControls::disableInterpolation() noexcept {
+        m_enableInterpolation = false;
+    }
+
+    bool PointerLockControls::isInterpolationEnabled() const noexcept {
+        return m_enableInterpolation;
+    }
 
     void PointerLockControls::setSpeed(const float speed) noexcept {
         m_speed = speed;
@@ -83,23 +96,33 @@ namespace NoxEngine {
                     const auto mx = mouseMov.x * m_sensitivity * deltaTime;
                     const auto my = mouseMov.y * m_sensitivity * deltaTime;
 
-                    // Accumulate raw rotation input (inverted for natural camera movement)
-                    m_smoothRotation.x -= my;
-                    m_smoothRotation.y -= mx;
+                    if(m_enableInterpolation) {
+                        // Accumulate raw rotation input (inverted for natural camera movement)
+                        m_smoothRotation.x -= my;
+                        m_smoothRotation.y -= mx;
+                    }
+                    else {
+                        // Apply rotation directly without interpolation
+                        const float deltaX = glm::radians(-mx);
+                        const float deltaY = glm::radians(-my);
+                        m_camera.orientate(V3D(deltaY, deltaX, 0.f));
+                    }
                 }
             }
 
-            // Apply smoothed rotation with interpolation
-            const float rotationLerpFactor = 15.0f * deltaTime; // Adjust for camera rotation smoothness
-            
-            if(glm::length(m_smoothRotation) > 0.001f) {
-                const float deltaX = glm::radians(m_smoothRotation.y * rotationLerpFactor);
-                const float deltaY = glm::radians(m_smoothRotation.x * rotationLerpFactor);
+            if(m_enableInterpolation) {
+                // Apply smoothed rotation with interpolation
+                const float rotationLerpFactor = 15.0f * deltaTime; // Adjust for camera rotation smoothness
+                
+                if(glm::length(m_smoothRotation) > 0.001f) {
+                    const float deltaX = glm::radians(m_smoothRotation.y * rotationLerpFactor);
+                    const float deltaY = glm::radians(m_smoothRotation.x * rotationLerpFactor);
 
-                m_camera.orientate(V3D(deltaY, deltaX, 0.f));
+                    m_camera.orientate(V3D(deltaY, deltaX, 0.f));
 
-                // Decay the smooth rotation
-                m_smoothRotation *= (1.0f - rotationLerpFactor);
+                    // Decay the smooth rotation
+                    m_smoothRotation *= (1.0f - rotationLerpFactor);
+                }
             }
 
             // displacement
@@ -117,10 +140,13 @@ namespace NoxEngine {
         if(isMoving) {
             if(input->isKeyDown(SDL_SCANCODE_W))
                 targetDisplacement.y += 1.0f;
+            
             if(input->isKeyDown(SDL_SCANCODE_S))
                 targetDisplacement.y -= 1.0f;
+            
             if(input->isKeyDown(SDL_SCANCODE_A))
                 targetDisplacement.x -= 1.0f;
+            
             if(input->isKeyDown(SDL_SCANCODE_D))
                 targetDisplacement.x += 1.0f;
 
@@ -130,22 +156,32 @@ namespace NoxEngine {
             }
         }
 
-        // Smooth interpolation of displacement (lerp)
-        const float lerpFactor = 10.0f * deltaTime;
-        m_displacement.x = glm::mix(m_displacement.x, targetDisplacement.x, lerpFactor);
-        m_displacement.y = glm::mix(m_displacement.y, targetDisplacement.y, lerpFactor);
+        if(m_enableInterpolation) {
+            // Smooth interpolation of displacement (lerp)
+            const float lerpFactor = 10.0f * deltaTime;
+            
+            m_displacement.x = glm::mix(m_displacement.x, targetDisplacement.x, lerpFactor);
+            m_displacement.y = glm::mix(m_displacement.y, targetDisplacement.y, lerpFactor);
 
-        // acceleration
-        if(isMoving) {
-            if(m_velocity < m_speed) {
-                m_velocity = std::min(m_velocity + m_acceleration * deltaTime, m_speed);
+            // acceleration
+            if(isMoving) {
+                if(m_velocity < m_speed) {
+                    m_velocity = std::min(m_velocity + m_acceleration * deltaTime, m_speed);
+                }
+            }
+            // deceleration
+            else {
+                if(m_velocity > 0.0f) {
+                    m_velocity = std::max(0.0f, m_velocity - m_deceleration * deltaTime);
+                }
             }
         }
-        // deceleration
         else {
-            if(m_velocity > 0.0f) {
-                m_velocity = std::max(0.0f, m_velocity - m_deceleration * deltaTime);
-            }
+            // Direct displacement without interpolation
+            m_displacement = targetDisplacement;
+            m_velocity = isMoving
+                ? m_speed
+                : 0.0f;
         }
 
         const float speed = m_velocity * deltaTime;

@@ -4,8 +4,8 @@
  * @license AGPL-3.0
  */
 
-#ifndef MAPCONTROLS_HPP
-#define MAPCONTROLS_HPP
+#ifndef ARCBALL_CONTROL_HPP
+#define ARCBALL_CONTROL_HPP
 
 #include "core/Controls/CameraControl.hpp"
 #include "core/Camera/PerspectiveCamera/PerspectiveCamera.hpp"
@@ -13,9 +13,9 @@
 
 namespace NoxEngine {
 
-	class MapControls: public CameraControl<PerspectiveCamera> {
+	class ArcballControls: public CameraControl<PerspectiveCamera> {
 		public:
-			explicit MapControls(Renderer& renderer, PerspectiveCamera& camera);
+			explicit ArcballControls(Renderer& renderer, PerspectiveCamera& camera);
 
 			void update() override;
 
@@ -26,4 +26,4 @@ namespace NoxEngine {
 
 }
 
-#endif // MAPCONTROLS_HPP
+#endif // ARCBALL_CONTROL_HPP

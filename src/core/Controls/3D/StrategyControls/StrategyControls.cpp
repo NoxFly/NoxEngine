@@ -4,18 +4,18 @@
  * @license AGPL-3.0
  */
 
-#include "MapControls.hpp"
+#include "StrategyControls.hpp"
 
 namespace NoxEngine {
 
-    MapControls::MapControls(Renderer& renderer, PerspectiveCamera& camera):
+    StrategyControls::StrategyControls(Renderer& renderer, PerspectiveCamera& camera):
         m_renderer(renderer),
         m_camera(camera)
     {
 
     }
 
-    void MapControls::update() {
+    void StrategyControls::update() {
 
     }
 

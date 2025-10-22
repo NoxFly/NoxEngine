@@ -4,8 +4,8 @@
  * @license AGPL-3.0
  */
 
-#ifndef TRACKBALLCONTROLS_HPP
-#define TRACKBALLCONTROLS_HPP
+#ifndef STRATEGY_CONTROLS_HPP
+#define STRATEGY_CONTROLS_HPP
 
 #include "core/Controls/CameraControl.hpp"
 #include "core/Camera/PerspectiveCamera/PerspectiveCamera.hpp"
@@ -13,9 +13,9 @@
 
 namespace NoxEngine {
 
-	class TrackballControls: public CameraControl<PerspectiveCamera> {
+	class StrategyControls: public CameraControl<PerspectiveCamera> {
 		public:
-			explicit TrackballControls(Renderer& renderer, PerspectiveCamera& camera);
+			explicit StrategyControls(Renderer& renderer, PerspectiveCamera& camera);
 
 			void update() override;
 
@@ -26,4 +26,4 @@ namespace NoxEngine {
 
 }
 
-#endif // TRACKBALLCONTROLS_HPP
+#endif // STRATEGY_CONTROLS_HPP

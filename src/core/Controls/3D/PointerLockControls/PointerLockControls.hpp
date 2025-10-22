@@ -15,9 +15,13 @@ namespace NoxEngine {
 
 	class PointerLockControls: public CameraControl<PerspectiveCamera> {
 		public:
-			explicit PointerLockControls(Renderer& renderer, PerspectiveCamera& camera);
+			explicit PointerLockControls(Renderer& renderer, PerspectiveCamera& camera, const bool enableInterpolation = true);
 
 			void update() override;
+
+			void enableInterpolation() noexcept;
+			void disableInterpolation() noexcept;
+			bool isInterpolationEnabled() const noexcept;
 
 			void setSpeed(const float speed) noexcept;
 			void setSensitivity(const float sensitivity) noexcept;
@@ -29,7 +33,7 @@ namespace NoxEngine {
 			void lockPointer() noexcept;
 			void unlockPointer() noexcept;
 
-		private:
+		protected:
 			Renderer& m_renderer;
 			PerspectiveCamera& m_camera;
 			float m_sensitivity, m_speed;
@@ -40,6 +44,7 @@ namespace NoxEngine {
 			V2D m_displacement;
 			V2D m_smoothRotation; // Smoothed rotation accumulator for interpolation
 			bool m_ignoreNextMouseMove; // Flag to ignore first mouse move after locking pointer
+			bool m_enableInterpolation;
 	};
 
 }

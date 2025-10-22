@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 		config.getFloatValue("CAMERA", "far", 1000.f)
 	);
 
-	PointerLockControls controls(renderer, camera);
+	FPSControls controls(renderer, camera);
 
 	controls.setSensitivity(config.getFloatValue("CAMERA", "sensitivity", 0.1f));
 	controls.setSpeed(config.getFloatValue("CAMERA", "speed", 5.0f));
@@ -117,6 +117,17 @@ int main(int argc, char** argv) {
 		cubeD->rotate(rotationX, rotationY, rotationZ);
 
 		cubeD->scale(cubeDScaling, cubeDScaling, cubeDScaling);
+
+		if(renderer.getInput()->isKeyDown(SDL_SCANCODE_SPACE)) {
+			if(controls.isInterpolationEnabled()) {
+				controls.disableInterpolation();
+				Console::log("Disabled interpolation");
+			}
+			else {
+				controls.enableInterpolation();
+				Console::log("Enabled interpolation");
+			}
+		}
 	}
 
 	return EXIT_SUCCESS;

@@ -4,18 +4,18 @@
  * @license AGPL-3.0
  */
 
-#include "TrackballControls.hpp"
+#include "ArcballControls.hpp"
 
 namespace NoxEngine {
 
-    TrackballControls::TrackballControls(Renderer& renderer, PerspectiveCamera& camera):
+    ArcballControls::ArcballControls(Renderer& renderer, PerspectiveCamera& camera):
         m_renderer(renderer),
         m_camera(camera)
     {
 
     }
 
-    void TrackballControls::update() {
+    void ArcballControls::update() {
 
     }
 

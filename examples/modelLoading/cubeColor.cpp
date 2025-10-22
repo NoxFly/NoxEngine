@@ -32,6 +32,7 @@ int main(int argc, char** argv) {
 
 	auto cube = std::make_shared<Cube>(1.f, Color(150, 50, 10));
 	cube->setPosition(0.f, 0.f, 0.f);
+	cube->setRotation(45.f, 25.f, 0.f);
 
 	scene.add(cube);
 
