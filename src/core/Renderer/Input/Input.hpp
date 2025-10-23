@@ -13,6 +13,22 @@
 
 namespace NoxEngine {
 
+    /**
+     * @brief [UP] -> [PRESSED (inst.)] -> [DOWN] -> [RELEASED (inst.)] -> [UP] ...
+     */
+    enum class KeyState {
+        UP,
+        DOWN,
+        PRESSED,
+        RELEASED,
+    };
+
+    enum class WheelState {
+        NONE,
+        UP,
+        DOWN,
+    };
+
     class Input {
         public:
             explicit Input();
@@ -22,23 +38,33 @@ namespace NoxEngine {
             void updateEvents() noexcept;
 
             bool isKeyDown(const SDL_Scancode key) const noexcept;
+            bool isKeyUp(const SDL_Scancode key) const noexcept;
+            bool isKeyPressed(const SDL_Scancode key) const noexcept;
+            bool isKeyReleased(const SDL_Scancode key) const noexcept;
+            
             bool isMouseButtonDown(const Uint8 button) const noexcept;
+            bool isMouseButtonUp(const Uint8 button) const noexcept;
+            bool isMouseButtonPressed(const Uint8 button) const noexcept;
+            bool isMouseButtonReleased(const Uint8 button) const noexcept;
             bool isMouseMoving() const noexcept;
 
             int getMouseX() const noexcept;
             int getMouseY() const noexcept;
-            int wheelScroll() const noexcept;
+            WheelState wheelScroll() const noexcept;
             V2D getMouseMovement() const noexcept;
             V2D getMousePosition() const noexcept;
             V2D getMousePointFromCenter(SDL_Window* window) const noexcept;
 
         private:
-            bool m_keys[SDL_NUM_SCANCODES];
-            bool m_mouseButtons[8];
-            int m_wheelEvent;
+            void update() noexcept;
+            void finalizeLastFrameState() noexcept;
+
+            KeyState m_keys[SDL_NUM_SCANCODES];
+            KeyState m_mouseButtons[8];
+            WheelState m_wheel;
             int m_mouseX, m_mouseY, m_mouseRelX, m_mouseRelY;
             int m_oldMouseX, m_oldMouseY;
-            V2D mouseMotion;
+            V2D m_mouseMotion;
             bool m_shouldClose;
     };
 

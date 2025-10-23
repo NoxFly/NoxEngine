@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
 
 		cubeD->scale(cubeDScaling, cubeDScaling, cubeDScaling);
 
-		if(renderer.getInput()->isKeyDown(SDL_SCANCODE_SPACE)) {
+		if(renderer.getInput()->isKeyPressed(SDL_SCANCODE_SPACE)) {
 			if(controls.isInterpolationEnabled()) {
 				controls.disableInterpolation();
 				Console::log("Disabled interpolation");
