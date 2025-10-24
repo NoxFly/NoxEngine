@@ -48,6 +48,8 @@ int main(int argc, char** argv) {
 
 	controls.setSensitivity(config.getFloatValue("CAMERA", "sensitivity", 0.1f));
 	controls.setSpeed(config.getFloatValue("CAMERA", "speed", 5.0f));
+	controls.setFloatingState(true);
+	controls.setLerpFactor(2.0f);
 
 
 	if(!Texture::load("stone", "stonebrick_cracked.png")) {
@@ -118,11 +120,7 @@ int main(int argc, char** argv) {
 
 		cubeD->scale(cubeDScaling, cubeDScaling, cubeDScaling);
 
-		if(renderer.getInput()->isKeyPressed(SDL_SCANCODE_SPACE)) {
-			std::cout << camera.getPosition().x << ", "
-					  << camera.getPosition().y << ", "
-					  << camera.getPosition().z << std::endl;
-
+		if(renderer.getInput()->isKeyPressed(SDL_SCANCODE_LSHIFT)) {
 			if(controls.isInterpolationEnabled()) {
 				controls.disableInterpolation();
 				Console::log("Disabled interpolation");

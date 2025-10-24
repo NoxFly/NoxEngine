@@ -23,6 +23,11 @@ namespace NoxEngine {
 			void disableInterpolation() noexcept;
 			bool isInterpolationEnabled() const noexcept;
 
+			void setFloatingState(const bool floating) noexcept;
+			bool isFloating() const noexcept;
+
+			void setLerpFactor(const float factor) noexcept;
+
 			void setSpeed(const float speed) noexcept;
 			void setSensitivity(const float sensitivity) noexcept;
 
@@ -41,10 +46,12 @@ namespace NoxEngine {
 			float m_velocity;
 			float m_acceleration;
 			float m_deceleration;
-			V2D m_displacement;
+			float m_lerpFactor;
+			V3D m_displacement;
 			V2D m_smoothRotation; // Smoothed rotation accumulator for interpolation
 			bool m_ignoreNextMouseMove; // Flag to ignore first mouse move after locking pointer
 			bool m_enableInterpolation;
+			bool m_floating;
 	};
 
 }

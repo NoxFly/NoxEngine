@@ -21,10 +21,12 @@ namespace NoxEngine {
         m_velocity(0.0f),
         m_acceleration(10.0f),
         m_deceleration(5.0f),
-        m_displacement(0.0f, 0.0f),
+        m_lerpFactor(10.0f),
+        m_displacement(0.0f, 0.0f, 0.0f),
         m_smoothRotation(0.0f, 0.0f),
         m_ignoreNextMouseMove(false),
-        m_enableInterpolation(enableInterpolation)
+        m_enableInterpolation(enableInterpolation),
+        m_floating(false)
     {}
 
     void PointerLockControls::enableInterpolation() noexcept {
@@ -37,6 +39,18 @@ namespace NoxEngine {
 
     bool PointerLockControls::isInterpolationEnabled() const noexcept {
         return m_enableInterpolation;
+    }
+
+    void PointerLockControls::setFloatingState(const bool floating) noexcept {
+        m_floating = floating;
+    }
+
+    bool PointerLockControls::isFloating() const noexcept {
+        return m_floating;
+    }
+
+    void PointerLockControls::setLerpFactor(const float factor) noexcept {
+        m_lerpFactor = factor;
     }
 
     void PointerLockControls::setSpeed(const float speed) noexcept {
@@ -129,13 +143,14 @@ namespace NoxEngine {
             if(
                 input->isKeyDown(SDL_SCANCODE_W) || input->isKeyDown(SDL_SCANCODE_S)
                 || input->isKeyDown(SDL_SCANCODE_A) || input->isKeyDown(SDL_SCANCODE_D)
+                || (m_floating && (input->isKeyDown(SDL_SCANCODE_SPACE) || input->isKeyDown(SDL_SCANCODE_LCTRL)))
             ) {
                 isMoving = true;
             }
         }
 
         // Target displacement based on input
-        V2D targetDisplacement(0.0f, 0.0f);
+        V3D targetDisplacement(0.0f, 0.0f, 0.0f);
         
         if(isMoving) {
             if(input->isKeyDown(SDL_SCANCODE_W))
@@ -150,18 +165,26 @@ namespace NoxEngine {
             if(input->isKeyDown(SDL_SCANCODE_D))
                 targetDisplacement.x += 1.0f;
 
-            // Normalize diagonal movement
-            if(targetDisplacement.x != 0.0f && targetDisplacement.y != 0.0f) {
-                targetDisplacement = glm::normalize(targetDisplacement);
+            if(m_floating) {
+                if(input->isKeyDown(SDL_SCANCODE_SPACE))
+                    targetDisplacement.z += 1.0f;
+
+                if(input->isKeyDown(SDL_SCANCODE_LCTRL))
+                    targetDisplacement.z -= 1.0f;
             }
+
+            // Normalize diagonal movement
+            if(glm::length(targetDisplacement) > 1.0f)
+                targetDisplacement = glm::normalize(targetDisplacement);
         }
 
         if(m_enableInterpolation) {
             // Smooth interpolation of displacement (lerp)
-            const float lerpFactor = 10.0f * deltaTime;
+            const float lerpFactor = m_lerpFactor * deltaTime;
             
             m_displacement.x = glm::mix(m_displacement.x, targetDisplacement.x, lerpFactor);
             m_displacement.y = glm::mix(m_displacement.y, targetDisplacement.y, lerpFactor);
+            m_displacement.z = glm::mix(m_displacement.z, targetDisplacement.z, lerpFactor);
 
             // acceleration
             if(isMoving) {
@@ -189,8 +212,11 @@ namespace NoxEngine {
         if(glm::length(m_displacement) > 0.001f) {
             const auto forward = m_camera.getForward();
             const auto right = m_camera.getRight();
+            const auto up = m_camera.getUp();
 
-            const auto displacement = right * m_displacement.x + forward * m_displacement.y;
+            const auto displacement = right * m_displacement.x
+                + forward * m_displacement.y
+                + up * m_displacement.z;
             
             // Move the camera directly without applying rotation again
             // (forward and right vectors already account for camera orientation)
