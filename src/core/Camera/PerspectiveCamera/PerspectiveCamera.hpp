@@ -41,7 +41,6 @@ namespace NoxEngine {
             const V3D& getPosition() const noexcept;
             const glm::quat& getOrientation() const noexcept;
 
-            void setOrientation(const glm::quat& orientation) noexcept;
             void orientate(const V3D& offset) noexcept;
 
             V3D getForward() const noexcept;

@@ -43,8 +43,6 @@ namespace NoxEngine {
 
         // pitch : orientation verticale
         m_pitch = std::atan2(dir.y, std::sqrt(dir.x * dir.x + dir.z * dir.z));
-
-        // clamp comme dans orientate()
         m_pitch = glm::clamp(m_pitch, -glm::half_pi<float>() + 0.01f, glm::half_pi<float>() - 0.01f);
 
         // reconstruction quaternion cohérente
@@ -52,9 +50,8 @@ namespace NoxEngine {
         glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1.0f, 0.0f, 0.0f));
         
         m_orientation = glm::normalize(qYaw * qPitch);
-
         m_target = m_position + getForward();
-        
+
         m_dirty = true;
     }
 
@@ -79,21 +76,6 @@ namespace NoxEngine {
         }
     }
 
-    void PerspectiveCamera::setOrientation(const glm::quat& orientation) noexcept {
-        glm::vec3 forward = glm::rotate(orientation, V3D(0, 0, -1));
-
-        m_yaw = atan2(forward.x, forward.z);
-        m_pitch = asin(-forward.y);
-
-        // Puis on reconstruit le quaternion comme partout ailleurs
-        glm::quat qYaw = glm::angleAxis(m_yaw, V3D(0,1,0));
-        glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1,0,0));
-        m_orientation = glm::normalize(qPitch * qYaw);
-
-        m_target = m_position + getForward();
-        m_dirty = true;
-    }
-
     /**
      * Rotate from Euler angles (in radians)
      */
@@ -110,11 +92,11 @@ namespace NoxEngine {
         
         // Reconstruct orientation from pitch and yaw
         // For proper FPS controls: pitch * yaw (pitch in local space, yaw in global)
-        glm::quat qYaw = glm::angleAxis(m_yaw, V3D(0, 1, 0));
-        glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1, 0, 0));
+        glm::quat qYaw = glm::angleAxis(m_yaw, V3D(0.0f, 1.0f, 0.0f));
+        glm::quat qPitch = glm::angleAxis(m_pitch, V3D(1.0f, 0.0f, 0.0f));
         
-        // Combine: pitch first, then yaw (reverse order for quaternion multiplication)
-        m_orientation = glm::normalize(qPitch * qYaw);
+        m_orientation = glm::normalize(qYaw * qPitch);
+        m_target = m_position + getForward();
         
         m_dirty = true;
     }

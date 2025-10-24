@@ -119,6 +119,10 @@ int main(int argc, char** argv) {
 		cubeD->scale(cubeDScaling, cubeDScaling, cubeDScaling);
 
 		if(renderer.getInput()->isKeyPressed(SDL_SCANCODE_SPACE)) {
+			std::cout << camera.getPosition().x << ", "
+					  << camera.getPosition().y << ", "
+					  << camera.getPosition().z << std::endl;
+
 			if(controls.isInterpolationEnabled()) {
 				controls.disableInterpolation();
 				Console::log("Disabled interpolation");
