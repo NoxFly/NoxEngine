@@ -20,11 +20,11 @@ Script de nettoyage et réorganisation des headers publics dans `bin/include/`.
 
 3. **Mise à jour complète des includes** ⭐ (après tous les déplacements)
    - **Étape 3a** : Correction des chemins pour les fichiers déplacés
-     - Exemple : `#include "core/.../BoxGeometry/BoxGeometry.hpp"` → `#include "core/.../BoxGeometry.hpp"`
+     - Exemple : `#include "engine/core/.../BoxGeometry/BoxGeometry.hpp"` → `#include "engine/core/.../BoxGeometry.hpp"`
    - **Étape 3b** : Conversion en chemins relatifs
      - Tous les `#include` deviennent relatifs au fichier qui les inclut
      - Exemple dans `core/engine.hpp` :
-       - Avant : `#include "core/Camera/PerspectiveCamera.hpp"`
+       - Avant : `#include "engine/core/Camera/PerspectiveCamera.hpp"`
        - Après : `#include "Camera/PerspectiveCamera.hpp"`
 
 4. **Suppression des dossiers vides**
@@ -83,8 +83,8 @@ bin/include/
 **Includes dans `core/engine.hpp` :**
 ```cpp
 // Avant (chemins absolus depuis root)
-#include "core/Camera/PerspectiveCamera.hpp"
-#include "core/Actor/Light/AmbientLight.hpp"
+#include "engine/core/Camera/PerspectiveCamera.hpp"
+#include "engine/core/Actor/Light/AmbientLight.hpp"
 
 // Après (chemins relatifs au fichier)
 #include "Camera/PerspectiveCamera.hpp"  ✅

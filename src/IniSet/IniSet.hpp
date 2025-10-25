@@ -15,7 +15,7 @@
 class IniSet {
 	public:
 		explicit IniSet();
-		~IniSet();
+		~IniSet() = default;
 
         /**
          * Loads a configuration from file, and returns either it has been successfully loaded or not.

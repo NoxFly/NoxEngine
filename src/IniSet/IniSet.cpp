@@ -24,10 +24,6 @@ IniSet::IniSet():
 
 }
 
-IniSet::~IniSet() {
-
-}
-
 bool IniSet::loadFromFile(const string& filepath) {
     ifstream file;
     std::vector<string> content = {};

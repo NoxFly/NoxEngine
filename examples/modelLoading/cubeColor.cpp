@@ -4,7 +4,7 @@
 #include <cmath>
 #include <chrono>
 
-#include "NoxEngine/core/engine.hpp"
+#include "NoxEngine/engine.hpp"
 
 using namespace NoxEngine;
 
@@ -30,9 +30,11 @@ int main(int argc, char** argv) {
 		config.getFloatValue("CAMERA", "far", 1000.f)
 	);
 
-	auto cube = std::make_shared<Cube>(1.f, Color(150, 50, 10));
-	cube->setPosition(0.f, 0.f, 0.f);
-	cube->setRotation(45.f, 25.f, 0.f);
+	auto cube = Actor::create()
+		->setPosition(0.f, 0.f, 0.f)
+		->setRotation(45.f, 25.f, 0.f);
+
+	cube->addComponent<Cube>(1.f, Color(150, 50, 10));
 
 	scene.add(cube);
 

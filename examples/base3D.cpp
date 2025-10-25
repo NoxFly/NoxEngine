@@ -4,7 +4,7 @@
 #include <cmath>
 #include <chrono>
 
-#include "NoxEngine/core/engine.hpp"
+#include "NoxEngine/engine.hpp"
 
 using namespace NoxEngine;
 
@@ -59,28 +59,34 @@ int main(int argc, char** argv) {
 
 
 	// color only
-	auto cubeA = std::make_shared<Cube>(1.f, Color(150, 50, 10));
+	auto cubeA = Actor::create();
 	cubeA->setPosition(-3.f, 0.f, 0.f);
+	cubeA->addComponent<Cube>(1.f, Color(150, 50, 10));
 
 	// texture only
-	auto cubeB = std::make_shared<Cube>(1.2f, "stone");
+	auto cubeB = Actor::create();
 	cubeB->setPosition(-1.f, 0.f, 0.f);
+	cubeB->addComponent<Cube>(1.2f, "stone");
 
 	// color + texure
-	auto cubeC = std::make_shared<Cube>(1.3f, "stone", Color(150, 50, 10));
+	auto cubeC = Actor::create();
 	cubeC->setPosition(1.f, 0.f, 0.f);
+	cubeC->addComponent<Cube>(1.3f, "stone", Color(150, 50, 10));
 
 	// color + texture + texture opacity
-	auto cubeD = std::make_shared<Cube>(.5f, "stone", Color(150, 50, 10));
+	auto cubeD = Actor::create();
 	cubeD->setPosition(3.f, 0.f, 0.f);
-	cubeD->getMaterial()->setTextureOpacity(0.5f);
+	
+	cubeD->addComponent<Cube>(.5f, "stone", Color(150, 50, 10))
+		->getMaterial()
+		->setTextureOpacity(0.5f);
 
 	scene.add(cubeA);
 	scene.add(cubeB);
 	scene.add(cubeC);
 	scene.add(cubeD);
 
-	// auto cube = std::make_shared<Mesh3D>();
+	// auto cube = Actor::create<Mesh3D>();
 	// cube->loadFromFile("cube.obj");
 	
 	// scene.add(cube);

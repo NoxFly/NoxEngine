@@ -3,7 +3,7 @@
 #include <iostream>
 #include <chrono>
 
-#include "NoxEngine/core/engine.hpp"
+#include "NoxEngine/engine.hpp"
 
 using namespace NoxEngine;
 
@@ -28,8 +28,11 @@ int main(int argc, char** argv) {
 
 	auto addCubes = [&](float x, float y, float z, float xOffset, float yOffset, float zOffset) {
 		for (uint i = 0; i < 10; i++) {
-			auto cube = std::make_shared<Cube>(1.f, "tile");
-			cube->setPosition(x + i * xOffset, y + i * yOffset, z + i * zOffset);
+			auto cube = Actor::create()
+				->setPosition(x + i * xOffset, y + i * yOffset, z + i * zOffset);
+
+			cube->addComponent<Cube>(1.f, "tile");
+
 			scene.add(cube);
 		}
 	};
