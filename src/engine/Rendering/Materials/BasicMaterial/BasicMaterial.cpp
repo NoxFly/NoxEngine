@@ -26,9 +26,4 @@ namespace NoxEngine {
         Material(Shader::get("texture"), Texture::get(textureName))
     {}
 
-    // OUTDATED
-    BasicMaterial::BasicMaterial(const Color& color, const std::string& textureName):
-        Material(Shader::get("texture"), Texture::get(textureName), color)
-    {}
-
 }

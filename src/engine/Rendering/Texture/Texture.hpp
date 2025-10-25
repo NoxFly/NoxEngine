@@ -42,9 +42,9 @@ namespace NoxEngine {
 
             SDL_Surface* invertPixels(SDL_Surface *src) const;
 
-            GLuint m_id;
-            std::string m_name;
-            std::string m_path;
+            GLuint m_id {0};
+            std::string m_name {""};
+            std::string m_path {""};
     };
 
 }

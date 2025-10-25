@@ -17,10 +17,7 @@
 namespace NoxEngine {
 
     PerspectiveCamera::PerspectiveCamera(const float fov, const float aspect, const float near, const float far):
-        Camera(fov, aspect, near, far),
-        m_orientation(),
-        m_pitch(0.0f),
-        m_yaw(0.0f)
+        Camera(fov, aspect, near, far)
     {}
 
     // Set's the camera's look at. The view matrix will be upated in the loop

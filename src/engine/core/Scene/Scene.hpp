@@ -21,7 +21,7 @@ namespace NoxEngine {
 
     class Scene {
         public:
-            explicit Scene();
+            explicit Scene() = default;
             Scene(Scene&) = delete;
             ~Scene() = default;
 
@@ -34,8 +34,8 @@ namespace NoxEngine {
             std::vector<std::shared_ptr<Light>> getLights() const noexcept;
 
         protected:
-            std::vector<std::shared_ptr<Actor>> m_objects;
-            std::vector<std::shared_ptr<Light>> m_lights;
+            std::vector<std::shared_ptr<Actor>> m_objects {};
+            std::vector<std::shared_ptr<Light>> m_lights {};
     };
 
 }

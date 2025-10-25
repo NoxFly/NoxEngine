@@ -9,79 +9,75 @@
 
 namespace NoxEngine {
 
-    BoxGeometry::BoxGeometry(const float width, const float height, const float depth):
-        BoxGeometry(V3D(width, height, depth))
-    {
-
+    std::shared_ptr<BoxGeometry> BoxGeometry::create(float width, float height, float depth) {
+        return std::make_shared<BoxGeometry>(width, height, depth);
     }
 
-    BoxGeometry::BoxGeometry(const V3D& size):
-        BufferGeometry()
-    {
-        const float sw = size.x / 2.f;
-        const float sh = size.y / 2.f;
-        const float sd = size.z / 2.f;
+    std::shared_ptr<BoxGeometry> BoxGeometry::create(const V3D& size) {
+        return std::make_shared<BoxGeometry>(size);
+    }
 
+    BoxGeometry::BoxGeometry(const float width, const float height, const float depth) {
+        buildGeometry(width, height, depth);
+    }
 
-        GeometryData data;
-        GeometryIndexedData indexedData;
+    BoxGeometry::BoxGeometry(const V3D& size) {
+        buildGeometry(size.x, size.y, size.z);
+    }
 
-        indexedData.vertices = {
-            // front
-            { -sw, -sh,  sd },
-            {  sw, -sh,  sd },
-            {  sw,  sh,  sd },
-            { -sw,  sh,  sd },
-            // back
-            { -sw, -sh, -sd },
-            {  sw, -sh, -sd },
-            {  sw,  sh, -sd },
-            { -sw,  sh, -sd }
+    void BoxGeometry::buildGeometry(const float width, const float height, const float depth) {
+        // 8 sommets d’un cube
+        std::vector<float> vertices = {
+            -width/2, -height/2, -depth/2,
+            width/2, -height/2, -depth/2,
+            width/2,  height/2, -depth/2,
+            -width/2,  height/2, -depth/2,
+            -width/2, -height/2,  depth/2,
+            width/2, -height/2,  depth/2,
+            width/2,  height/2,  depth/2,
+            -width/2,  height/2,  depth/2,
         };
 
-        indexedData.uvs = {
-            // Front face
-            { 0, 0 },
-            { 1, 0 },
-            { 1, 1 },
-            { 0, 1 },
+        // Normales (6 faces)
+        std::vector<float> normals = {
+            // -Z
+            0.f, 0.f, -1.f, 0.f, 0.f, -1.f, 0.f, 0.f, -1.f, 0.f, 0.f, -1.f,
+            // +Z
+            0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+            // -X
+            -1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,
+            // +X
+            1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f,0.f,
+            // -Y
+            0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,
+            // +Y
+            0.f,1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f
         };
 
-        indexedData.normals = {
-            {  0.0f,  1.0f,  0.0f },
-            {  0.0f,  0.0f,  1.0f },
-            { -1.0f,  0.0f,  0.0f },
-            {  0.0f, -1.0f,  0.0f },
-            {  1.0f,  0.0f,  0.0f },
-            {  0.0f,  0.0f, -1.0f }
+        // UV basiques pour chaque face
+        std::vector<float> uvs = {
+            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
+            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
+            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
+            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
+            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
+            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f
         };
 
-        // vertices, uvs, normals, colors
-        indexedData.indexes = {
-            // front
-            { 1, 1, 1, 0 }, { 2, 2, 1, 0 }, { 3, 3, 1, 0 },
-            { 3, 3, 1, 0 }, { 4, 4, 1, 0 }, { 1, 1, 1, 0 },
-            // right
-            { 2, 1, 2, 0 }, { 6, 2, 2, 0 }, { 7, 3, 2, 0 },
-            { 7, 3, 2, 0 }, { 3, 4, 2, 0 }, { 2, 1, 2, 0 },
-            // back
-            { 8, 1, 3, 0 }, { 7, 2, 3, 0 }, { 6, 3, 3, 0 },
-            { 6, 3, 3, 0 }, { 5, 4, 3, 0 }, { 8, 1, 3, 0 },
-            // left
-            { 5, 1, 4, 0 }, { 1, 2, 4, 0 }, { 4, 3, 4, 0 },
-            { 4, 3, 4, 0 }, { 8, 4, 4, 0 }, { 5, 1, 4, 0 },
-            // bottom
-            { 5, 1, 5, 0 }, { 6, 2, 5, 0 }, { 2, 3, 5, 0 },
-            { 2, 3, 5, 0 }, { 1, 4, 5, 0 }, { 5, 1, 5, 0 },
-            // top
-            { 4, 1, 6, 0 }, { 3, 2, 6, 0 }, { 7, 3, 6, 0 },
-            { 7, 3, 6, 0 }, { 8, 4, 6, 0 }, { 4, 1, 6, 0 }
+        // Indices pour 12 triangles (2 par face)
+        std::vector<uint> indices = {
+            0,1,2, 2,3,0,   // -Z
+            4,5,6, 6,7,4,   // +Z
+            0,3,7, 7,4,0,   // -X
+            1,5,6, 6,2,1,   // +X
+            0,1,5, 5,4,0,   // -Y
+            3,2,6, 6,7,3    // +Y
         };
 
-
-        indexData(indexedData, data);
-
-        load(data);
+        setPositions(vertices);
+        setNormals(normals);
+        setUVs(uvs);
+        setIndices(indices);
     }
 
 }

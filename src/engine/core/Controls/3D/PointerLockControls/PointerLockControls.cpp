@@ -16,17 +16,7 @@ namespace NoxEngine {
     PointerLockControls::PointerLockControls(Renderer& renderer, PerspectiveCamera& camera, const bool enableInterpolation):
         m_renderer(renderer),
         m_camera(camera),
-        m_sensitivity(20.0f),
-        m_speed(5.0f),
-        m_velocity(0.0f),
-        m_acceleration(10.0f),
-        m_deceleration(5.0f),
-        m_lerpFactor(10.0f),
-        m_displacement(0.0f, 0.0f, 0.0f),
-        m_smoothRotation(0.0f, 0.0f),
-        m_ignoreNextMouseMove(false),
-        m_enableInterpolation(enableInterpolation),
-        m_floating(false)
+        m_enableInterpolation(enableInterpolation)
     {}
 
     void PointerLockControls::enableInterpolation() noexcept {

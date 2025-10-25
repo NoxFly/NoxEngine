@@ -14,7 +14,7 @@
 
 class IniSet {
 	public:
-		explicit IniSet();
+		explicit IniSet() = default;
 		~IniSet() = default;
 
         /**
@@ -75,10 +75,10 @@ class IniSet {
         void assignFromRawString(const std::string& section, const std::string& str);
 
         // { section: { key: { type, value } } }
-        std::map<std::string, std::map<std::string, std::pair<std::string, std::string>>> m_iniMap;
+        std::map<std::string, std::map<std::string, std::pair<std::string, std::string>>> m_iniMap {};
         // { key: { type, value } }
-        std::map<std::string, std::pair<std::string, std::string>> m_rootMap;
-        unsigned int m_sectionCount;
+        std::map<std::string, std::pair<std::string, std::string>> m_rootMap {};
+        unsigned int m_sectionCount {0};
 };
 
 #endif // INISET_HPP

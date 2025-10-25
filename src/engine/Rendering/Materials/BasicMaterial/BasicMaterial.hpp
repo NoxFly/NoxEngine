@@ -19,15 +19,7 @@ namespace NoxEngine {
             explicit BasicMaterial();
             explicit BasicMaterial(const Color& color);
             explicit BasicMaterial(const std::string& textureName);
-            explicit BasicMaterial(const Color& color, const std::string& textureName);
             ~BasicMaterial() = default;
-
-            void transferUniforms(Matrices& mvp, const Scene* scene) override {
-                (void)scene;
-                m_shader->setMat4("MVP", mvp.get());
-                m_shader->setVec3("objectColor", m_color.vec3());
-                m_shader->setVec2("textureAndColorOpacity", m_textureAndColorOpacity);
-            }
     };
 
 }

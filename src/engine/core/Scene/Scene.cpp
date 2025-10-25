@@ -8,11 +8,6 @@
 
 namespace NoxEngine {
 
-    Scene::Scene():
-        m_objects{}, m_lights{}
-    {}
-
-
     void Scene::add(std::shared_ptr<Actor> object) noexcept {
         m_objects.push_back(object);
     }

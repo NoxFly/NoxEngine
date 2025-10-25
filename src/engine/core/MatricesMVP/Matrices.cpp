@@ -28,11 +28,7 @@ namespace NoxEngine {
     {}
 
     Matrices::Matrices(const M4& view, const std::stack<M4>& saves):
-        m_dirty(true),
-        m_model(1.0f),
         m_view(view),
-        m_mvp(),
-        m_projection(1.0f),
         m_saves{saves}
     {}
 

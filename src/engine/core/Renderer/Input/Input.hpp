@@ -59,13 +59,13 @@ namespace NoxEngine {
             void update() noexcept;
             void finalizeLastFrameState() noexcept;
 
-            KeyState m_keys[SDL_NUM_SCANCODES];
-            KeyState m_mouseButtons[8];
-            WheelState m_wheel;
-            int m_mouseX, m_mouseY, m_mouseRelX, m_mouseRelY;
-            int m_oldMouseX, m_oldMouseY;
-            V2D m_mouseMotion;
-            bool m_shouldClose;
+            KeyState m_keys[SDL_NUM_SCANCODES] {};
+            KeyState m_mouseButtons[8] {};
+            WheelState m_wheel { WheelState::NONE };
+            int m_mouseX {0}, m_mouseY {0}, m_mouseRelX {0}, m_mouseRelY {0};
+            int m_oldMouseX {0}, m_oldMouseY {0};
+            V2D m_mouseMotion { 0.0f, 0.0f };
+            bool m_shouldClose { false };
     };
 
 }

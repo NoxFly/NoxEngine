@@ -32,7 +32,7 @@ namespace NoxEngine {
             static void loadFolder(GLuint glVersion = 0, const std::string& folderPath="");
             static Shader* get(const std::string& shaderName) noexcept;
 
-            explicit Shader();
+            explicit Shader() = default;
             explicit Shader(GLuint glVersion, const std::string& shaderPath);
             
             Shader(Shader const &) = delete;
@@ -84,8 +84,8 @@ namespace NoxEngine {
             bool compileShader(GLuint& shader, const std::string& type, const std::string& filepath);
             void destroyShader() noexcept;
 
-            GLuint m_glVersion, m_vertexID, m_fragmentID, m_programID;
-            std::string m_shaderPath, m_shaderName;
+            GLuint m_glVersion {20}, m_vertexID {0}, m_fragmentID {0}, m_programID {0};
+            std::string m_shaderPath {""}, m_shaderName {"unknown"};
 
         private:
             inline static std::array<GLuint, 13> m_GLversions = { 11, 12, 13, 14, 15, 33, 40, 41, 42, 43, 44, 45, 46 };

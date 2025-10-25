@@ -21,24 +21,12 @@
 namespace NoxEngine {
 
     Renderer::Renderer(const IniSet& config):
-        m_isInit(false),
-        m_shouldClose(false),
         m_config(config),
-        m_input(),
-        m_window(0),
-        m_glContext(0),
-        m_settings{},
-        m_maxCapabilities{},
-        m_previousTime(SDL_GetPerformanceCounter()), 
-        m_frameRate(0),
-        m_targetFrameTime(0),
-        m_deltaTime(0.0f), 
-        m_totalTime(0.0f),
-        m_clearColor{}
+        m_previousTime(SDL_GetPerformanceCounter())
     {
         m_clearColor = (m_config.hasKey("ENGINE", "background"))
             ? getColorFromString(m_config.getValue("ENGINE", "background"))
-            : Color(0, 0, 0);
+            : Color();
 
         if(!InitSDL() || !InitGL()) {
             exit(1);

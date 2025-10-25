@@ -46,20 +46,15 @@ namespace NoxEngine {
     }
 
     Texture::Texture(const std::string& texturePath, const std::string& textureName):
-        m_id(0),
         m_name(textureName),
         m_path(Texture::texturesPath + texturePath)
-    {
-        
-    }
+    {}
 
     Texture::Texture(Texture const& copy):
         m_id(0),
         m_name(copy.getName()),
         m_path(copy.getPath())
-    {
-        
-    }
+    {}
 
     Texture::~Texture() {
         glDeleteTextures(1, &m_id);

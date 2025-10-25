@@ -46,18 +46,6 @@ namespace NoxEngine {
     // 
 
     /**
-     * @brief Construct a new Actor object
-     */
-    Actor::Actor():
-        m_uuid(generateUUID()),
-        m_components{},
-        m_drawables{},
-        m_rotation{},
-        m_scale{},
-        m_hasToTranslate(false), m_hasToRotate(false), m_hasToScale(false)
-    {}
-
-    /**
      * @brief Get the UUID object
      */
     const std::string& Actor::getUUID() const noexcept {

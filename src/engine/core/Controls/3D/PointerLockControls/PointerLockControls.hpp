@@ -41,17 +41,17 @@ namespace NoxEngine {
 		protected:
 			Renderer& m_renderer;
 			PerspectiveCamera& m_camera;
-			float m_sensitivity, m_speed;
+			float m_sensitivity, m_speed { 5.0f };
 
-			float m_velocity;
-			float m_acceleration;
-			float m_deceleration;
-			float m_lerpFactor;
-			V3D m_displacement;
-			V2D m_smoothRotation; // Smoothed rotation accumulator for interpolation
-			bool m_ignoreNextMouseMove; // Flag to ignore first mouse move after locking pointer
-			bool m_enableInterpolation;
-			bool m_floating;
+			float m_velocity { 0.0f };
+			float m_acceleration { 10.0f };
+			float m_deceleration { 5.0f };
+			float m_lerpFactor { 10.0f };
+			V3D m_displacement { 0.0f, 0.0f, 0.0f };
+			V2D m_smoothRotation { 0.0f, 0.0f }; // Smoothed rotation accumulator for interpolation
+			bool m_ignoreNextMouseMove { false }; // Flag to ignore first mouse move after locking pointer
+			bool m_enableInterpolation { true };
+			bool m_floating { false };
 	};
 
 }

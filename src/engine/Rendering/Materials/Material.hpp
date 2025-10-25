@@ -19,54 +19,59 @@
 
 namespace NoxEngine {
 
+    struct MaterialData {
+        std::string name;
+        Color diffuse {};
+        Color ambient {};
+        Color specular {};
+        float shininess = 32.f;
+    };
+
     class Material {
         public:
-            explicit Material();
-            explicit Material(Texture* texture);
-            explicit Material(const std::vector<Texture*>& textures);
-            explicit Material(const Color& color);
-            explicit Material(Texture* texture, const Color& color);
-            explicit Material(const std::vector<Texture*>& textures, const Color& color);
+            static std::shared_ptr<Material> create();
 
-            /*Material(const Material& copy) = delete;
-            const Material& operator=(const Material& copy) = delete;*/
+            // Constructeurs
+            explicit Material();
+            explicit Material(Shader* shader);
+            explicit Material(Shader* shader, const Color& color);
+            explicit Material(Shader* shader, Texture* texture);
+            explicit Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color = Color(1.f,1.f,1.f));
 
             ~Material() = default;
 
+            // Setters
+            void setShader(Shader* shader) noexcept;
+            void setTextures(const std::vector<Texture*>& textures) noexcept;
+            void setDiffuse(const Color& c) noexcept;
+            void setColor(const Color& color) noexcept;
+            void setAmbient(const Color& ambient) noexcept;
+            void setSpecular(const Color& specular) noexcept;
+            void setShininess(float shininess) noexcept;
+            void setWireframe(bool wireframe) noexcept;
+            void setOpacity(float opacity) noexcept;
 
-            void setShader(Shader* shader);
-            void setTexture(Texture* texture);
-            void setTextures(const std::vector<Texture*>& m_textures);
-            void setColor(Color& color);
-            void setWireframe(const bool isWireframe);
-            void setColorOpacity(const float opacity);
-            void setTextureOpacity(const float opacity);
+            // Getters
+            Shader* getShader() const noexcept;
+            const std::vector<Texture*>& getTextures() const noexcept;
+            const Color& getDiffuse() const noexcept;
+            const Color& getAmbient() const noexcept;
+            const Color& getSpecular() const noexcept;
+            float getShininess() const noexcept;
+            bool isWireframed() const noexcept;
+            float getOpacity() const noexcept;
 
-            Shader* getShader() const;
-            std::vector<Texture*> getTextures() const;
-            Color getColor() const;
-            bool isWireframed() const;
-            float getColorOpacity() const;
-            float getTextureOpacity() const;
-
-            virtual void transferUniforms(Matrices& mvp, const Scene* scene) {
-                (void)mvp;
-                (void)scene;
-            };
+            virtual void transferUniforms(Matrices& mvp, const Scene* scene) const;
 
         protected:
-            explicit Material(Shader* shader);
-            explicit Material(Shader* shader, Texture* texture);
-            explicit Material(Shader* shader, Texture* texture, const Color& color);
-            explicit Material(Shader* shader, const Color& color);
-            explicit Material(Shader* shader, const std::vector<Texture*>& textures);
-            explicit Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color);
-
-            Shader* m_shader;
+            Shader* m_shader{ nullptr };
             std::vector<Texture*> m_textures;
-            Color m_color;
-            bool m_wireframe;
-            V2D m_textureAndColorOpacity;
+            Color m_diffuse{ 1.0f, 1.0f, 1.0f };        // Couleur diffuse
+            Color m_ambient{ 0.2f, 0.2f, 0.2f };        // Couleur ambiante
+            Color m_specular{ 1.0f, 1.0f, 1.0f };       // Couleur spéculaire
+            float m_shininess{ 32.f };
+            bool m_wireframe{ false };
+            float m_opacity{ 1.f };
     };
 
 }

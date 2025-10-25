@@ -43,9 +43,7 @@
 #include "engine/core/Controls/3D/StrategyControls/StrategyControls.hpp"
 
 // Drawable Objects
-#include "engine/Rendering/Components/Mesh3D/Mesh3D.hpp"
-#include "engine/Rendering/Object3D/Cube/Cube.hpp"
-#include "engine/Rendering/Object3D/Sphere/Sphere.hpp"
+#include "engine/Rendering/Components/Mesh/Mesh.hpp"
 
 // Geometries
 #include "engine/Rendering/Geometries/3D/BoxGeometry/BoxGeometry.hpp"
@@ -57,6 +55,11 @@
 
 // Lights
 #include "engine/Rendering/Light/AmbientLight/AmbientLight.hpp"
+
+
+// Loaders
+#include "engine/Loaders/OBJLoader/OBJLoader.hpp"
+#include "engine/Loaders/MTLLoader/MTLLoader.hpp"
 
 
 #endif // ENGINE_HPP

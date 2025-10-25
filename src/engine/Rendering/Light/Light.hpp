@@ -15,6 +15,11 @@ namespace NoxEngine {
 	
 	class Light: public Movable<true> {
 		public:
+			template<typename T, typename = std::enable_if_t<std::is_base_of_v<Light, T>>, typename... Args>
+            static std::shared_ptr<T> create(Args&&... args) {
+                return std::make_shared<T>(std::forward<Args>(args)...);
+            }
+
 			explicit Light(const Color color, const float intensity);
 			virtual ~Light() = default;
 

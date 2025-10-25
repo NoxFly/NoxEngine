@@ -115,7 +115,7 @@ vector<string> split(string sequence, string separator) {
 }
 
 Color getColorFromString(string str) {
-    Color color = { 0, 0, 0 };
+    Color color = { 0.f, 0.f, 0.f };
 
     if(str != "") {
         std::vector<std::string> vColor = split(str, ",");

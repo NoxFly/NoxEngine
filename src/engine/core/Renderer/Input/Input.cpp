@@ -14,11 +14,7 @@
 
 namespace NoxEngine {
 
-    Input::Input():
-        m_mouseX(0), m_mouseY(0), m_mouseRelX(0), m_mouseRelY(0),
-        m_oldMouseX(0), m_oldMouseY(0), m_mouseMotion(0, 0),
-        m_shouldClose(false)
-    {
+    Input::Input() {
         for(int i=0; i < SDL_NUM_SCANCODES; i++)
             m_keys[i] = KeyState::UP;
 

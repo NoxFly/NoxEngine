@@ -146,20 +146,6 @@ namespace NoxEngine {
 
 
 
-
-
-
-    Shader::Shader():
-        m_glVersion(20),
-        m_vertexID(0),
-        m_fragmentID(0),
-        m_programID(0),
-        m_shaderPath(""),
-        m_shaderName("unknown")
-    {
-
-    }
-
     Shader::Shader(GLuint glVersion, const std::string& shaderPath):
         Shader()
     {

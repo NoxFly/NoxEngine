@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 
 #include "engine/core/engine.typedef.hpp"
-#include "engine/Rendering/Geometries/BufferGeometry/BufferGeometry.hpp"
+#include "engine/Rendering/Geometries/BufferGeometry.hpp"
 
 
 namespace NoxEngine {

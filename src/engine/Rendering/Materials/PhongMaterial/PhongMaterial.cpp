@@ -14,31 +14,15 @@
 namespace NoxEngine {
 
     PhongMaterial::PhongMaterial():
-        Material(Shader::get("lightPhong3D")),
-        m_specularIntensity(0)
+        Material(Shader::get("lightPhong3D"))
     {}
 
     PhongMaterial::PhongMaterial(const Color& color):
-        Material(Shader::get("lightPhong3D"), color),
-        m_specularIntensity(0)
+        Material(Shader::get("lightPhong3D"), color)
     {}
 
     PhongMaterial::PhongMaterial(const std::string& textureName):
-        Material(Shader::get("lightPhong3D"), Texture::get(textureName)),
-        m_specularIntensity(0)
+        Material(Shader::get("lightPhong3D"), Texture::get(textureName))
     {}
 
-    PhongMaterial::PhongMaterial(const Color& color, const std::string& textureName):
-        Material(Shader::get("lightPhong3D"), Texture::get(textureName), color),
-        m_specularIntensity(0)
-    {}
-
-    float PhongMaterial::getSpecular() const noexcept {
-        return m_specularIntensity;
-    }
-
-    void PhongMaterial::setSpecular(const float intensity) noexcept {
-        m_specularIntensity = intensity;
-    }
-    
 }

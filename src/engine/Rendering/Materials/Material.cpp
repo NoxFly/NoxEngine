@@ -6,141 +6,141 @@
 
 #include "Material.hpp"
 
+#include <GL/glew.h>
+#include <sstream>
+#include <fstream>
+#include <unordered_map>
+
+#include "engine/core/Actor/Actor.hpp"
+
 namespace NoxEngine {
 
-    Material::Material():
-        Material(nullptr, std::vector<Texture*>{}, Color())
-    {}
-
-    Material::Material(Shader* shader):
-        Material(shader, std::vector<Texture*>{}, Color())
-    {}
-
-    Material::Material(Shader* shader, Texture* texture):
-        Material(shader, std::vector<Texture*>{ texture }, Color())
-    {
-        m_textureAndColorOpacity.y = 0.f;
+    std::shared_ptr<Material> Material::create() {
+        return std::shared_ptr<Material>(new Material());
     }
 
-    Material::Material(Shader* shader, Texture* texture, const Color& color):
-        Material(shader, std::vector<Texture*>{ texture }, color)
-    {}
+    // ------------------- Constructeurs -------------------
+    Material::Material() = default;
 
-    Material::Material(Shader* shader, const Color& color):
-        Material(shader, std::vector<Texture*>{}, color)
-    {}
+    Material::Material(Shader* shader)
+        : m_shader(shader) {}
 
-    Material::Material(Shader* shader, const std::vector<Texture*>& textures):
-        Material(shader, textures, Color())
-    {}
+    Material::Material(Shader* shader, const Color& color)
+        : m_shader(shader), m_diffuse(color) {}
 
-    Material::Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color):
-        m_shader(shader),
-        m_textures(textures),
-        m_color(color),
-        m_wireframe(false),
-        m_textureAndColorOpacity(textures.size() == 0 ? 0 : 1, 1)
-    {}
-
-    Material::Material(Texture* texture):
-        Material(nullptr, std::vector<Texture*>{ texture }, Color())
-    {
-        m_textureAndColorOpacity.y = 0.f;
+    Material::Material(Shader* shader, Texture* texture)
+        : m_shader(shader) {
+        if(texture) m_textures.push_back(texture);
     }
 
-    Material::Material(const std::vector<Texture*>& textures):
-        Material(nullptr, textures, Color())
-    {
-        m_textureAndColorOpacity.y = 0.f;
-    }
+    Material::Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color)
+        : m_shader(shader), m_textures(textures), m_diffuse(color) {}
 
-    Material::Material(const Color& color):
-        Material(nullptr, std::vector<Texture*>{}, color)
-    {}
-
-    Material::Material(Texture* texture, const Color& color):
-        Material(nullptr, std::vector<Texture*>{ texture }, color)
-    {}
-
-    Material::Material(const std::vector<Texture*>& textures, const Color& color):
-        Material(nullptr, textures, color)
-    {}
-
-    void Material::setShader(Shader* shader) {
+    // ------------------- Setters -------------------
+    void Material::setShader(Shader* shader) noexcept {
         m_shader = shader;
     }
 
-    void Material::setTexture(Texture* texture) {
-        m_textures.clear();
-
-        // avoid the shader to set the texture coord as a black one
-        // so no matter the color put after, resulting as black.
-        // putting the texture's alpha to 0, we let the color speak out
-        if(texture != nullptr) {
-            m_textures.push_back(texture);
-
-            if(m_textureAndColorOpacity.x == 0.f) {
-                m_textureAndColorOpacity.x = 1.f;
-            }
-        }
-        else {
-            m_textureAndColorOpacity.x = 0.f;
-        }
-    }
-
-    void Material::setTextures(const std::vector<Texture*>& textures) {
+    void Material::setTextures(const std::vector<Texture*>& textures) noexcept {
         m_textures = textures;
-
-        if(m_textures.size() == 0) {
-            m_textureAndColorOpacity.x = 0.f;
-        }
-        else if(m_textureAndColorOpacity.x == 0.f) {
-            m_textureAndColorOpacity.x = 1.f;
-        }
     }
 
-    void Material::setColor(Color& color) {
-        m_color = color;
+    void Material::setDiffuse(const Color& diffuse) noexcept {
+        m_diffuse = diffuse;
     }
 
-    void Material::setWireframe(const bool isWireframe) {
-        m_wireframe = isWireframe;
+    void Material::setAmbient(const Color& ambient) noexcept {
+        m_ambient = ambient;
     }
 
-    void Material::setColorOpacity(const float opacity) {
-        m_textureAndColorOpacity.y = std::min(std::max(0.f, opacity), 1.f);
+    void Material::setSpecular(const Color& specular) noexcept {
+        m_specular = specular;
     }
 
-    void Material::setTextureOpacity(const float opacity) {
-        if(m_textures.size() == 0) {
-            return;
-        }
-
-        m_textureAndColorOpacity.x = std::min(std::max(0.f, opacity), 1.f);
+    void Material::setShininess(float shininess) noexcept {
+        m_shininess = shininess;
     }
 
-    Shader* Material::getShader() const {
+    void Material::setWireframe(bool wireframe) noexcept {
+        m_wireframe = wireframe;
+    }
+
+    void Material::setOpacity(float opacity) noexcept {
+        m_opacity = opacity;
+    }
+
+
+    // ------------------- Getters -------------------
+    Shader* Material::getShader() const noexcept {
         return m_shader;
     }
 
-    std::vector<Texture*> Material::getTextures() const {
+    const std::vector<Texture*>& Material::getTextures() const noexcept {
         return m_textures;
     }
 
-    Color Material::getColor() const {
-        return m_color;
+    const Color& Material::getDiffuse() const noexcept {
+        return m_diffuse;
     }
 
-    bool Material::isWireframed() const {
+    const Color& Material::getAmbient() const noexcept {
+        return m_ambient;
+    }
+
+    const Color& Material::getSpecular() const noexcept {
+        return m_specular;
+    }
+
+    float Material::getShininess() const noexcept {
+        return m_shininess;
+    }
+
+    bool Material::isWireframed() const noexcept {
         return m_wireframe;
     }
 
-    float Material::getColorOpacity() const {
-        return m_textureAndColorOpacity.y;
+    float Material::getOpacity() const noexcept {
+        return m_opacity;
     }
 
-    float Material::getTextureOpacity() const {
-        return m_textureAndColorOpacity.x;
+
+    void Material::transferUniforms(Matrices& mvp, const Scene* scene) const {
+        if(!m_shader) return;
+
+        m_shader->use();
+
+        // Matrices
+        m_shader->setMat4("MVP", mvp.get());
+        m_shader->setMat4("M", mvp.getModel());
+        m_shader->setMat4("V", mvp.getView());
+        m_shader->setMat4("P", mvp.getProjection());
+
+        // Material properties
+        m_shader->setVec3("u_Color", m_diffuse.vec3());
+        m_shader->setVec3("u_Ambient", m_ambient.vec3());
+        m_shader->setVec3("u_Specular", m_specular.vec3());
+        m_shader->setFloat("u_Shininess", m_shininess);
+        m_shader->setFloat("u_Opacity", m_opacity);
+        m_shader->setBool("u_Wireframe", m_wireframe);
+
+        // Textures
+        for(size_t i = 0; i < m_textures.size(); ++i) {
+            glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
+            glBindTexture(GL_TEXTURE_2D, m_textures[i]->getID());
+            m_shader->setInt("u_Texture" + std::to_string(i), static_cast<int>(i));
+        }
+
+        glActiveTexture(GL_TEXTURE0); // reset
+
+
+        const auto lights = scene->getLights();
+
+        // sends the lights
+        if (lights.size() > 0) {
+            m_shader->setVec3("u_LightPos", lights[0]->getPosition());
+            m_shader->setVec3("u_LightColor", lights[0]->getColor().vec3());
+            m_shader->setFloat("u_LightPower", lights[0]->getIntensity());
+        }
     }
 
 }

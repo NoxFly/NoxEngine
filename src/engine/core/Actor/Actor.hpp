@@ -51,7 +51,7 @@ namespace NoxEngine {
 
             std::shared_ptr<Actor> scale(const float x, const float y, const float z) noexcept;
 
-            template<typename T, typename... Args>
+            template<typename T, typename = std::enable_if_t<std::is_base_of_v<ActorComponent, T>>, typename... Args>
             std::shared_ptr<T> addComponent(Args&&... args) {
                 auto component = std::make_shared<T>(std::forward<Args>(args)...);
                 addComponent(component);
@@ -65,16 +65,18 @@ namespace NoxEngine {
         protected:
             static std::string m_objectsPath;
             
-            explicit Actor();
+            explicit Actor() = default;
 
-            const std::string m_uuid;
+            const std::string m_uuid { generateUUID() };
 
-            std::vector<std::shared_ptr<ActorComponent>> m_components;
-            std::vector<std::shared_ptr<Drawable>> m_drawables;
+            std::vector<std::shared_ptr<ActorComponent>> m_components {};
+            std::vector<std::shared_ptr<Drawable>> m_drawables {};
 
-            V3D m_rotation;
-            V3D m_scale;
-            bool m_hasToTranslate, m_hasToRotate, m_hasToScale;
+            V3D m_rotation {};
+            V3D m_scale {};
+            bool m_hasToTranslate { false },
+                m_hasToRotate { false },
+                m_hasToScale { false };
 
         private:
             explicit Actor(const Actor&) = delete;

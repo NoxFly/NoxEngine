@@ -16,14 +16,6 @@ using namespace std;
 
 string IniSet::pairSeparator = "=";
 
-IniSet::IniSet():
-    m_iniMap{},
-    m_rootMap{},
-    m_sectionCount(0)
-{
-
-}
-
 bool IniSet::loadFromFile(const string& filepath) {
     ifstream file;
     std::vector<string> content = {};

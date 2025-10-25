@@ -70,19 +70,19 @@ namespace NoxEngine {
 
             void updateInput() noexcept;
 
-            bool m_isInit;
-            bool m_shouldClose;
-            IniSet m_config;
-            Input m_input;
-            SDL_Window* m_window;
-            SDL_GLContext m_glContext;
-            VideoSettings m_settings;
-            VideoSettings m_maxCapabilities;
-	        Uint64 m_previousTime;
-            uint m_frameRate;
-            Uint32 m_targetFrameTime; // Target time per frame in milliseconds
-            float m_deltaTime, m_totalTime;
-            Color m_clearColor;
+            bool m_isInit { false };
+            bool m_shouldClose { false };
+            IniSet m_config {};
+            Input m_input {};
+            SDL_Window* m_window { nullptr };
+            SDL_GLContext m_glContext { 0 };
+            VideoSettings m_settings {};
+            VideoSettings m_maxCapabilities {};
+	        Uint64 m_previousTime { 0 };
+            uint m_frameRate { 0 };
+            Uint32 m_targetFrameTime { 0 }; // Target time per frame in milliseconds
+            float m_deltaTime { 0.0f }, m_totalTime { 0.0f };
+            Color m_clearColor {};
 
         private:
             void loadHardwareCapabilities() noexcept;
