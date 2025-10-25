@@ -30,14 +30,6 @@ int main(int argc, char** argv) {
 		config.getFloatValue("CAMERA", "far", 1000.f)
 	);
 
-	FPSControls controls(renderer, camera);
-
-	controls.setSensitivity(config.getFloatValue("CAMERA", "sensitivity", 0.1f));
-	controls.setSpeed(config.getFloatValue("CAMERA", "speed", 5.0f));
-	controls.setFloatingState(true);
-	controls.setLerpFactor(2.0f);
-
-
 	auto meshData = OBJLoader::load("cube.obj");
 	auto mesh = Mesh::create(meshData.geometry, meshData.material);
 
@@ -51,7 +43,6 @@ int main(int argc, char** argv) {
 	camera.lookAt(0.f, 0.f, 0.f);
 
 	while (!renderer.shouldClose()) {
-		controls.update();
 		renderer.render(scene, camera);
 	}
 
