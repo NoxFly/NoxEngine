@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 	auto mesh = Mesh::create(meshData.geometry, meshData.material);
 
 	auto cubeE = Actor::create();
-	cubeE->setPosition(-10.f, -2.f, -5.f);
+	cubeE->setPosition(0.0f, 0.0f, 0.0f);
 	cubeE->addComponent(mesh);
 	
 	scene.add(cubeE);
