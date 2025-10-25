@@ -20,13 +20,7 @@ int main(int argc, char** argv) {
 
 	Renderer renderer(config);
 	Scene scene;
-	
-	PerspectiveCamera camera(
-		config.getFloatValue("CAMERA", "fov", 45.0f),
-		renderer.getAspect(),
-		0.1f,
-		config.getFloatValue("CAMERA", "far", 1000.f)
-	);
+	PerspectiveCamera camera(45.0f, renderer.getAspect(), 0.1f, 1000.f);
 
 	auto meshData = OBJLoader::load("cube.obj");
 	auto mesh = Mesh::create(meshData.geometry, meshData.material);
