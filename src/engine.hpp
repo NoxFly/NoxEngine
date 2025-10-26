@@ -50,16 +50,23 @@
 #include "engine/Rendering/Geometries/3D/SphereGeometry/SphereGeometry.hpp"
 
 // Materials
-#include "engine/Rendering/Materials/BasicMaterial/BasicMaterial.hpp"
+#include "engine/Rendering/Materials/UnlitMaterial/UnlitMaterial.hpp"
 #include "engine/Rendering/Materials/PhongMaterial/PhongMaterial.hpp"
+#include "engine/Rendering/Materials/LambertMaterial/LambertMaterial.hpp"
+#include "engine/Rendering/Materials/PBRMaterial/PBRMaterial.hpp"
 
 // Lights
 #include "engine/Rendering/Light/AmbientLight/AmbientLight.hpp"
+#include "engine/Rendering/Light/SpotLight/SpotLight.hpp"
+#include "engine/Rendering/Light/DirectionalLight/DirectionalLight.hpp"
+#include "engine/Rendering/Light/RectAreaLight/RectAreaLight.hpp"
 
 
 // Loaders
 #include "engine/Loaders/OBJLoader/OBJLoader.hpp"
 #include "engine/Loaders/MTLLoader/MTLLoader.hpp"
+#include "engine/Loaders/TextureLoader/TextureLoader.hpp"
+#include "engine/Loaders/ShaderLoader/ShaderLoader.hpp"
 
 
 #endif // ENGINE_HPP

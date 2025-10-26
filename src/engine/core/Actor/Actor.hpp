@@ -28,9 +28,6 @@ namespace NoxEngine {
 
     class Actor: public Movable<true>, public std::enable_shared_from_this<Actor> {
         public:
-            static void setObjectsPath(const std::string& objectsPath) noexcept;
-            static const std::string& getObjectsPath() noexcept;
-            
             static std::shared_ptr<Actor> create();
 
             // ---
@@ -50,6 +47,7 @@ namespace NoxEngine {
             std::shared_ptr<Actor> rotate(const float x, const float y, const float z) noexcept;
 
             std::shared_ptr<Actor> scale(const float x, const float y, const float z) noexcept;
+            std::shared_ptr<Actor> scale(const float scale) noexcept;
 
             template<typename T, typename = std::enable_if_t<std::is_base_of_v<ActorComponent, T>>, typename... Args>
             std::shared_ptr<T> addComponent(Args&&... args) {
@@ -63,8 +61,6 @@ namespace NoxEngine {
             void render(Scene* scene, Camera* camera);
 
         protected:
-            static std::string m_objectsPath;
-            
             explicit Actor() = default;
 
             const std::string m_uuid { generateUUID() };

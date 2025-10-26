@@ -69,7 +69,7 @@ class IniSet {
         bool hasKey(const std::string& section, const std::string& key) const;
 
     private:
-        static std::string pairSeparator;
+        inline static std::string s_pairSeparator = "=";
 
         unsigned int stringIsValidPair(const std::string& str) const;
         void assignFromRawString(const std::string& section, const std::string& str);

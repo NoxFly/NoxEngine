@@ -26,12 +26,10 @@ namespace NoxEngine {
             return result;
         }
 
-        const std::string path = Actor::getObjectsPath() + filepath;
-
-		std::ifstream file(path);
+		std::ifstream file(filepath);
 
 		if (!file.is_open()) {
-			Console::error("Mesh::loadFromOBJ", "Failed to open file : " + path);
+			Console::error("Mesh::loadFromOBJ", "Failed to open file : " + filepath);
 			return result;
 		}
 
@@ -88,10 +86,10 @@ namespace NoxEngine {
 				while(ss >> token) {
 					uint vi = 0, ti = 0, ni = 0;
 
-					if (sscanf(token.c_str(), "%u/%u/%u", &vi, &ti, &ni) == 3) {}
-					else if (sscanf(token.c_str(), "%u//%u", &vi, &ni) == 2) {}
-					else if (sscanf(token.c_str(), "%u/%u", &vi, &ti) == 2) {}
-					else sscanf(token.c_str(), "%u", &vi);
+					if (sscanf_s(token.c_str(), "%u/%u/%u", &vi, &ti, &ni) == 3) {}
+					else if (sscanf_s(token.c_str(), "%u//%u", &vi, &ni) == 2) {}
+					else if (sscanf_s(token.c_str(), "%u/%u", &vi, &ti) == 2) {}
+					else sscanf_s(token.c_str(), "%u", &vi);
 
 					if(vi) {
 						faceIndices.push_back(static_cast<GLushort>(vi - 1));

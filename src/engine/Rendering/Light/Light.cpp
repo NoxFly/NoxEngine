@@ -22,4 +22,8 @@ namespace NoxEngine {
 		return m_color;
 	}
 
+	std::string Light::getName() const noexcept {
+		return name;
+	}
+
 }

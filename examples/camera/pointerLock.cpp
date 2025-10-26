@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
 	PointerLockControls controls(renderer, camera);
 
-	Texture::load("tile", "dev_tile_orange.png");
+	auto tex = TextureLoader::load("tile", "res/assets/textures/dev_tile_orange.png");
 
 	// auto addCubes = [&](float x, float y, float z, float xOffset, float yOffset, float zOffset) {
 	// 	for (uint i = 0; i < 10; i++) {

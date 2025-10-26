@@ -19,21 +19,19 @@
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 
-#include "ResourceHolder/ResourceHolder.hpp"
-
 
 namespace NoxEngine {
 
+    class ShaderLoader;
+
     class Shader {
+        friend class ShaderLoader;
+
         public:
-            static void setShadersPath(const std::string& shadersPath) noexcept;
             static void setDefaultGLSLversion(GLuint glVersion) noexcept;
-            static bool load(const std::string& shaderName, GLuint glVersion = 0);
-            static void loadFolder(GLuint glVersion = 0, const std::string& folderPath="");
-            static Shader* get(const std::string& shaderName) noexcept;
 
             explicit Shader() = default;
-            explicit Shader(GLuint glVersion, const std::string& shaderPath);
+            explicit Shader(const std::string& shaderPath);
             
             Shader(Shader const &) = delete;
 
@@ -41,7 +39,6 @@ namespace NoxEngine {
 
             ~Shader();
 
-            bool load();
             void use() noexcept;
 
             GLuint getID() const noexcept;
@@ -64,35 +61,22 @@ namespace NoxEngine {
             void setMat4(const std::string& name, const glm::mat4& mat) const;
 
         protected:
-            inline static std::string m_shadersPath = "./";
-            inline static GLuint m_defaultGLversion = 0;
-            inline static ResourceHolder<Shader, std::string> m_bank;
-            
-            /**
-             * @brief Read a shader .vert or .frag file, then precompute it with custom defined preprocessor directives.
-             * For the include directive, does not search recursivly. Only a .vert or .frag can include a .glsl file.
-             * @param filepath 
-             * @param shaderContent 
-             * @return Either the file has been successfully read and computed
-             */
-            bool readAndPrecomputeFile(const std::string& filepath, std::string& shaderContent);
-            /**
-             * Tries to read a .glsl file
-             */
-            void getDependencyContent(const std::string& dependencyPath, std::string& dependencyContent);
-            bool checkCompileErrors(GLuint& shader, const std::string& type);
-            bool compileShader(GLuint& shader, const std::string& type, const std::string& filepath);
+            inline static GLuint s_defaultGLversion = 0;
+
             void destroyShader() noexcept;
 
-            GLuint m_glVersion {20}, m_vertexID {0}, m_fragmentID {0}, m_programID {0};
-            std::string m_shaderPath {""}, m_shaderName {"unknown"};
+            GLuint m_glVersion {20};
+            GLuint m_vertexID {0};
+            GLuint m_fragmentID {0};
+            GLuint m_programID {0};
+            
+            std::string m_shaderPath {""};
+            std::string m_shaderName {"unknown"};
 
         private:
-            inline static std::array<GLuint, 13> m_GLversions = { 11, 12, 13, 14, 15, 33, 40, 41, 42, 43, 44, 45, 46 };
+            inline static std::array<GLuint, 13> s_GLversions = { 11, 12, 13, 14, 15, 33, 40, 41, 42, 43, 44, 45, 46 };
 
-            static void searchShadersRec(const std::string& folderPath, std::vector<std::string>& savedPaths);
             static bool checkGLversion(GLuint& glVersion) noexcept;
-            static bool _load(const std::string& shaderName, GLuint glVersion);
     };
 
 }

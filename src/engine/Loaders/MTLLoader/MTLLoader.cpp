@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
 #include "engine/core/Actor/Actor.hpp"
 
@@ -15,12 +16,10 @@
 namespace NoxEngine {
 
     std::shared_ptr<Material> MTLLoader::load(const std::string& filepath) {
-        const std::string path = Actor::getObjectsPath() + filepath;
-
-		std::ifstream file(path);
+		std::ifstream file(filepath);
 
 		if (!file.is_open()) {
-			Console::error("MTLLoader::load", "Failed to open MTL file : " + path);
+			Console::error("MTLLoader::load", "Failed to open MTL file : " + filepath);
 			return nullptr;
 		}
 

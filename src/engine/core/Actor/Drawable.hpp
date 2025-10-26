@@ -18,7 +18,7 @@ namespace NoxEngine {
         public:
             virtual ~Drawable() = default;
 
-			virtual void draw(Scene* scene, Matrices& mvp) = 0;
+			virtual void draw(Scene* scene, Matrices& mvp, const V3D& cameraPosition) = 0;
     };
 
 }

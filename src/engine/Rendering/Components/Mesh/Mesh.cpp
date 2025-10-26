@@ -33,7 +33,7 @@ namespace NoxEngine {
         m_polygonMode = polygonMode;
     }
 
-	void Mesh::draw(Scene* scene, Matrices& mvp) {
+	void Mesh::draw(Scene* scene, Matrices& mvp, const V3D& cameraPosition) {
 		if(m_geometry == nullptr || m_material == nullptr || !m_geometry->hasPositions() || m_material->getShader() == nullptr)
             return;
 
@@ -49,7 +49,7 @@ namespace NoxEngine {
         // lock shader
         shader->use();
 
-		m_material->transferUniforms(mvp, scene);
+		m_material->transferUniforms(mvp, scene, cameraPosition);
 
 		// if(hasTexture)
 		//     glBindTexture(GL_TEXTURE_2D, m_material->getTextures()[0]->getID());

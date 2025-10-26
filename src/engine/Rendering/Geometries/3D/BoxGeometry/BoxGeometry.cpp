@@ -26,55 +26,60 @@ namespace NoxEngine {
     }
 
     void BoxGeometry::buildGeometry(const float width, const float height, const float depth) {
-        // 8 sommets d’un cube
-        std::vector<float> vertices = {
-            -width/2, -height/2, -depth/2,
-            width/2, -height/2, -depth/2,
-            width/2,  height/2, -depth/2,
-            -width/2,  height/2, -depth/2,
-            -width/2, -height/2,  depth/2,
-            width/2, -height/2,  depth/2,
-            width/2,  height/2,  depth/2,
-            -width/2,  height/2,  depth/2,
+        // --- positions et normales d'un cube ---
+        float hw = width * 0.5f;
+        float hh = height * 0.5f;
+        float hd = depth * 0.5f;
+
+        std::vector<float> positions = {
+            // Front
+            -hw,-hh, hd,  hw,-hh, hd,  hw,hh, hd, -hw,hh, hd,
+            // Back
+            hw,-hh,-hd, -hw,-hh,-hd, -hw,hh,-hd, hw,hh,-hd,
+            // Left
+            -hw,-hh,-hd, -hw,-hh, hd, -hw,hh, hd, -hw,hh,-hd,
+            // Right
+            hw,-hh, hd, hw,-hh,-hd, hw,hh,-hd, hw,hh, hd,
+            // Top
+            -hw, hh, hd,  hw, hh, hd,  hw,hh,-hd, -hw,hh,-hd,
+            // Bottom
+            -hw,-hh,-hd,  hw,-hh,-hd,  hw,-hh, hd, -hw,-hh, hd
         };
 
-        // Normales (6 faces)
         std::vector<float> normals = {
-            // -Z
-            0.f, 0.f, -1.f, 0.f, 0.f, -1.f, 0.f, 0.f, -1.f, 0.f, 0.f, -1.f,
-            // +Z
-            0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
-            // -X
-            -1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,
-            // +X
-            1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f,0.f,
-            // -Y
-            0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,0.f,-1.f,0.f,
-            // +Y
-            0.f,1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f,0.f,1.f,0.f
+            // Front
+            0,0,1, 0,0,1, 0,0,1, 0,0,1,
+            // Back
+            0,0,-1, 0,0,-1, 0,0,-1, 0,0,-1,
+            // Left
+            -1,0,0, -1,0,0, -1,0,0, -1,0,0,
+            // Right
+            1,0,0, 1,0,0, 1,0,0, 1,0,0,
+            // Top
+            0,1,0, 0,1,0, 0,1,0, 0,1,0,
+            // Bottom
+            0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0
         };
 
-        // UV basiques pour chaque face
         std::vector<float> uvs = {
-            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
-            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
-            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
-            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
-            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f,
-            0.f,0.f, 1.f,0.f, 1.f,1.f, 0.f,1.f
+            0,0, 1,0, 1,1, 0,1,   // Front
+            0,0, 1,0, 1,1, 0,1,   // Back
+            0,0, 1,0, 1,1, 0,1,   // Left
+            0,0, 1,0, 1,1, 0,1,   // Right
+            0,0, 1,0, 1,1, 0,1,   // Top
+            0,0, 1,0, 1,1, 0,1    // Bottom
         };
 
-        // Indices pour 12 triangles (2 par face)
-        std::vector<uint> indices = {
-            0,1,2, 2,3,0,   // -Z
-            4,5,6, 6,7,4,   // +Z
-            0,3,7, 7,4,0,   // -X
-            1,5,6, 6,2,1,   // +X
-            0,1,5, 5,4,0,   // -Y
-            3,2,6, 6,7,3    // +Y
+        std::vector<unsigned int> indices = {
+            0,1,2, 2,3,0,       // Front
+            4,5,6, 6,7,4,       // Back
+            8,9,10, 10,11,8,    // Left
+            12,13,14, 14,15,12, // Right
+            16,17,18, 18,19,16, // Top
+            20,21,22, 22,23,20  // Bottom
         };
 
-        setPositions(vertices);
+        setPositions(positions);
         setNormals(normals);
         setUVs(uvs);
         setIndices(indices);

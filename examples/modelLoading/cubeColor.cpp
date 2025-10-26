@@ -22,34 +22,31 @@ int main(int argc, char** argv) {
 	Scene scene;
 	PerspectiveCamera camera(45.0f, renderer.getAspect(), 0.1f, 1000.f);
 
-	// auto cube = Actor::create()
-	// 	->setPosition(0.f, 0.f, 0.f)
-	// 	->setRotation(45.f, 25.f, 0.f);
+	auto phongShader = ShaderLoader::load("res/assets/shaders/phong");
 
-	// cube->addComponent<Cube>(1.f, Color(150, 50, 10));
+	auto cubeGeometry = BoxGeometry::create(1.f, 1.f, 1.f);
+	auto cubeMaterial = Material::create<PhongMaterial>(Color(100, 200, 255));
 
-	// scene.add(cube);
+	auto mesh = Mesh::create(cubeGeometry, cubeMaterial);
 
-	// auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 25.f);
-	// light->setPosition(5.f, 2.f, 2.f);
+	auto cube = Actor::create()
+		->setPosition(0.f, 0.f, 0.f)
+		->setRotation(45.f, 25.f, 0.f);
 
-	// scene.add(light);
+	cube->addComponent(mesh);
 
-	// camera.setPosition(0.f, 2.f, 6.f);
-	// camera.lookAt(0.f, 0.f, 0.f);
+	scene.add(cube);
 
-	// while (!renderer.shouldClose()) {
-	// 	renderer.render(scene, camera);
+	auto light = std::make_shared<AmbientLight>(Color(255, 255, 255), 25.f);
 
-	// 	// renderer.close();
-	// }
+	scene.add(light);
 
-	// Console::log("Camera Orientation: "
-	// 	+ std::to_string(camera.getOrientation().w) + ", "
-	// 	+ std::to_string(camera.getOrientation().x) + ", "
-	// 	+ std::to_string(camera.getOrientation().y) + ", "
-	// 	+ std::to_string(camera.getOrientation().z)
-	// );
+	camera.setPosition(0.f, 2.f, 6.f);
+	camera.lookAt(0.f, 0.f, 0.f);
+
+	while (!renderer.shouldClose()) {
+		renderer.render(scene, camera);
+	}
 
 	return EXIT_SUCCESS;
 }

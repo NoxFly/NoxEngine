@@ -22,15 +22,15 @@ struct Color {
     Color(): Color(0.0f, 0.0f, 0.0f, 0.0f)
     {}
 
-    Color(const unsigned short red, const unsigned short green, const unsigned short blue):
+    Color(const int red, const int green, const int blue):
         Color(red, green, blue, 255)
     {}
 
-    Color(const unsigned short red, const unsigned short green, const unsigned short blue, const unsigned short alpha) {
-        r = std::clamp(red,     (unsigned short)0, (unsigned short)255) / 255.f;
-        g = std::clamp(green,   (unsigned short)0, (unsigned short)255) / 255.f;
-        b = std::clamp(blue,    (unsigned short)0, (unsigned short)255) / 255.f;
-        a = std::clamp(alpha,   (unsigned short)0, (unsigned short)255) / 255.f;
+    Color(const int red, const int green, const int blue, const int alpha) {
+        r = std::clamp(red,     0, 255) / 255.f;
+        g = std::clamp(green,   0, 255) / 255.f;
+        b = std::clamp(blue,    0, 255) / 255.f;
+        a = std::clamp(alpha,   0, 255) / 255.f;
     }
 
     Color(const float red, const float green, const float blue):

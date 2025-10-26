@@ -14,8 +14,11 @@ namespace NoxEngine {
 
 	class AmbientLight: public Light {
 		public:
-			explicit AmbientLight(const Color color, const float intensity);
+			explicit AmbientLight(const Color color = Color(255, 255, 255), const float intensity = 1.0f);
 			~AmbientLight() = default;
+
+		protected:
+			std::string name {"AmbientLight"};
 	};
 
 }

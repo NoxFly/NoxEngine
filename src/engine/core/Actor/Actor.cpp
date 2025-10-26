@@ -16,27 +16,6 @@ namespace fs = std::filesystem;
 
 namespace NoxEngine {
 
-    // --------------------------------------------------------------------------------
-    // Static members
-
-    std::string Actor::m_objectsPath = "./";
-
-    /**
-     * @brief Set the path where 3D objects are stored
-     */
-    void Actor::setObjectsPath(const std::string& objectsPath) noexcept {
-        if (!fs::exists(objectsPath) || !fs::is_directory(objectsPath)) {
-            Console::error("Actor::setObjectsPath", "The given path is not a valid folder.");
-            exit(EXIT_FAILURE);
-        }
-
-        Actor::m_objectsPath = ((objectsPath[0] == '/') ? "." : "") + objectsPath;
-    }
-
-    const std::string& Actor::getObjectsPath() noexcept {
-        return m_objectsPath;
-    }
-
     std::shared_ptr<Actor> Actor::create() {
         return std::shared_ptr<Actor>(new Actor());
     }
@@ -118,6 +97,13 @@ namespace NoxEngine {
         
         return shared_from_this();
     }
+
+    /**
+     * @brief Uniformly scale the Actor by the given factor
+     */
+    std::shared_ptr<Actor> Actor::scale(const float s) noexcept {
+        return scale(s, s, s);
+    }
     
     /**
      * @brief Add a Component to the Actor 
@@ -156,7 +142,7 @@ namespace NoxEngine {
             }
 
             for(const auto& component : m_drawables) {
-                component->draw(scene, mvp);
+                component->draw(scene, mvp, camera->getPosition());
             }
 
             if(translateOrRotate) {

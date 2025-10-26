@@ -16,32 +16,45 @@
 namespace NoxEngine {
 
     std::shared_ptr<Material> Material::create() {
-        return std::shared_ptr<Material>(new Material());
+        return std::shared_ptr<Material>(new Material(Material::s_defaultShader));
+    }
+
+    void Material::setDefaultShader(std::shared_ptr<Shader> shader) noexcept {
+        s_defaultShader = shader;
     }
 
     // ------------------- Constructeurs -------------------
-    Material::Material() = default;
+    Material::Material(std::shared_ptr<Shader> shader):
+        m_shader(shader)
+    {}
 
-    Material::Material(Shader* shader)
-        : m_shader(shader) {}
+    Material::Material(std::shared_ptr<Shader> shader, const Color& color):
+        m_shader(shader),
+        m_diffuse(color)
+    {}
 
-    Material::Material(Shader* shader, const Color& color)
-        : m_shader(shader), m_diffuse(color) {}
-
-    Material::Material(Shader* shader, Texture* texture)
-        : m_shader(shader) {
-        if(texture) m_textures.push_back(texture);
+    Material::Material(std::shared_ptr<Shader> shader, std::shared_ptr<Texture> texture):
+        m_shader(shader)
+    {
+        if(texture) {
+            m_textures.push_back(texture);
+        }
     }
 
-    Material::Material(Shader* shader, const std::vector<Texture*>& textures, const Color& color)
-        : m_shader(shader), m_textures(textures), m_diffuse(color) {}
+    Material::Material(std::shared_ptr<Shader> shader, const std::vector<std::shared_ptr<Texture>>& textures, const Color& color):
+        m_shader(shader),
+        m_textures(textures),
+        m_diffuse(color)
+    {}
 
     // ------------------- Setters -------------------
-    void Material::setShader(Shader* shader) noexcept {
-        m_shader = shader;
+    void Material::setShader(std::shared_ptr<Shader> shader) noexcept {
+        if(shader == nullptr) {
+            m_shader = shader;
+        }
     }
 
-    void Material::setTextures(const std::vector<Texture*>& textures) noexcept {
+    void Material::setTextures(const std::vector<std::shared_ptr<Texture>>& textures) noexcept {
         m_textures = textures;
     }
 
@@ -71,11 +84,11 @@ namespace NoxEngine {
 
 
     // ------------------- Getters -------------------
-    Shader* Material::getShader() const noexcept {
+    std::shared_ptr<Shader> Material::getShader() const noexcept {
         return m_shader;
     }
 
-    const std::vector<Texture*>& Material::getTextures() const noexcept {
+    const std::vector<std::shared_ptr<Texture>>& Material::getTextures() const noexcept {
         return m_textures;
     }
 
@@ -104,19 +117,22 @@ namespace NoxEngine {
     }
 
 
-    void Material::transferUniforms(Matrices& mvp, const Scene* scene) const {
-        if(!m_shader) return;
+    void Material::transferUniforms(Matrices& mvp, const Scene* scene, const V3D& cameraPosition) const {
+        if(!m_shader)
+            return;
 
         m_shader->use();
 
         // Matrices
         m_shader->setMat4("MVP", mvp.get());
-        m_shader->setMat4("M", mvp.getModel());
-        m_shader->setMat4("V", mvp.getView());
-        m_shader->setMat4("P", mvp.getProjection());
+        m_shader->setMat4("u_Model", mvp.getModel());
+        m_shader->setMat4("u_View", mvp.getView());
+        m_shader->setMat4("u_Projection", mvp.getProjection());
+
+        m_shader->setVec3("u_CameraPos", cameraPosition);
 
         // Material properties
-        m_shader->setVec3("u_Color", m_diffuse.vec3());
+        m_shader->setVec3("u_Diffuse", m_diffuse.vec3());
         m_shader->setVec3("u_Ambient", m_ambient.vec3());
         m_shader->setVec3("u_Specular", m_specular.vec3());
         m_shader->setFloat("u_Shininess", m_shininess);
@@ -137,7 +153,7 @@ namespace NoxEngine {
 
         // sends the lights
         if (lights.size() > 0) {
-            m_shader->setVec3("u_LightPos", lights[0]->getPosition());
+            // m_shader->setVec3("u_LightPos", lights[0]->getPosition());
             m_shader->setVec3("u_LightColor", lights[0]->getColor().vec3());
             m_shader->setFloat("u_LightPower", lights[0]->getIntensity());
         }

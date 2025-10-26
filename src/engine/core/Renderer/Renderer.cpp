@@ -45,12 +45,7 @@ namespace NoxEngine {
         // loads a lot of things, and then we get a bugged window.
         swapWindow();
 
-        Shader::setShadersPath(m_config.getValue("PATH", "shaders"));
         Shader::setDefaultGLSLversion(getCompactGLversion());
-        Shader::loadFolder();
-
-        Texture::setTexturesPath(m_config.getValue("PATH", "textures"));
-        Actor::setObjectsPath(m_config.getValue("PATH", "models"));
     }
 
     Renderer::~Renderer() {

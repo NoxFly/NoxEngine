@@ -33,7 +33,7 @@ namespace NoxEngine {
 			void setCullFace(const GLenum cullFace) noexcept;
             void setPolygonMode(const GLenum polygonMode) noexcept;
 
-			void draw(Scene* scene, Matrices& mvp);
+			void draw(Scene* scene, Matrices& mvp, const V3D& cameraPosition);
 
 		protected:
 			explicit Mesh(std::shared_ptr<BufferGeometry> geom, std::shared_ptr<Material> mat);

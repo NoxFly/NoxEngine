@@ -6,23 +6,21 @@
 
 #include "PhongMaterial.hpp"
 
-#include "engine/Rendering/Shader/Shader.hpp"
-#include "engine/Rendering/Texture/Texture.hpp"
-#include "Console/Console.hpp"
+#include "engine/Loaders/ShaderLoader/ShaderLoader.hpp"
+#include "engine/Loaders/TextureLoader/TextureLoader.hpp"
 
-// BUG : Shape is black no matter the light's properties and the object's color
 namespace NoxEngine {
 
     PhongMaterial::PhongMaterial():
-        Material(Shader::get("lightPhong3D"))
+        Material(ShaderLoader::get("phong"))
     {}
 
     PhongMaterial::PhongMaterial(const Color& color):
-        Material(Shader::get("lightPhong3D"), color)
+        Material(ShaderLoader::get("phong"), color)
     {}
 
     PhongMaterial::PhongMaterial(const std::string& textureName):
-        Material(Shader::get("lightPhong3D"), Texture::get(textureName))
+        Material(ShaderLoader::get("phong"), TextureLoader::get(textureName))
     {}
 
 }

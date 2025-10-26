@@ -14,8 +14,6 @@
 using namespace std;
 
 
-string IniSet::pairSeparator = "=";
-
 bool IniSet::loadFromFile(const string& filepath) {
     ifstream file;
     std::vector<string> content = {};
@@ -138,8 +136,8 @@ unsigned int IniSet::stringIsValidPair(const string& str) const {
 
 void IniSet::assignFromRawString(const string& section, const string& str) {
     if(stringIsValidPair(str) == 0) {
-        string key = trim(str.substr(0, str.find(IniSet::pairSeparator)));
-        string value = trim(str.substr(str.find(IniSet::pairSeparator)+1, str.size()));
+        string key = trim(str.substr(0, str.find(IniSet::s_pairSeparator)));
+        string value = trim(str.substr(str.find(IniSet::s_pairSeparator)+1, str.size()));
         string valueType = "string";
         
         if(isInteger(value))
