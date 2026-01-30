@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/bin/include",
-                "C:/codes/cpp/.libs/**"
+                "C:/perso/cpp-libs/**"
             ],
             "defines": [
                 "_DEBUG",

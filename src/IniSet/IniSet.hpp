@@ -78,7 +78,7 @@ class IniSet {
         std::map<std::string, std::map<std::string, std::pair<std::string, std::string>>> m_iniMap {};
         // { key: { type, value } }
         std::map<std::string, std::pair<std::string, std::string>> m_rootMap {};
-        unsigned int m_sectionCount {0};
+        size_t m_sectionCount {0};
 };
 
 #endif // INISET_HPP
