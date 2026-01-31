@@ -1,10 +1,10 @@
 /**
- * @copyright (c) 2025 NoxFly
+ * @copyright (c) 2026 NoxFly
  * @date 2025-01-29
  * @license AGPL-3.0
  */
 
-#include "Light.hpp"
+#include "NoxEngine/Light/Light.hpp"
 
 namespace NoxEngine {
 

@@ -1,15 +1,14 @@
 /**
- * @copyright (c) 2025 NoxFly
+ * @copyright (c) 2026 NoxFly
  * @date 2025-01-29
  * @license AGPL-3.0
  */
 
-#include "Texture.hpp"
-
 #include <memory>
 #include <filesystem>
 
-#include "Console/Console.hpp"
+#include "NoxEngine/Rendering/Texture.hpp"
+#include "internal/Console.hpp"
 
 namespace fs = std::filesystem;
 

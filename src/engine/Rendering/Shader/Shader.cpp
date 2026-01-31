@@ -1,21 +1,19 @@
 /**
- * @copyright (c) 2025 NoxFly
+ * @copyright (c) 2026 NoxFly
  * @date 2025-01-29
  * @license AGPL-3.0
  */
-
-#include "Shader.hpp"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
-
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Console/Console.hpp"
-#include "utils/string.hpp"
+#include "NoxEngine/Rendering/Shader.hpp"
+#include "internal/Console.hpp"
+#include "internal/string.hpp"
 
 // GLSL versions :
 // 1.10, 1.20, 1.30, 1.40, 1.50, 3.30, 4.00, 4.10, 4.20, 4.30, 4.40, 4.50, 4.60, 1.00 ES, 3.00 ES, 3.10 ES, and 3.20 ES

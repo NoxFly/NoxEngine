@@ -3,22 +3,13 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/bin/include",
-                "C:/perso/cpp-libs/**"
+                "${default}",
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/src/**"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE",
-                "DEBUG"
-            ],
-            "windowsSdkVersion": "10.0.26100.0",
-            "compilerPath": "cl.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++23",
             "intelliSenseMode": "windows-msvc-x64"
         }
     ],
-    "version": 4
+    "version": 4,
+    "enableConfigurationSquiggles": true
 }
