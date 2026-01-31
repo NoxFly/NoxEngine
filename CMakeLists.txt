@@ -2,23 +2,54 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-# Project Name and Version
-project(NoxEngine VERSION 1.0 LANGUAGES CXX)
+project(
+    NoxEngine
+    VERSION 1.0.0
+    LANGUAGES CXX
+)
+
+# =========================
+# Global configuration
+# =========================
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(BUILD_SHARED_LIBS OFF)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Build all src/ files (with include/ folder for headers) as a shared library
-# Search for libraries (SDL2, OpenGL, Glew, glm).
+# =========================
+# Options
+# =========================
+
+option(NOXENGINE_BUILD_SHARED "Build NoxEngine as shared library" ON)
+option(NOXENGINE_BUILD_EXAMPLES "Build engine examples" OFF)
+option(NOXENGINE_ENABLE_ASSERTS "Enable engine assertions" ON)
+
+# =========================
+# Dependencies
+# =========================
+
+find_package(OpenGL REQUIRED)
+find_package(Threads REQUIRED)
+
+find_package(SDL2 REQUIRED)
+find_package(GLEW REQUIRED)
+
+# =========================
+# Engine target
+# =========================
+
 add_subdirectory(src)
 
+# =========================
+# Examples (optional)
+# =========================
+
+if (NOXENGINE_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()

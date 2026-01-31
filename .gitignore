@@ -9,6 +9,8 @@ out/
 
 # User-specific configuration (contains local paths)
 config.cmake
+CMakeUserPresets.json
+CMakePresets.json.user
 
 **/*.o
 
