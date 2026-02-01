@@ -14,19 +14,22 @@ add_library(Nox::Engine ALIAS ${NOXENGINE_TARGET})
 # Sources
 # =========================
 
-target_sources(${NOXENGINE_TARGET}
-    PRIVATE
-        internal/Window.cpp
-        internal/Renderer.cpp
-        internal/ShaderCompiler.cpp
-        internal/AssetManager.cpp
-        internal/Scene.cpp
+file(GLOB_RECURSE NOXENGINE_SRC
+    CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+)
 
-    PUBLIC
-        include/NoxEngine/Engine.hpp
-        include/NoxEngine/Window.hpp
-        include/NoxEngine/Renderer.hpp
-        include/NoxEngine/Scene.hpp
+file(GLOB_RECURSE NOXENGINE_HEADERS
+    CONFIGURE_DEPENDS
+    ${CMAKE_SOURCE_DIR}/include/*.hpp
+    ${CMAKE_SOURCE_DIR}/include/*.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.inl
+)
+
+target_sources(NoxEngine
+    PRIVATE ${NOXENGINE_SRC}
+    PUBLIC  ${NOXENGINE_HEADERS}
 )
 
 # =========================
@@ -35,10 +38,10 @@ target_sources(${NOXENGINE_TARGET}
 
 target_include_directories(${NOXENGINE_TARGET}
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/internal
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # =========================
@@ -68,11 +71,13 @@ endif()
 
 target_link_libraries(${NOXENGINE_TARGET}
     PUBLIC
-        SDL2::SDL2
         OpenGL::GL
+        glm::glm
     PRIVATE
         GLEW::GLEW
         Threads::Threads
+        SDL2::SDL2
+        SDL2::SDL2main
 )
 
 # =========================

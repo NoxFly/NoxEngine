@@ -72,7 +72,7 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--preset=x64-debug"
+                "--preset=debug-local"
             ],
             "options": {
                 "shell": {

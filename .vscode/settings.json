@@ -1,7 +1,6 @@
 {
     "cmake.configureOnOpen": false,
     "cmake.buildDirectory": "${workspaceFolder}/out/build/${presetName}",
-    "cmake.generator": "Ninja",
     "cmake.configureSettings": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
     },
