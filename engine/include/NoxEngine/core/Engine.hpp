@@ -6,6 +6,7 @@
 #include <NoxEngine/core/FileWatcher.hpp>
 #include <NoxEngine/platform/Window.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
+#include <NoxEngine/renderer/PostProcessStack.hpp>
 #include <NoxEngine/scene/Scene3D.hpp>
 #include <NoxEngine/scene/SceneNode.hpp>
 
@@ -56,6 +57,8 @@ namespace Nox {
         void setExposure(float e) { exposure_ = e; }
         [[nodiscard]] float exposure() const { return exposure_; }
 
+        [[nodiscard]] PostProcessStack& postProcessStack() { return postProcessStack_; }
+
     private:
         void uploadMesh(Mesh& mesh);
         void uploadTexture(Mesh& mesh);
@@ -98,13 +101,16 @@ namespace Nox {
         // HDR rendering
         uint32_t hdrFBO_         = 0;
         uint32_t hdrColorTex_    = 0;
-        uint32_t hdrDepthRBO_    = 0;
+        uint32_t hdrDepthTex_    = 0;
         uint32_t toneMapPipeline_ = 0;
         uint32_t screenQuadVAO_  = 0;
         uint32_t screenQuadVBO_  = 0;
         int      hdrWidth_       = 0;
         int      hdrHeight_      = 0;
         float    exposure_       = 1.0f;
+
+        // Post-processing
+        PostProcessStack postProcessStack_;
     };
 
 } // namespace Nox

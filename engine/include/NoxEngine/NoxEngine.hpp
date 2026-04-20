@@ -1,6 +1,11 @@
 // Copyright (c) 2026 NoxFly — AGPL-3.0
 #pragma once
 
+// Animation
+#include <NoxEngine/animation/AnimationClip.hpp>
+#include <NoxEngine/animation/AnimationPlayer.hpp>
+#include <NoxEngine/animation/Skeleton.hpp>
+
 // Core
 #include <NoxEngine/core/AssetCache.hpp>
 #include <NoxEngine/core/Assert.hpp>
@@ -17,7 +22,16 @@
 #include <NoxEngine/renderer/Camera.hpp>
 #include <NoxEngine/renderer/CameraController.hpp>
 #include <NoxEngine/renderer/Frustum.hpp>
+#include <NoxEngine/renderer/PostProcessEffect.hpp>
+#include <NoxEngine/renderer/PostProcessStack.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
+#include <NoxEngine/renderer/effects/BloomEffect.hpp>
+#include <NoxEngine/renderer/effects/FXAAEffect.hpp>
+#include <NoxEngine/renderer/effects/SSAOEffect.hpp>
+
+// Physics
+#include <NoxEngine/physics/PhysicsWorld.hpp>
+#include <NoxEngine/physics/RigidBody.hpp>
 
 // Scene
 #include <NoxEngine/scene/Geometry.hpp>

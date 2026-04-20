@@ -42,26 +42,26 @@
 - [x] Normal mapping
 - [x] Emissive maps
 
-### v0.5 — Post-processing
-- [ ] Framebuffer / render-to-texture infrastructure
-- [ ] FXAA anti-aliasing
-- [ ] Bloom
-- [ ] SSAO (Screen Space Ambient Occlusion)
-- [ ] Gamma correction + exposure control
-- [ ] Post-process stack (ordered chain of effects)
+### v0.5 — Post-processing  ✅ done
+- [x] Framebuffer / render-to-texture infrastructure
+- [x] FXAA anti-aliasing
+- [x] Bloom
+- [x] SSAO (Screen Space Ambient Occlusion)
+- [x] Gamma correction + exposure control
+- [x] Post-process stack (ordered chain of effects)
 
-### v0.6 — Animation
-- [ ] Skeletal animation (skin/joints from glTF)
-- [ ] Animation clips + playback (play, pause, loop, speed)
-- [ ] Animation blending (cross-fade between clips)
-- [ ] Morph targets (blend shapes)
+### v0.6 — Animation  ✅ done
+- [x] Skeletal animation (skin/joints from glTF)
+- [x] Animation clips + playback (play, pause, loop, speed)
+- [x] Animation blending (cross-fade between clips)
+- [x] Morph targets (blend shapes)
 
-### v0.7 — Physics integration
-- [ ] Jolt Physics integration (rigid bodies, collision shapes)
-- [ ] RigidBody component (static, dynamic, kinematic)
-- [ ] Collider shapes (box, sphere, capsule, mesh)
-- [ ] Ray casting API (scene.raycast(origin, direction))
-- [ ] Collision event callbacks (Signal-based)
+### v0.7 — Physics integration  ✅ done
+- [x] Jolt Physics integration (rigid bodies, collision shapes)
+- [x] RigidBody component (static, dynamic, kinematic)
+- [x] Collider shapes (box, sphere, capsule, mesh)
+- [x] Ray casting API (scene.raycast(origin, direction))
+- [x] Collision event callbacks (Signal-based)
 
 ### v0.8 — Vulkan backend
 - [ ] VulkanRHI implementing the RHI interface
@@ -84,3 +84,64 @@
 - [ ] CMake install target + find_package(NoxEngine) support
 - [ ] CI/CD on GitHub Actions (Windows MSVC, Ubuntu GCC, Ubuntu Clang)
 - [ ] vcpkg port
+
+### v1.1 — Advanced rendering
+- [ ] Deferred rendering pipeline (G-Buffer : position, normal, albedo, material)
+- [ ] Tiled / Clustered lighting (hundreds of lights perf loss)
+- [ ] Cascaded Shadow Maps (CSM) for large exterior scenes
+- [ ] Screen Space Reflections (SSR)
+- [ ] Temporal Anti-Aliasing (TAA)
+- [ ] Volumetric fog / god rays
+- [ ] Decals (bullet impacts, stains, splashes on surfaces)
+
+### v1.2 — Terrain & large worlds
+- [ ] Heightmap terrain with LOD (geomipmapping)
+- [ ] Terrain splatting (blend of many textures depending the pente/altitude)
+- [ ] Streaming of terrain's chunks (loading/unloading on the fly around the player)
+- [ ] Instantiated vegetation (grass, trees) via GPU instancing
+- [ ] Imposters for the remote objects (automatic billboard)
+- [ ] Occlusion culling (GPU occlusion queries or HZB)
+
+### v1.3 — GPU & advanced performance
+- [ ] GPU instancing API high level (scene.addInstanced(mesh, transforms))
+- [ ] Indirect draw calls (GL_DRAW_INDIRECT_BUFFER / VkDrawIndirectCommand)
+- [ ] Compute shaders — exposed API to engine's level
+- [ ] GPU particle system (compute-driven, millions of particles)
+- [ ] Mesh shaders (Vulkan / DX12 backend required)
+- [ ] Bindless textures (Vulkan)
+
+### v1.4 — Spatial audio
+- [ ] Integration of miniaudio (header-only)
+- [ ] 3D positionnal Audio (distance attenuation, Doppler effect)
+- [ ] Reverb zones (interior/exterior environnement)
+- [ ] Audio streaming for long musics
+- [ ] API : AudioSource component, AudioListener on the camera
+
+### v1.5 — Scripting & extensibility
+- [ ] Plugin system (.dll/.so dynamically loaded)
+- [ ] Bindings Lua via sol2 (lightweight scripting for game's logic)
+- [ ] Hot-reload for the scripts on Debug mode
+- [ ] Generic serialization API (static reflection via macros or concepts)
+- [ ] Custom render passes recordable from the application
+
+### v1.6 — Networking foundation
+- [ ] Low level network abstraction (UDP via ENet or GameNetworkingSockets)
+- [ ] Snapshot interpolation + client reconciliation
+- [ ] basic Entity replication (position, rotation synchronized)
+- [ ] Lobby / session management API
+- [ ] Deterministic simulation (Guaranteed fixed timestep + shared seed)
+
+### v1.7 — DirectX 12 backend
+- [ ] DX12RHI implementing the RHI interface
+- [ ] DirectStorage for ultra-fast asset loading (Windows only)
+- [ ] PIX integration for GPU profiling on Windows
+- [ ] Feature parity Vulkan/DX12/OpenGL
+
+### v2.0 — Complete Engine production-ready
+- [ ] Complete world streaming (open world without visible loading time)
+- [ ] Nanite-like virtualized geometry (Automatic LOD at the triangle)
+- [ ] Lumen-like global dynamic illumination (radiance cache)
+- [ ] Full Vulkan/DX12 by default, OpenGL as fallback legacy
+- [ ] Editor standalone (separated application built on NoxEngine)
+- [ ] Marketplace of plugins and assets
+- [ ] Exhaustive documentation + examples for each system

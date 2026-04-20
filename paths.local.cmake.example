@@ -78,3 +78,15 @@
 #   set(IMGUI_DIR "/home/user/libs/imgui")
 #
 # set(IMGUI_DIR "")
+
+# ─── Jolt Physics ──────────────────────────────────────────────
+# Root of the Jolt Physics source tree (contains Jolt/ header directory
+# and Build/ with pre-compiled libraries).
+#
+# Windows:
+#   set(JOLT_DIR "C:/cpp-libs/JoltPhysics-5.5.0")
+#
+# WSL / Linux:
+#   set(JOLT_DIR "/home/user/libs/JoltPhysics-5.5.0")
+#
+# set(JOLT_DIR "")

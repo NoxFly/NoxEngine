@@ -38,7 +38,8 @@ namespace Nox {
         boundPipeline_ = pipelines_.get(h);
         if (boundPipeline_) {
             glUseProgram(boundPipeline_->program);
-            glBindVertexArray(boundPipeline_->vao);
+            // NOTE: DO NOT bind VAO here! VAO is per-mesh, not per-pipeline.
+            // Each mesh will bind its own VAO before rendering.
         }
     }
 

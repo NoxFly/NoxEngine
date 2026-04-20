@@ -3,9 +3,13 @@
 #include <NoxEngine/core/Engine.hpp>
 #include <NoxEngine/core/Logger.hpp>
 #include <NoxEngine/renderer/Frustum.hpp>
+#include <NoxEngine/renderer/PostProcessStack.hpp>
 #include <NoxEngine/renderer/Renderer.hpp>
 #include <NoxEngine/renderer/RHI.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
+#include <NoxEngine/renderer/effects/BloomEffect.hpp>
+#include <NoxEngine/renderer/effects/FXAAEffect.hpp>
+#include <NoxEngine/renderer/effects/SSAOEffect.hpp>
 #include <NoxEngine/scene/Geometry.hpp>
 #include <NoxEngine/scene/Light.hpp>
 #include <NoxEngine/scene/Mesh.hpp>
@@ -509,6 +513,18 @@ namespace Nox {
         // Create HDR framebuffer
         createHDRResources(config.width, config.height);
 
+        // Initialize post-processing stack with default effects
+        // TODO: Effects start disabled for v0.4 baseline testing
+        postProcessStack_.addEffect(std::make_unique<SSAOEffect>());
+        postProcessStack_.addEffect(std::make_unique<BloomEffect>());
+        postProcessStack_.addEffect(std::make_unique<FXAAEffect>());
+        postProcessStack_.init(config.width, config.height);
+
+        // DISABLE ALL EFFECTS BY DEFAULT FOR DEBUGGING
+        for (auto& effect : const_cast<std::vector<std::unique_ptr<PostProcessEffect>>&>(postProcessStack_.effects())) {
+            effect->setEnabled(false);
+        }
+
         pipelineReady_ = true;
 
         debugOverlay_.init(*this);
@@ -562,7 +578,6 @@ namespace Nox {
             fpsTimer += dt;
             if (fpsTimer >= 1.0f) {
                 currentFps_ = static_cast<float>(frameCount) / fpsTimer;
-                NOX_LOG_INFO("FPS: {}", frameCount);
                 frameCount = 0;
                 fpsTimer -= 1.0f;
             }
@@ -589,6 +604,8 @@ namespace Nox {
     void Engine::renderInternal(Scene3D& scene, const Math::Mat4& viewMatrix,
                                 const Math::Mat4& projMatrix, const Math::Vec3& cameraPos) {
         auto& rhi_ref = renderer_->rhi();
+
+
 
         // Upload meshes that aren't on the GPU yet
         for (const auto& mesh : scene.meshes()) {
@@ -648,6 +665,8 @@ namespace Nox {
             [](const SortableMesh& a, const SortableMesh& b) {
                 return a.depth < b.depth;
             });
+
+
 
         // Gather lights
         std::vector<const DirectionalLight*> dirLights;
@@ -775,7 +794,10 @@ namespace Nox {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
+
+
         // Draw each visible mesh
+        int meshesDrawn = 0;
         for (const auto& entry : visibleMeshes) {
             auto* mesh = entry.mesh;
 
@@ -878,7 +900,10 @@ namespace Nox {
             glBindVertexArray(gpu.vao);
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(gpu.indexCount),
                         GL_UNSIGNED_INT, nullptr);
+            ++meshesDrawn;
         }
+
+
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1123,7 +1148,7 @@ namespace Nox {
         if (hdrFBO_ != 0) {
             glDeleteFramebuffers(1, &hdrFBO_);
             glDeleteTextures(1, &hdrColorTex_);
-            glDeleteRenderbuffers(1, &hdrDepthRBO_);
+            glDeleteTextures(1, &hdrDepthTex_);
         }
 
         hdrWidth_  = width;
@@ -1135,21 +1160,20 @@ namespace Nox {
         glTextureParameteri(hdrColorTex_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(hdrColorTex_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // Depth renderbuffer
-        glCreateRenderbuffers(1, &hdrDepthRBO_);
-        glNamedRenderbufferStorage(hdrDepthRBO_, GL_DEPTH24_STENCIL8, width, height);
+        // Depth texture (for SSAO and other effects that need depth)
+        glCreateTextures(GL_TEXTURE_2D, 1, &hdrDepthTex_);
+        glTextureStorage2D(hdrDepthTex_, 1, GL_DEPTH24_STENCIL8, width, height);
+        glTextureParameteri(hdrDepthTex_, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTextureParameteri(hdrDepthTex_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         // Framebuffer
         glCreateFramebuffers(1, &hdrFBO_);
         glNamedFramebufferTexture(hdrFBO_, GL_COLOR_ATTACHMENT0, hdrColorTex_, 0);
-        glNamedFramebufferRenderbuffer(hdrFBO_, GL_DEPTH_STENCIL_ATTACHMENT,
-                                       GL_RENDERBUFFER, hdrDepthRBO_);
+        glNamedFramebufferTexture(hdrFBO_, GL_DEPTH_STENCIL_ATTACHMENT, hdrDepthTex_, 0);
 
         // Create screen quad VAO (if not already created)
         if (screenQuadVAO_ == 0) {
-            // Full-screen triangle strip as quad
             float quadVertices[] = {
-                // pos      uv
                 -1.0f, -1.0f,  0.0f, 0.0f,
                  1.0f, -1.0f,  1.0f, 0.0f,
                 -1.0f,  1.0f,  0.0f, 1.0f,
@@ -1160,12 +1184,10 @@ namespace Nox {
             glCreateBuffers(1, &screenQuadVBO_);
             glNamedBufferStorage(screenQuadVBO_, sizeof(quadVertices), quadVertices, 0);
 
-            // Position (location 0)
             glEnableVertexArrayAttrib(screenQuadVAO_, 0);
             glVertexArrayAttribFormat(screenQuadVAO_, 0, 2, GL_FLOAT, GL_FALSE, 0);
             glVertexArrayAttribBinding(screenQuadVAO_, 0, 0);
 
-            // UV (location 1)
             glEnableVertexArrayAttrib(screenQuadVAO_, 1);
             glVertexArrayAttribFormat(screenQuadVAO_, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
             glVertexArrayAttribBinding(screenQuadVAO_, 1, 0);
@@ -1173,16 +1195,39 @@ namespace Nox {
             glVertexArrayVertexBuffer(screenQuadVAO_, 0, screenQuadVBO_, 0, 4 * sizeof(float));
         }
 
+        // Resize post-process stack
+        postProcessStack_.resize(width, height);
+
         NOX_LOG_INFO("HDR framebuffer created ({}x{})", width, height);
     }
 
     void Engine::renderToneMapPass() {
         auto [w, h] = window_->size();
+
+        // Feed SSAO the depth texture
+        auto* ssaoEffect = postProcessStack_.getEffect("SSAO");
+        if (ssaoEffect) {
+            static_cast<SSAOEffect*>(ssaoEffect)->setDepthTexture(hdrDepthTex_);
+        }
+
+        // Apply HDR post-process effects (SSAO, Bloom).
+        // FXAA is disabled here — it runs after tone mapping on LDR.
+        auto* fxaa = postProcessStack_.getEffect("FXAA");
+        bool fxaaWasEnabled = fxaa && fxaa->isEnabled();
+        if (fxaa) { fxaa->setEnabled(false); }
+
+        uint32_t postProcessedTex = postProcessStack_.apply(hdrColorTex_, w, h);
+
+        if (fxaa) { fxaa->setEnabled(fxaaWasEnabled); }
+
+
+
+        // Tone mapping: HDR → default framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, w, h);
         glClear(GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
 
-        PipelineHandle toneMapPipe{ toneMapPipeline_, 1 };
         auto& rhi_ref = renderer_->rhi();
         auto& pipePool = static_cast<OpenGLRHI&>(rhi_ref).pipelinePool();
         HandlePool<GLPipelineData>::Handle ph{ toneMapPipeline_, 1 };
@@ -1190,14 +1235,15 @@ namespace Nox {
 
         if (pipeData) {
             glUseProgram(pipeData->program);
-            glBindTextureUnit(0, hdrColorTex_);
+            glBindTextureUnit(0, postProcessedTex);
             GLint locBuf = glGetUniformLocation(pipeData->program, "uHDRBuffer");
             glUniform1i(locBuf, 0);
             GLint locExp = glGetUniformLocation(pipeData->program, "uExposure");
             glUniform1f(locExp, exposure_);
-
             glBindVertexArray(screenQuadVAO_);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        } else {
+            NOX_LOG_ERROR("Tone mapping pipeline not found!");
         }
 
         glEnable(GL_DEPTH_TEST);

@@ -16,6 +16,9 @@ namespace Nox {
 
         void update(const Input& input, float dt);
 
+        // Re-read orbit parameters (target, distance, pitch, yaw) from current camera state.
+        void syncFromCamera();
+
         void setTarget(const Math::Vec3& target);
         void setDistance(float distance);
         void setRotationSpeed(float speed) { rotationSpeed_ = speed; }

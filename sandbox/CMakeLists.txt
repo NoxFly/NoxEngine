@@ -1,10 +1,25 @@
 # Copyright (c) 2026 NoxFly — AGPL-3.0
 
-add_executable(NoxEngineSandbox
-    src/main.cpp
+file(GLOB_RECURSE SANDBOX_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
+add_executable(NoxEngineSandbox ${SANDBOX_SOURCES})
+
 target_link_libraries(NoxEngineSandbox PRIVATE NoxEngine)
+
+target_include_directories(NoxEngineSandbox PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
+
+# ── MSVC Runtime must match Jolt libs (static /MT) ──────────────────────────
+if(MSVC)
+    # SDL3 is a DLL (/MD) — suppress the LNK4098 warning about MSVCRT(D) conflict
+    target_link_options(NoxEngineSandbox PRIVATE
+        $<$<CONFIG:Debug>:/NODEFAULTLIB:MSVCRTD>
+        $<$<NOT:$<CONFIG:Debug>>:/NODEFAULTLIB:MSVCRT>
+    )
+endif()
 
 # ── Compiler warnings ──────────────────────────────────────────
 if(MSVC)

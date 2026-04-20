@@ -8,6 +8,11 @@ file(GLOB_RECURSE NOX_ENGINE_SOURCES CONFIGURE_DEPENDS
 # ── NoxEngine static library ───────────────────────────────────
 add_library(NoxEngine STATIC ${NOX_ENGINE_SOURCES})
 
+# ── Ensure consistent MSVC runtime (static /MT) ────────────────────────────
+# if(MSVC)
+#     set_target_properties(NoxEngine PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded")
+# endif()
+
 target_include_directories(NoxEngine
     PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src"
@@ -83,6 +88,28 @@ if(IMGUI_DIR)
         "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp"
     )
     target_sources(NoxEngine PRIVATE ${IMGUI_SOURCES})
-    target_include_directories(NoxEngine PRIVATE "${IMGUI_DIR}" "${IMGUI_DIR}/backends")
-    target_compile_definitions(NoxEngine PRIVATE NOX_HAS_IMGUI)
+    target_include_directories(NoxEngine PUBLIC "${IMGUI_DIR}" "${IMGUI_DIR}/backends")
+    target_compile_definitions(NoxEngine PUBLIC NOX_HAS_IMGUI)
+endif()
+
+# ── Jolt Physics (optional) ────────────────────────────────────
+if(JOLT_DIR)
+    # Forcer AVANT l'inclusion — même config Debug/Release que le projet parent
+    set(USE_STATIC_MSVC_RUNTIME_LIBRARY ON  CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS               OFF CACHE BOOL "" FORCE)
+    set(CPP_RTTI_ENABLED                ON  CACHE BOOL "" FORCE)
+    set(CPP_EXCEPTIONS_ENABLED          ON  CACHE BOOL "" FORCE)
+
+    # Désactiver les tests et outils Jolt — on veut juste la lib
+    set(TARGET_UNIT_TESTS   OFF CACHE BOOL "" FORCE)
+    set(TARGET_HELLO_WORLD  OFF CACHE BOOL "" FORCE)
+    set(TARGET_PERFORMANCE_TEST OFF CACHE BOOL "" FORCE)
+    set(TARGET_SAMPLES      OFF CACHE BOOL "" FORCE)
+    set(TARGET_VIEWER       OFF CACHE BOOL "" FORCE)
+
+    add_subdirectory("${JOLT_DIR}/Build" jolt_build)
+    target_link_libraries(NoxEngine PRIVATE Jolt)
+    target_compile_definitions(NoxEngine PRIVATE NOX_HAS_JOLT)
+else()
+    message(STATUS "NoxEngine: Jolt not found — physics disabled")
 endif()

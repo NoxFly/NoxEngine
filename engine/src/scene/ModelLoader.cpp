@@ -6,6 +6,8 @@
 #include <NoxEngine/scene/Material.hpp>
 #include <NoxEngine/scene/Mesh.hpp>
 
+#ifdef NOX_HAS_FASTGLTF
+
 #include <fastgltf/core.hpp>
 #include <fastgltf/tools.hpp>
 #include <fastgltf/glm_element_traits.hpp>
@@ -13,7 +15,6 @@
 namespace Nox {
 
     namespace {
-
         std::shared_ptr<SceneNode> processNode(
             const fastgltf::Asset& asset,
             const fastgltf::Node& node,
@@ -33,13 +34,6 @@ namespace Nox {
                     trs->scale[0], trs->scale[1], trs->scale[2]
                 });
             }
-            else if (auto* mat = std::get_if<fastgltf::math::fmat4x4>(&node.transform)) {
-                // Matrix transform — decompose later if needed
-                // For now just set position from the matrix translation
-                sceneNode->transform().setPosition({
-                    (*mat)[3][0], (*mat)[3][1], (*mat)[3][2]
-                });
-            }
 
             // If node has a mesh, add it as a component on the node
             if (node.meshIndex.has_value()) {
@@ -57,8 +51,7 @@ namespace Nox {
 
             return sceneNode;
         }
-
-    } // anonymous namespace
+    }
 
     std::shared_ptr<SceneNode> ModelLoader::load(const std::filesystem::path& path) {
         fastgltf::Parser parser;
@@ -89,8 +82,6 @@ namespace Nox {
         }
 
         auto& asset = assetResult.get();
-
-        // Convert meshes
         std::vector<std::shared_ptr<Mesh>> meshes;
         meshes.reserve(asset.meshes.size());
 
@@ -174,3 +165,15 @@ namespace Nox {
     }
 
 } // namespace Nox
+
+#else
+
+// Stub when fastgltf not available
+namespace Nox {
+    std::shared_ptr<SceneNode> ModelLoader::load(const std::filesystem::path& path) {
+        NOX_LOG_WARN("Model loading disabled (fastgltf not available): {}", path.string());
+        return nullptr;
+    }
+} // namespace Nox
+
+#endif
