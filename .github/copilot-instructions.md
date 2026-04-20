@@ -27,7 +27,7 @@ that can later support multiple rendering backends (OpenGL → Vulkan → Direct
 - **vcpkg** for third-party dependencies (manifest mode, `vcpkg.json`).
 - Compiler support: MSVC 2022, GCC 13+, Clang 16+.
 - Build types: `Debug`, `Release`, `RelWithDebInfo`.
-- The engine compiles as a **static library** (`NoxEngine.lib` / `libNoxEngine.a`).
+- The engine compiles as a **static library** (`NoxEngine.lib` / `libNoxEngine.a` / `NoxEngine.dll`).
 - The sandbox compiles as an **executable** that links against the engine lib.
 - Local dependency paths live in `paths.local.cmake` (gitignored). A template
   `paths.local.cmake.example` is always committed.
@@ -274,15 +274,15 @@ private:
 
 ## Third-Party Libraries
 
-| Library | Version | Purpose |
-|---|---|---|
-| **SDL3** | 3.x | Window, input, event loop, audio |
-| **GLM** | 1.x | Math (Vec, Mat, Quat) — header only |
-| **OpenGL** | 4.6 Core | Rendering backend (DSA API only) |
-| **stb_image** | latest | Texture loading — header only |
-| **fastgltf** | latest | glTF 2.0 mesh/scene loading |
-| **Dear ImGui** | docking branch | Debug UI, editor overlays |
-| **Jolt Physics** | latest | Physics (future integration) |
+| Library          | Version        | Purpose                             |
+| ---------------- | -------------- | ----------------------------------- |
+| **SDL3**         | 3.x            | Window, input, event loop, audio    |
+| **GLM**          | 1.x            | Math (Vec, Mat, Quat) — header only |
+| **OpenGL**       | 4.6 Core       | Rendering backend (DSA API only)    |
+| **stb_image**    | latest         | Texture loading — header only       |
+| **fastgltf**     | latest         | glTF 2.0 mesh/scene loading         |
+| **Dear ImGui**   | docking branch | Debug UI, editor overlays           |
+| **Jolt Physics** | latest         | Physics (future integration)        |
 
 ### OpenGL usage rules
 
@@ -312,3 +312,108 @@ private:
 - Generated files (`build/`, `*.user`, `.vs/`, `cmake-build-*/`) — gitignored.
 - One logical change per commit. Commit messages: `type(scope): description`
   (e.g., `feat(renderer): add DSA buffer upload`, `fix(scene): dirty flag not propagated`).
+
+---
+
+## User-Facing API Design — "Friendly C++ API"
+
+NoxEngine exposes a **high-level, expressive API** inspired by Three.js idioms,
+adapted to C++ idioms and ownership semantics. The guiding principle:
+**a developer should be able to render a lit 3D scene in under 20 lines of code.**
+
+### Design goals
+
+- Sensible defaults everywhere — nothing requires configuration unless you want to customize.
+- Method chaining where it reads naturally (builder-style setters return `*this`).
+- No raw pointers in the public API. Factory methods return `std::shared_ptr<T>`.
+  (Shared ownership is correct here: a mesh can belong to multiple scene nodes;
+  a material can be shared across many meshes.)
+- Geometry, Material, and Mesh are separate, composable objects — matching the
+  Three.js mental model while staying C++ idiomatic.
+- `scene.add(object)` is the universal entry point for anything renderable or influential.
+- Importing a full model file is one line. Manual geometry construction is also one line.
+
+### Reference API shape (enforce this in all generated code)
+
+```cpp
+// --- Engine + window bootstrap ---
+EngineConfig config;
+config.title  = "My App";
+config.width  = 1280;
+config.height = 720;
+config.vsync  = true;
+Engine engine(config); // owns Window + Renderer + RHI
+
+Scene3D scene;
+
+PerspectiveCamera camera(45.0f, engine.aspect(), 0.1f, 1000.0f);
+
+// --- Geometry (CPU-side shape description) ---
+auto box     = Geometry::box(1.0f, 1.0f, 1.0f);
+auto sphere  = Geometry::sphere(0.5f, 32, 16);
+auto plane   = Geometry::plane(10.0f, 10.0f);
+auto custom  = Geometry::fromVertices(vertices, indices);
+
+// --- Material ---
+auto mat = Material::standard();
+
+mat->setColor(Color(1.0f, 0.5f, 0.2f));
+mat->setRoughness(0.4f);
+mat->setAlbedoMap("textures/stone.png");
+
+auto unlit = Material::unlit();
+unlit->setColor(Color::White);
+
+// --- Mesh = Geometry + Material ---
+auto mesh = std::make_shared<Mesh>(box, mat);
+mesh->setPosition(0.0f, 0.5f, 0.0f);
+mesh->setRotation(0.0f, 45.0f, 0.0f);   // degrees, Euler XYZ
+mesh->setScale(1.0f);
+scene.add(mesh);
+
+// --- Import a full model (glTF) ---
+auto model = engine.load("models/character.glb");   // returns SceneNode subtree
+scene.add(model);
+
+// --- Lights ---
+auto sun = std::make_shared<DirectionalLight>(Color::White, 1.0f);
+sun->setDirection(-1.0f, -1.0f, -0.5f);
+scene.add(sun);
+
+auto point = std::make_shared<PointLight>(Color(1.0f, 0.8f, 0.6f), 2.0f);
+point->setPosition(2.0f, 3.0f, 2.0f);
+point->setRange(10.0f);
+scene.add(point);
+
+auto ambient = std::make_shared<AmbientLight>(Color::White, 0.05f);
+scene.add(ambient);
+
+// --- Camera placement ---
+camera.setPosition(3.0f, 2.0f, 3.0f);
+camera.lookAt(0.0f, 0.0f, 0.0f);
+
+// --- Main loop ---
+engine.run([&](float dt) {
+    mesh->rotate(0.0f, 90.0f * dt, 0.0f);   // rotate Y, degrees/sec
+    engine.render(scene, camera);
+});
+```
+
+### Rules derived from the above
+
+- `Geometry` is a **value-producing factory** (static methods only, no public constructor).
+- `Material` is a **factory + fluent setter** object. `Material::standard()` returns
+  `std::shared_ptr<Material>`. All setters return `void` (no chaining needed on materials).
+- `Mesh`, `DirectionalLight`, `PointLight`, `AmbientLight` all inherit from `SceneObject`.
+  `scene.add()` accepts `std::shared_ptr<SceneObject>`.
+- `Object3D` (base of Mesh and lights) exposes:
+  `setPosition(x,y,z)`, `setRotation(x,y,z)` (degrees Euler),
+  `setScale(uniform)` / `setScale(x,y,z)`,
+  `rotate(x,y,z)`, `translate(x,y,z)`,
+  `getTransform() -> const Transform&`.
+- `engine.run(loopFn)` drives the main loop. `loopFn` receives `float dt` in seconds.
+  The loop handles events, calls the user function, renders, and swaps buffers.
+- `engine.load(path)` returns `std::shared_ptr<SceneNode>` with the full node hierarchy
+  from the file. The developer adds it to the scene directly.
+- Angles in the public API are always **degrees** (converted to radians internally).
+- Colors in the public API are always **linear float RGB(A)** in range [0, 1].
