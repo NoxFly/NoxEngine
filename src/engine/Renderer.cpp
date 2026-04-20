@@ -6,7 +6,7 @@
 
 //#pragma warning (disable: 4244)
 
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <iostream>
 
 #include "NoxEngine/Rendering/Renderer.hpp"
@@ -14,7 +14,7 @@
 #include "NoxEngine/Rendering/Shader.hpp"
 #include "NoxEngine/Rendering/Texture.hpp"
 #include "internal/Console.hpp"
-#include "internal/string.hpp"
+#include "NoxEngine/utils/string.hpp"
 
 
 namespace NoxEngine {

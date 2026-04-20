@@ -9,7 +9,7 @@
 #include <filesystem>
 
 #include "NoxEngine/Loader/ShaderLoader.hpp"
-#include "internal/string.hpp"
+#include "NoxEngine/utils/string.hpp"
 #include "internal/Console.hpp"
 
 namespace fs = std::filesystem;

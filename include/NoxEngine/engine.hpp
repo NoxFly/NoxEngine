@@ -7,8 +7,6 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-#define GLM_ENABLE_EXPERIMENTAL
-
 // Utilities
 #include "NoxEngine/utils/IniSet.hpp"
 #include "NoxEngine/utils/Console.hpp"

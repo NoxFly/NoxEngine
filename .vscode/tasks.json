@@ -99,11 +99,9 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-debug",
+                "build",
                 "--config",
-                "Debug",
-                "--target",
-                "NoxEngine"
+                "Debug"
             ],
             "options": {
                 "shell": {
@@ -138,7 +136,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-debug",
+                "build",
                 "--config",
                 "Debug",
                 "--target",
@@ -172,7 +170,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-debug",
+                "build",
                 "--config",
                 "Debug",
                 "--target",
@@ -206,7 +204,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-debug",
+                "build",
                 "--config",
                 "Debug"
             ],

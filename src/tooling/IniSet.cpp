@@ -9,7 +9,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "internal/string.hpp"
+#include "NoxEngine/utils/string.hpp"
 
 using namespace std;
 

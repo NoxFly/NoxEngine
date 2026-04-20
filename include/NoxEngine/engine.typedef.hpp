@@ -9,8 +9,6 @@
 
 #include "engine.export.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL
-
 #include <type_traits>
 #include <glm/glm.hpp>
 #include <concepts>

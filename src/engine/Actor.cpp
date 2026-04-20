@@ -9,7 +9,7 @@
 #include <filesystem>
 
 #include "NoxEngine/Actor/Actor.hpp"
-#include "internal/string.hpp"
+#include "NoxEngine/utils/string.hpp"
 
 namespace fs = std::filesystem;
 

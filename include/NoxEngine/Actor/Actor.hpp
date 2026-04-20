@@ -19,6 +19,7 @@
 #include "NoxEngine/Actor/Movable.hpp"
 #include "NoxEngine/Actor/Component.hpp"
 #include "NoxEngine/Actor/Drawable.hpp"
+#include "NoxEngine/utils/string.hpp"
 
 
 namespace NoxEngine {

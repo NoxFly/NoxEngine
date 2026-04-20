@@ -4,7 +4,8 @@
  * @license AGPL-3.0
  */
 
-#include "string.hpp"
+#include "NoxEngine/utils/string.hpp"
+#include "NoxEngine/utils/Color.hpp"
 
 #include <random>
 #include <algorithm>

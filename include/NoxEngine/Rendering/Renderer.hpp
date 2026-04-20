@@ -7,7 +7,7 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <vector>

@@ -36,10 +36,14 @@ target_sources(NoxEngine
 # Include directories
 # =========================
 
+get_target_property(SDL2_INCLUDE_DIR SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
+
 target_include_directories(${NOXENGINE_TARGET}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        ${SDL2_INCLUDE_DIR}
+        $<BUILD_INTERFACE:${SDL2_INCLUDE_DIR}/SDL2>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -51,6 +55,7 @@ target_include_directories(${NOXENGINE_TARGET}
 target_compile_definitions(${NOXENGINE_TARGET}
     PRIVATE
         NOXENGINE_INTERNAL
+        GLM_ENABLE_EXPERIMENTAL
     PUBLIC
         $<$<BOOL:${NOXENGINE_ENABLE_ASSERTS}>:NOXENGINE_ENABLE_ASSERTS>
 )
@@ -78,6 +83,7 @@ target_link_libraries(${NOXENGINE_TARGET}
         Threads::Threads
         SDL2::SDL2
         SDL2::SDL2main
+        SDL2::SDL2_image
 )
 
 # =========================
