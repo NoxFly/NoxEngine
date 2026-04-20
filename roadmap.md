@@ -33,14 +33,14 @@
 - [x] Input system (keyboard, mouse, gamepad via SDL3)
 - [x] Window resize handling (framebuffer + camera aspect)
 
-### v0.4 — PBR & lighting
-- [ ] PBR Material (metallic/roughness workflow)
+### v0.4 — PBR & lighting  ✅ done
+- [x] PBR Material (metallic/roughness workflow)
 - [ ] Image-based lighting (IBL) — environment maps, irradiance, prefiltered
-- [ ] HDR rendering + tone mapping (ACES / Reinhard)
-- [ ] Directional light shadow maps (PCF)
-- [ ] Point light shadow maps (cube maps)
-- [ ] Normal mapping
-- [ ] Emissive maps
+- [x] HDR rendering + tone mapping (exposure-based)
+- [x] Directional light shadow maps (PCF 3x3)
+- [x] Point light shadow maps (cube maps, 6-pass)
+- [x] Normal mapping
+- [x] Emissive maps
 
 ### v0.5 — Post-processing
 - [ ] Framebuffer / render-to-texture infrastructure

@@ -37,6 +37,7 @@ namespace Nox {
         Engine& operator=(Engine&&) = delete;
 
         void run(std::function<void(float dt)> loopFn);
+        void stop();
         void render(Scene3D& scene, PerspectiveCamera& camera);
         void render(Scene3D& scene, OrthographicCamera& camera);
 
@@ -52,13 +53,19 @@ namespace Nox {
         [[nodiscard]] const Input& input() const { return window_->input(); }
 
         void setShaderDirectory(const std::filesystem::path& dir);
+        void setExposure(float e) { exposure_ = e; }
+        [[nodiscard]] float exposure() const { return exposure_; }
 
     private:
         void uploadMesh(Mesh& mesh);
         void uploadTexture(Mesh& mesh);
+        uint32_t loadTexture(const std::filesystem::path& path);
         void renderInternal(Scene3D& scene, const Math::Mat4& viewMatrix,
                             const Math::Mat4& projMatrix, const Math::Vec3& cameraPos);
         void rebuildPipelines();
+        void createShadowResources();
+        void createHDRResources(int width, int height);
+        void renderToneMapPass();
 
         std::unique_ptr<Window>   window_;
         std::unique_ptr<Renderer> renderer_;
@@ -67,10 +74,37 @@ namespace Nox {
         bool     pipelineReady_ = false;
         float    currentFps_       = 0.0f;
         float    currentFrameTime_ = 0.0f;
+        bool     running_          = false;
         DebugOverlay debugOverlay_;
         AssetCache<uint32_t> textureCache_;
         FileWatcher shaderWatcher_;
         std::filesystem::path shaderDir_;
+
+        // Shadow mapping
+        uint32_t shadowPipeline_  = 0;
+        uint32_t shadowFBO_       = 0;
+        uint32_t shadowDepthTex_  = 0;
+        static constexpr int ShadowMapSize = 2048;
+        Math::Mat4 lightSpaceMatrix_{ 1.0f };
+
+        // Point light shadow mapping
+        uint32_t pointShadowPipeline_ = 0;
+        static constexpr int MaxShadowPointLights = 4;
+        static constexpr int PointShadowMapSize = 1024;
+        uint32_t pointShadowFBOs_[MaxShadowPointLights] = {};
+        uint32_t pointShadowCubemaps_[MaxShadowPointLights] = {};
+        int      numShadowPointLights_ = 0;
+
+        // HDR rendering
+        uint32_t hdrFBO_         = 0;
+        uint32_t hdrColorTex_    = 0;
+        uint32_t hdrDepthRBO_    = 0;
+        uint32_t toneMapPipeline_ = 0;
+        uint32_t screenQuadVAO_  = 0;
+        uint32_t screenQuadVBO_  = 0;
+        int      hdrWidth_       = 0;
+        int      hdrHeight_      = 0;
+        float    exposure_       = 1.0f;
     };
 
 } // namespace Nox

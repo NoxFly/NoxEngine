@@ -11,6 +11,7 @@ namespace Nox {
         : vertices_(std::move(vertices))
         , indices_(std::move(indices)) {
         computeAABB();
+        computeTangents();
     }
 
     void Geometry::computeAABB() {
@@ -198,6 +199,52 @@ namespace Nox {
         std::vector<uint32_t> indices
     ) {
         return std::shared_ptr<Geometry>(new Geometry(std::move(vertices), std::move(indices)));
+    }
+
+    void Geometry::computeTangents() {
+        // Zero out tangents before accumulation
+        for (auto& v : vertices_) {
+            v.tangent = Math::Vec3(0.0f);
+        }
+
+        // MikkTSpace-style tangent computation per triangle
+        for (size_t i = 0; i + 2 < indices_.size(); i += 3) {
+            auto& v0 = vertices_[indices_[i]];
+            auto& v1 = vertices_[indices_[i + 1]];
+            auto& v2 = vertices_[indices_[i + 2]];
+
+            Math::Vec3 edge1 = v1.position - v0.position;
+            Math::Vec3 edge2 = v2.position - v0.position;
+            Math::Vec2 dUV1 = v1.uv - v0.uv;
+            Math::Vec2 dUV2 = v2.uv - v0.uv;
+
+            float denom = dUV1.x * dUV2.y - dUV2.x * dUV1.y;
+            float f = (std::abs(denom) > 1e-8f) ? (1.0f / denom) : 0.0f;
+
+            Math::Vec3 tangent{
+                f * (dUV2.y * edge1.x - dUV1.y * edge2.x),
+                f * (dUV2.y * edge1.y - dUV1.y * edge2.y),
+                f * (dUV2.y * edge1.z - dUV1.y * edge2.z)
+            };
+
+            v0.tangent += tangent;
+            v1.tangent += tangent;
+            v2.tangent += tangent;
+        }
+
+        // Normalize and orthogonalize (Gram-Schmidt)
+        for (auto& v : vertices_) {
+            if (glm::length(v.tangent) > 1e-8f) {
+                v.tangent = glm::normalize(v.tangent - v.normal * glm::dot(v.normal, v.tangent));
+            } else {
+                // Fallback tangent
+                if (std::abs(v.normal.y) < 0.999f) {
+                    v.tangent = glm::normalize(glm::cross(v.normal, Math::Vec3(0.0f, 1.0f, 0.0f)));
+                } else {
+                    v.tangent = glm::normalize(glm::cross(v.normal, Math::Vec3(1.0f, 0.0f, 0.0f)));
+                }
+            }
+        }
     }
 
 } // namespace Nox

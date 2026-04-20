@@ -13,6 +13,7 @@ namespace Nox {
         Math::Vec3 position{ 0.0f };
         Math::Vec3 normal{ 0.0f, 1.0f, 0.0f };
         Math::Vec2 uv{ 0.0f };
+        Math::Vec3 tangent{ 1.0f, 0.0f, 0.0f };
     };
 
     class Geometry {
@@ -33,6 +34,7 @@ namespace Nox {
     private:
         Geometry(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
         void computeAABB();
+        void computeTangents();
 
         std::vector<Vertex>   vertices_;
         std::vector<uint32_t> indices_;

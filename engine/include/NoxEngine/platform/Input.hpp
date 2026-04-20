@@ -28,6 +28,7 @@ namespace Nox {
         F1 = 0x4000003A, F2 = 0x4000003B, F3 = 0x4000003C, F4 = 0x4000003D,
         F5 = 0x4000003E, F6 = 0x4000003F, F7 = 0x40000040, F8 = 0x40000041,
         F9 = 0x40000042, F10 = 0x40000043, F11 = 0x40000044, F12 = 0x40000045,
+        PageUp = 0x4000004B, PageDown = 0x4000004E,
     };
 
     enum class MouseButton : uint8_t {

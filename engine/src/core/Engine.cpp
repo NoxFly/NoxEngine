@@ -11,8 +11,15 @@
 #include <NoxEngine/scene/Mesh.hpp>
 #include <NoxEngine/scene/ModelLoader.hpp>
 
+#include "../renderer/OpenGLRHI.hpp"
+
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <algorithm>
 #include <filesystem>
@@ -39,26 +46,78 @@ namespace Nox {
     static constexpr int MaxDirectionalLights = 4;
     static constexpr int MaxPointLights = 8;
 
+    // ── Shadow depth vertex shader ─────────────────────────────────
+    static constexpr std::string_view ShadowVertexSource = R"glsl(
+    #version 460 core
+    layout(location = 0) in vec3 aPosition;
+    uniform mat4 uLightSpaceMatrix;
+    uniform mat4 uModel;
+    void main() {
+        gl_Position = uLightSpaceMatrix * uModel * vec4(aPosition, 1.0);
+    }
+    )glsl";
+
+    static constexpr std::string_view ShadowFragmentSource = R"glsl(
+    #version 460 core
+    void main() {
+        // Depth written automatically
+    }
+    )glsl";
+
+    // ── Point light shadow (6-pass, linear depth) ────────────────
+    static constexpr std::string_view PointShadowVertexSource = R"glsl(
+    #version 460 core
+    layout(location = 0) in vec3 aPosition;
+    uniform mat4 uLightSpaceMatrix;
+    uniform mat4 uModel;
+    out vec3 vWorldPos;
+    void main() {
+        vec4 wp = uModel * vec4(aPosition, 1.0);
+        vWorldPos = wp.xyz;
+        gl_Position = uLightSpaceMatrix * wp;
+    }
+    )glsl";
+
+    static constexpr std::string_view PointShadowFragmentSource = R"glsl(
+    #version 460 core
+    in vec3 vWorldPos;
+    uniform vec3 uLightPos;
+    uniform float uFarPlane;
+    void main() {
+        float dist = length(vWorldPos - uLightPos);
+        gl_FragDepth = dist / uFarPlane;
+    }
+    )glsl";
+
+    // ── PBR lit vertex shader ──────────────────────────────────────
+
     static constexpr std::string_view VertexShaderSource = R"glsl(
     #version 460 core
 
     layout(location = 0) in vec3 aPosition;
     layout(location = 1) in vec3 aNormal;
     layout(location = 2) in vec2 aUV;
+    layout(location = 3) in vec3 aTangent;
 
     uniform mat4 uModel;
     uniform mat4 uView;
     uniform mat4 uProjection;
+    uniform mat4 uLightSpaceMatrix;
 
     out vec3 vWorldPos;
     out vec3 vNormal;
     out vec2 vUV;
+    out vec3 vTangent;
+    out vec4 vLightSpacePos;
 
     void main() {
         vec4 worldPos = uModel * vec4(aPosition, 1.0);
         vWorldPos = worldPos.xyz;
-        vNormal   = mat3(transpose(inverse(uModel))) * aNormal;
+        mat3 normalMatrix = mat3(transpose(inverse(uModel)));
+        vNormal   = normalMatrix * aNormal;
+        vTangent  = normalMatrix * aTangent;
         vUV       = aUV;
+        vLightSpacePos = uLightSpaceMatrix * worldPos;
         gl_Position = uProjection * uView * worldPos;
     }
     )glsl";
@@ -69,6 +128,8 @@ namespace Nox {
     in vec3 vWorldPos;
     in vec3 vNormal;
     in vec2 vUV;
+    in vec3 vTangent;
+    in vec4 vLightSpacePos;
 
     struct DirLight {
         vec3  direction;
@@ -93,49 +154,183 @@ namespace Nox {
     uniform float uAmbientIntensity;
     uniform vec3  uCameraPos;
     uniform vec3  uObjectColor;
+    uniform float uRoughness;
+    uniform float uMetallic;
 
+    // Textures
     uniform bool uHasAlbedoTex;
     uniform sampler2D uAlbedoTex;
+    uniform bool uHasNormalTex;
+    uniform sampler2D uNormalTex;
+    uniform bool uHasEmissiveTex;
+    uniform sampler2D uEmissiveTex;
+    uniform vec3  uEmissiveColor;
+    uniform float uEmissiveIntensity;
 
-    out vec4 FragColor;
+    // Shadow map (directional)
+    uniform sampler2D uShadowMap;
+    uniform bool uHasShadowMap;
 
+    // Point light shadow cubemaps
+    uniform samplerCube uPointShadowMaps[4];
+    uniform int  uNumShadowPointLights;
+    uniform float uPointLightFarPlane;
+
+    layout(location = 0) out vec4 FragColor;
+
+    const float PI = 3.14159265359;
+
+    // ── PBR functions ──────────────────────────────────────────
+    float distributionGGX(vec3 N, vec3 H, float roughness) {
+        float a  = roughness * roughness;
+        float a2 = a * a;
+        float NdotH  = max(dot(N, H), 0.0);
+        float NdotH2 = NdotH * NdotH;
+        float denom  = NdotH2 * (a2 - 1.0) + 1.0;
+        return a2 / (PI * denom * denom);
+    }
+
+    float geometrySchlickGGX(float NdotV, float roughness) {
+        float r = roughness + 1.0;
+        float k = (r * r) / 8.0;
+        return NdotV / (NdotV * (1.0 - k) + k);
+    }
+
+    float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+        float NdotV = max(dot(N, V), 0.0);
+        float NdotL = max(dot(N, L), 0.0);
+        return geometrySchlickGGX(NdotV, roughness) * geometrySchlickGGX(NdotL, roughness);
+    }
+
+    vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+        return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+    }
+
+    // ── Shadow calculation ─────────────────────────────────────
+    float calcDirShadow(vec4 lsPos) {
+        vec3 projCoords = lsPos.xyz / lsPos.w;
+        projCoords = projCoords * 0.5 + 0.5;
+        if (projCoords.z > 1.0) return 0.0;
+
+        float currentDepth = projCoords.z;
+        float bias = 0.005;
+
+        // PCF 3x3
+        float shadow = 0.0;
+        vec2 texelSize = 1.0 / textureSize(uShadowMap, 0);
+        for (int x = -1; x <= 1; ++x) {
+            for (int y = -1; y <= 1; ++y) {
+                float pcfDepth = texture(uShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+                shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+            }
+        }
+        return shadow / 9.0;
+    }
+
+    float calcPointShadow(int idx, vec3 fragToLight, float currentDist) {
+        float closestDepth = texture(uPointShadowMaps[idx], fragToLight).r;
+        closestDepth *= uPointLightFarPlane;
+        float bias = 0.05;
+        return currentDist - bias > closestDepth ? 1.0 : 0.0;
+    }
+
+    // ── Main ───────────────────────────────────────────────────
     void main() {
+        // Normal mapping
         vec3 N = normalize(vNormal);
+        if (uHasNormalTex) {
+            vec3 T = normalize(vTangent);
+            T = normalize(T - dot(T, N) * N);
+            vec3 B = cross(N, T);
+            mat3 TBN = mat3(T, B, N);
+            vec3 normalSample = texture(uNormalTex, vUV).rgb * 2.0 - 1.0;
+            N = normalize(TBN * normalSample);
+        }
+
         vec3 V = normalize(uCameraPos - vWorldPos);
 
-        vec3 baseColor = uObjectColor;
+        vec3 albedo = uObjectColor;
         if (uHasAlbedoTex) {
-            baseColor *= texture(uAlbedoTex, vUV).rgb;
+            albedo *= texture(uAlbedoTex, vUV).rgb;
         }
 
-        // Ambient
-        vec3 result = uAmbientColor * uAmbientIntensity;
+        float roughness = clamp(uRoughness, 0.04, 1.0);
+        float metallic  = clamp(uMetallic,  0.0,  1.0);
 
-        // Directional lights
+        // F0: base reflectivity (dielectric = 0.04, metallic = albedo)
+        vec3 F0 = mix(vec3(0.04), albedo, metallic);
+
+        // Directional shadow
+        float dirShadow = 0.0;
+        if (uHasShadowMap) {
+            dirShadow = calcDirShadow(vLightSpacePos);
+        }
+
+        vec3 Lo = vec3(0.0);
+
+        // ── Directional lights ─────────────────────────────────
         for (int i = 0; i < uNumDirLights; ++i) {
             vec3 L = normalize(-uDirLights[i].direction);
-            float diff = max(dot(N, L), 0.0);
-            vec3 H = normalize(L + V);
-            float spec = pow(max(dot(N, H), 0.0), 32.0);
-            result += uDirLights[i].color * uDirLights[i].intensity * (diff + spec * 0.5);
+            vec3 H = normalize(V + L);
+            vec3 radiance = uDirLights[i].color * uDirLights[i].intensity;
+
+            float NDF = distributionGGX(N, H, roughness);
+            float G   = geometrySmith(N, V, L, roughness);
+            vec3  F   = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+            vec3 numerator = NDF * G * F;
+            float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+            vec3 specular = numerator / denom;
+
+            vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
+            float NdotL = max(dot(N, L), 0.0);
+
+            float shadowFactor = (i == 0) ? (1.0 - dirShadow) : 1.0;
+            Lo += (kD * albedo / PI + specular) * radiance * NdotL * shadowFactor;
         }
 
-        // Point lights
+        // ── Point lights ───────────────────────────────────────
         for (int i = 0; i < uNumPointLights; ++i) {
             vec3 toLight = uPointLights[i].position - vWorldPos;
             float dist = length(toLight);
             vec3 L = toLight / max(dist, 0.001);
+            vec3 H = normalize(V + L);
 
             float attenuation = 1.0 / (1.0 + dist * dist / max(uPointLights[i].range * uPointLights[i].range, 0.001));
+            vec3 radiance = uPointLights[i].color * uPointLights[i].intensity * attenuation;
 
-            float diff = max(dot(N, L), 0.0);
-            vec3 H = normalize(L + V);
-            float spec = pow(max(dot(N, H), 0.0), 32.0);
+            float NDF = distributionGGX(N, H, roughness);
+            float G   = geometrySmith(N, V, L, roughness);
+            vec3  F   = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-            result += uPointLights[i].color * uPointLights[i].intensity * attenuation * (diff + spec * 0.5);
+            vec3 numerator = NDF * G * F;
+            float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+            vec3 specular = numerator / denom;
+
+            vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
+            float NdotL = max(dot(N, L), 0.0);
+
+            float shadowFactor = 1.0;
+            if (i < uNumShadowPointLights) {
+                shadowFactor = 1.0 - calcPointShadow(i, -L, dist);
+            }
+
+            Lo += (kD * albedo / PI + specular) * radiance * NdotL * shadowFactor;
         }
 
-        FragColor = vec4(result * baseColor, 1.0);
+        // Ambient (simple IBL approximation)
+        vec3 ambient = uAmbientColor * uAmbientIntensity * albedo;
+
+        vec3 color = ambient + Lo;
+
+        // Emissive
+        vec3 emissive = uEmissiveColor * uEmissiveIntensity;
+        if (uHasEmissiveTex) {
+            emissive *= texture(uEmissiveTex, vUV).rgb;
+        }
+        color += emissive;
+
+        FragColor = vec4(color, 1.0);
     }
     )glsl";
 
@@ -147,6 +342,7 @@ namespace Nox {
     layout(location = 0) in vec3 aPosition;
     layout(location = 1) in vec3 aNormal;
     layout(location = 2) in vec2 aUV;
+    layout(location = 3) in vec3 aTangent;
 
     uniform mat4 uModel;
     uniform mat4 uView;
@@ -180,6 +376,42 @@ namespace Nox {
     }
     )glsl";
 
+    // ── Tone mapping (fullscreen quad) ─────────────────────────────
+
+    static constexpr std::string_view ToneMapVertexSource = R"glsl(
+    #version 460 core
+    layout(location = 0) in vec2 aPosition;
+    layout(location = 1) in vec2 aUV;
+    out vec2 vUV;
+    void main() {
+        vUV = aUV;
+        gl_Position = vec4(aPosition, 0.0, 1.0);
+    }
+    )glsl";
+
+    static constexpr std::string_view ToneMapFragmentSource = R"glsl(
+    #version 460 core
+    in vec2 vUV;
+    uniform sampler2D uHDRBuffer;
+    uniform float uExposure;
+    out vec4 FragColor;
+    void main() {
+        vec3 hdrColor = texture(uHDRBuffer, vUV).rgb;
+
+        // Exposure
+        vec3 mapped = vec3(1.0) - exp(-hdrColor * uExposure);
+
+        // ACES tone mapping
+        // (simple approximation)
+        // mapped = (mapped * (2.51 * mapped + 0.03)) / (mapped * (2.43 * mapped + 0.59) + 0.14);
+
+        // Gamma correction
+        mapped = pow(mapped, vec3(1.0 / 2.2));
+
+        FragColor = vec4(mapped, 1.0);
+    }
+    )glsl";
+
     // ── Engine ─────────────────────────────────────────────────────
 
     Engine::Engine(const EngineConfig& config) {
@@ -193,13 +425,14 @@ namespace Nox {
         window_->onResize.connect([this](int w, int h) {
             renderer_->onResize(w, h);
             glViewport(0, 0, w, h);
+            createHDRResources(w, h);
         });
 
         if (!config.vsync) {
             SDL_GL_SetSwapInterval(0);
         }
 
-        // Create lit pipeline (Blinn-Phong multi-light)
+        // Create lit pipeline (PBR Cook-Torrance)
         auto& rhi_ref = renderer_->rhi();
         {
             auto vs = rhi_ref.createShader({ .stage = ShaderStage::Vertex,   .source = VertexShaderSource });
@@ -228,11 +461,59 @@ namespace Nox {
             unlitPipeline_ = pipeline.index;
         }
 
+        // Create shadow depth pipeline (directional)
+        {
+            auto vs = rhi_ref.createShader({ .stage = ShaderStage::Vertex,   .source = ShadowVertexSource });
+            auto fs = rhi_ref.createShader({ .stage = ShaderStage::Fragment, .source = ShadowFragmentSource });
+            auto pipeline = rhi_ref.createPipeline({
+                .vertexShader   = vs,
+                .fragmentShader = fs,
+                .depthTest      = true,
+                .depthWrite     = true,
+                .blending       = false
+            });
+            shadowPipeline_ = pipeline.index;
+        }
+
+        // Create tone mapping pipeline
+        {
+            auto vs = rhi_ref.createShader({ .stage = ShaderStage::Vertex,   .source = ToneMapVertexSource });
+            auto fs = rhi_ref.createShader({ .stage = ShaderStage::Fragment, .source = ToneMapFragmentSource });
+            auto pipeline = rhi_ref.createPipeline({
+                .vertexShader   = vs,
+                .fragmentShader = fs,
+                .depthTest      = false,
+                .depthWrite     = false,
+                .blending       = false
+            });
+            toneMapPipeline_ = pipeline.index;
+        }
+
+        // Create point shadow pipeline (linear depth output)
+        {
+            auto vs = rhi_ref.createShader({ .stage = ShaderStage::Vertex,   .source = PointShadowVertexSource });
+            auto fs = rhi_ref.createShader({ .stage = ShaderStage::Fragment, .source = PointShadowFragmentSource });
+            auto pipeline = rhi_ref.createPipeline({
+                .vertexShader   = vs,
+                .fragmentShader = fs,
+                .depthTest      = true,
+                .depthWrite     = true,
+                .blending       = false
+            });
+            pointShadowPipeline_ = pipeline.index;
+        }
+
+        // Create shadow map resources
+        createShadowResources();
+
+        // Create HDR framebuffer
+        createHDRResources(config.width, config.height);
+
         pipelineReady_ = true;
 
         debugOverlay_.init(*this);
 
-        NOX_LOG_INFO("Engine initialized ({}x{})", config.width, config.height);
+        NOX_LOG_INFO("Engine initialized ({}x{}) — PBR rendering", config.width, config.height);
     }
 
     Engine::~Engine() {
@@ -252,7 +533,8 @@ namespace Nox {
         float fpsTimer = 0.0f;
         int   frameCount = 0;
 
-        while (window_->pollEvents()) {
+        running_ = true;
+        while (running_ && window_->pollEvents()) {
             uint64_t now = SDL_GetPerformanceCounter();
             float dt = static_cast<float>(now - lastTicks) / static_cast<float>(freq);
             lastTicks = now;
@@ -287,6 +569,10 @@ namespace Nox {
         }
     }
 
+    void Engine::stop() {
+        running_ = false;
+    }
+
     void Engine::render(Scene3D& scene, PerspectiveCamera& camera) {
         camera.setAspect(window_->aspect());
         renderInternal(scene, camera.viewMatrix(), camera.projectionMatrix(), camera.position());
@@ -309,10 +595,8 @@ namespace Nox {
             if (!mesh->gpuReady()) {
                 uploadMesh(*mesh);
             }
-            // Upload texture if material has one and it's not loaded yet
-            if (!mesh->material()->albedoMapPath().empty() && !mesh->material()->hasAlbedoTexture()) {
-                uploadTexture(*mesh);
-            }
+            // Upload textures for this material
+            uploadTexture(*mesh);
         }
 
         // Frustum culling
@@ -388,9 +672,108 @@ namespace Nox {
 
         // Begin rendering
         auto* cmd = rhi_ref.beginFrame();
+
+        // ── Shadow pass (directional light 0) ──────────────────────
+        if (!dirLights.empty()) {
+            const auto& dir = dirLights[0]->direction();
+            float shadowExtent = 20.0f;
+            Math::Mat4 lightProj = glm::ortho(-shadowExtent, shadowExtent, -shadowExtent, shadowExtent, 0.1f, 50.0f);
+            Math::Vec3 lightPos = -glm::normalize(dir) * 20.0f;
+            Math::Mat4 lightView = glm::lookAt(lightPos, Math::Vec3(0.0f), Math::Vec3(0.0f, 1.0f, 0.0f));
+            lightSpaceMatrix_ = lightProj * lightView;
+
+            glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO_);
+            glViewport(0, 0, ShadowMapSize, ShadowMapSize);
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            PipelineHandle shadowPipe{ shadowPipeline_, 1 };
+
+            for (const auto& entry : visibleMeshes) {
+                auto* mesh = entry.mesh;
+                if (!mesh->material()->isLit()) { continue; }
+
+                auto& pipePool = static_cast<OpenGLRHI&>(rhi_ref).pipelinePool();
+                HandlePool<GLPipelineData>::Handle ph{ shadowPipeline_, 1 };
+                auto* pipeData = pipePool.get(ph);
+                if (pipeData) {
+                    glUseProgram(pipeData->program);
+                    GLint locLSM = glGetUniformLocation(pipeData->program, "uLightSpaceMatrix");
+                    GLint locModel = glGetUniformLocation(pipeData->program, "uModel");
+                    glUniformMatrix4fv(locLSM, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix_));
+                    glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(mesh->worldMatrix()));
+                }
+
+                const auto& gpu = mesh->gpuData();
+                glBindVertexArray(gpu.vao);
+                glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(gpu.indexCount), GL_UNSIGNED_INT, nullptr);
+            }
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+        // ── Point light shadow pass (6-pass per cubemap face) ───────
+        numShadowPointLights_ = std::min(static_cast<int>(pointLights.size()), MaxShadowPointLights);
+        float pointFarPlane = 25.0f;
+
+        // Reuse the point shadow pipeline (linear depth output)
+        auto& ptShadowPipePool = static_cast<OpenGLRHI&>(rhi_ref).pipelinePool();
+        HandlePool<GLPipelineData>::Handle ptShadowPH{ pointShadowPipeline_, 1 };
+        auto* ptShadowPipeData = ptShadowPipePool.get(ptShadowPH);
+
+        for (int li = 0; li < numShadowPointLights_; ++li) {
+            const auto& lightPos = pointLights[static_cast<size_t>(li)]->transform().position();
+            Math::Mat4 shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, pointFarPlane);
+
+            Math::Mat4 shadowTransforms[6] = {
+                shadowProj * glm::lookAt(lightPos, lightPos + Math::Vec3( 1, 0, 0), Math::Vec3(0,-1, 0)),
+                shadowProj * glm::lookAt(lightPos, lightPos + Math::Vec3(-1, 0, 0), Math::Vec3(0,-1, 0)),
+                shadowProj * glm::lookAt(lightPos, lightPos + Math::Vec3( 0, 1, 0), Math::Vec3(0, 0, 1)),
+                shadowProj * glm::lookAt(lightPos, lightPos + Math::Vec3( 0,-1, 0), Math::Vec3(0, 0,-1)),
+                shadowProj * glm::lookAt(lightPos, lightPos + Math::Vec3( 0, 0, 1), Math::Vec3(0,-1, 0)),
+                shadowProj * glm::lookAt(lightPos, lightPos + Math::Vec3( 0, 0,-1), Math::Vec3(0,-1, 0)),
+            };
+
+            if (ptShadowPipeData) {
+                glUseProgram(ptShadowPipeData->program);
+                GLint locLSM = glGetUniformLocation(ptShadowPipeData->program, "uLightSpaceMatrix");
+                GLint locModel = glGetUniformLocation(ptShadowPipeData->program, "uModel");
+                GLint locLP = glGetUniformLocation(ptShadowPipeData->program, "uLightPos");
+                GLint locFP = glGetUniformLocation(ptShadowPipeData->program, "uFarPlane");
+                glUniform3fv(locLP, 1, glm::value_ptr(lightPos));
+                glUniform1f(locFP, pointFarPlane);
+
+                for (int face = 0; face < 6; ++face) {
+                    // Attach the cubemap face to the FBO
+                    glNamedFramebufferTextureLayer(pointShadowFBOs_[li], GL_DEPTH_ATTACHMENT,
+                                                    pointShadowCubemaps_[li], 0, face);
+                    glBindFramebuffer(GL_FRAMEBUFFER, pointShadowFBOs_[li]);
+                    glViewport(0, 0, PointShadowMapSize, PointShadowMapSize);
+                    glClear(GL_DEPTH_BUFFER_BIT);
+
+                    glUniformMatrix4fv(locLSM, 1, GL_FALSE, glm::value_ptr(shadowTransforms[face]));
+
+                    for (const auto& entry : visibleMeshes) {
+                        auto* mesh = entry.mesh;
+                        if (!mesh->material()->isLit()) { continue; }
+                        glUniformMatrix4fv(locModel, 1, GL_FALSE, glm::value_ptr(mesh->worldMatrix()));
+                        const auto& gpu = mesh->gpuData();
+                        glBindVertexArray(gpu.vao);
+                        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(gpu.indexCount), GL_UNSIGNED_INT, nullptr);
+                    }
+                }
+            }
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+        // ── HDR main pass ──────────────────────────────────────────
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO_);
         auto [w, h] = window_->size();
-        cmd->setViewport(0, 0, w, h);
-        cmd->clear(0.1f, 0.1f, 0.12f, 1.0f, 1.0f);
+        glViewport(0, 0, w, h);
+        glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
+        glClearDepth(1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
         // Draw each visible mesh
         for (const auto& entry : visibleMeshes) {
@@ -406,6 +789,9 @@ namespace Nox {
             cmd->pushConstant("uProjection", projMatrix);
 
             if (mesh->material()->isLit()) {
+                // Light space matrix for shadow
+                cmd->pushConstant("uLightSpaceMatrix", lightSpaceMatrix_);
+
                 // Set light uniforms
                 cmd->pushConstant("uNumDirLights", static_cast<int>(dirLights.size()));
                 for (int i = 0; i < static_cast<int>(dirLights.size()); ++i) {
@@ -429,6 +815,46 @@ namespace Nox {
                 cmd->pushConstant("uAmbientColor", ambientColor);
                 cmd->pushConstant("uAmbientIntensity", ambientIntensity);
                 cmd->pushConstant("uCameraPos", cameraPos);
+
+                // PBR material uniforms
+                cmd->pushConstant("uRoughness", mesh->material()->roughness());
+                cmd->pushConstant("uMetallic", mesh->material()->metallic());
+
+                // Emissive
+                const auto& ec = mesh->material()->emissiveColor();
+                cmd->pushConstant("uEmissiveColor", Math::Vec3(ec.r, ec.g, ec.b));
+                cmd->pushConstant("uEmissiveIntensity", mesh->material()->emissiveIntensity());
+
+                // Shadow map binding (texture unit 3)
+                glBindTextureUnit(3, shadowDepthTex_);
+                cmd->pushConstant("uShadowMap", 3);
+                cmd->pushConstant("uHasShadowMap", dirLights.empty() ? 0 : 1);
+
+                // Point shadow cubemaps (texture units 4-7)
+                cmd->pushConstant("uNumShadowPointLights", numShadowPointLights_);
+                cmd->pushConstant("uPointLightFarPlane", pointFarPlane);
+                for (int i = 0; i < numShadowPointLights_; ++i) {
+                    glBindTextureUnit(static_cast<GLuint>(4 + i), pointShadowCubemaps_[i]);
+                    cmd->pushConstant("uPointShadowMaps[" + std::to_string(i) + "]", 4 + i);
+                }
+
+                // Normal map (texture unit 2)
+                if (mesh->material()->hasNormalTexture()) {
+                    glBindTextureUnit(2, mesh->material()->normalTextureId());
+                    cmd->pushConstant("uHasNormalTex", 1);
+                    cmd->pushConstant("uNormalTex", 2);
+                } else {
+                    cmd->pushConstant("uHasNormalTex", 0);
+                }
+
+                // Emissive map (texture unit 8)
+                if (mesh->material()->hasEmissiveTexture()) {
+                    glBindTextureUnit(8, mesh->material()->emissiveTextureId());
+                    cmd->pushConstant("uHasEmissiveTex", 1);
+                    cmd->pushConstant("uEmissiveTex", 8);
+                } else {
+                    cmd->pushConstant("uHasEmissiveTex", 0);
+                }
             }
 
             cmd->pushConstant("uModel", mesh->worldMatrix());
@@ -437,11 +863,11 @@ namespace Nox {
             const auto& col = mesh->material()->color();
             cmd->pushConstant("uObjectColor", Math::Vec3(col.r, col.g, col.b));
 
-            // Texture binding
+            // Albedo texture (texture unit 0)
             if (mesh->material()->hasAlbedoTexture()) {
                 glBindTextureUnit(0, mesh->material()->albedoTextureId());
-                // Set uHasAlbedoTex = true (via 1.0f since we push as float through the uniform)
                 cmd->pushConstant("uHasAlbedoTex", 1);
+                cmd->pushConstant("uAlbedoTex", 0);
             }
             else {
                 cmd->pushConstant("uHasAlbedoTex", 0);
@@ -454,7 +880,10 @@ namespace Nox {
                         GL_UNSIGNED_INT, nullptr);
         }
 
-        rhi_ref.endFrame(cmd);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // ── Tone mapping pass ──────────────────────────────────────
+        renderToneMapPass();
     }
 
     void Engine::uploadMesh(Mesh& mesh) {
@@ -495,6 +924,11 @@ namespace Nox {
         glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
         glVertexArrayAttribBinding(vao, 2, 0);
 
+        // Tangent (location 3)
+        glEnableVertexArrayAttrib(vao, 3);
+        glVertexArrayAttribFormat(vao, 3, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, tangent));
+        glVertexArrayAttribBinding(vao, 3, 0);
+
         mesh.gpuData() = Mesh::GpuData{
             .vao        = vao,
             .vbo        = vbo,
@@ -505,16 +939,40 @@ namespace Nox {
     }
 
     void Engine::uploadTexture(Mesh& mesh) {
-        const auto& texPath = mesh.material()->albedoMapPath();
+        auto& mat = *mesh.material();
 
-        // Check cache first
-        if (textureCache_.contains(texPath)) {
-            mesh.material()->setAlbedoTextureId(textureCache_.get(texPath));
-            return;
+        // Albedo texture
+        if (!mat.albedoMapPath().empty() && !mat.hasAlbedoTexture()) {
+            uint32_t texId = loadTexture(mat.albedoMapPath());
+            if (texId != 0) {
+                mat.setAlbedoTextureId(texId);
+            }
         }
 
-        auto texData = TextureLoader::load(texPath);
-        if (!texData.pixels) return;
+        // Normal map
+        if (!mat.normalMapPath().empty() && !mat.hasNormalTexture()) {
+            uint32_t texId = loadTexture(mat.normalMapPath());
+            if (texId != 0) {
+                mat.setNormalTextureId(texId);
+            }
+        }
+
+        // Emissive map
+        if (!mat.emissiveMapPath().empty() && !mat.hasEmissiveTexture()) {
+            uint32_t texId = loadTexture(mat.emissiveMapPath());
+            if (texId != 0) {
+                mat.setEmissiveTextureId(texId);
+            }
+        }
+    }
+
+    uint32_t Engine::loadTexture(const std::filesystem::path& path) {
+        if (textureCache_.contains(path)) {
+            return textureCache_.get(path);
+        }
+
+        auto texData = TextureLoader::load(path.string());
+        if (!texData.pixels) { return 0; }
 
         GLuint texId = 0;
         glCreateTextures(GL_TEXTURE_2D, 1, &texId);
@@ -527,9 +985,9 @@ namespace Nox {
         glTextureParameteri(texId, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(texId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        textureCache_.store(texPath, texId);
-        mesh.material()->setAlbedoTextureId(texId);
+        textureCache_.store(path, texId);
         TextureLoader::free(texData);
+        return texId;
     }
 
     void Engine::setShaderDirectory(const std::filesystem::path& dir) {
@@ -615,6 +1073,134 @@ namespace Nox {
                 NOX_LOG_INFO("Unlit pipeline reloaded");
             }
         }
+    }
+
+    void Engine::createShadowResources() {
+        // ── Directional shadow map ─────────────────────────────────
+        glCreateTextures(GL_TEXTURE_2D, 1, &shadowDepthTex_);
+        glTextureStorage2D(shadowDepthTex_, 1, GL_DEPTH_COMPONENT24, ShadowMapSize, ShadowMapSize);
+        glTextureParameteri(shadowDepthTex_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(shadowDepthTex_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(shadowDepthTex_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTextureParameteri(shadowDepthTex_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTextureParameterfv(shadowDepthTex_, GL_TEXTURE_BORDER_COLOR, borderColor);
+        glTextureParameteri(shadowDepthTex_, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+
+        glCreateFramebuffers(1, &shadowFBO_);
+        glNamedFramebufferTexture(shadowFBO_, GL_DEPTH_ATTACHMENT, shadowDepthTex_, 0);
+        glNamedFramebufferDrawBuffer(shadowFBO_, GL_NONE);
+        glNamedFramebufferReadBuffer(shadowFBO_, GL_NONE);
+
+        // ── Point light shadow cubemaps ────────────────────────────
+        for (int i = 0; i < MaxShadowPointLights; ++i) {
+            glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &pointShadowCubemaps_[i]);
+            glTextureStorage2D(pointShadowCubemaps_[i], 1, GL_DEPTH_COMPONENT24,
+                               PointShadowMapSize, PointShadowMapSize);
+            glTextureParameteri(pointShadowCubemaps_[i], GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTextureParameteri(pointShadowCubemaps_[i], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTextureParameteri(pointShadowCubemaps_[i], GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTextureParameteri(pointShadowCubemaps_[i], GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTextureParameteri(pointShadowCubemaps_[i], GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+            glCreateFramebuffers(1, &pointShadowFBOs_[i]);
+            glNamedFramebufferTexture(pointShadowFBOs_[i], GL_DEPTH_ATTACHMENT,
+                                      pointShadowCubemaps_[i], 0);
+            glNamedFramebufferDrawBuffer(pointShadowFBOs_[i], GL_NONE);
+            glNamedFramebufferReadBuffer(pointShadowFBOs_[i], GL_NONE);
+        }
+
+        NOX_LOG_INFO("Shadow resources created (dir {}x{}, point {}x{})",
+                     ShadowMapSize, ShadowMapSize, PointShadowMapSize, PointShadowMapSize);
+    }
+
+    void Engine::createHDRResources(int width, int height) {
+        if (width == hdrWidth_ && height == hdrHeight_ && hdrFBO_ != 0) {
+            return;
+        }
+
+        // Destroy previous resources if resizing
+        if (hdrFBO_ != 0) {
+            glDeleteFramebuffers(1, &hdrFBO_);
+            glDeleteTextures(1, &hdrColorTex_);
+            glDeleteRenderbuffers(1, &hdrDepthRBO_);
+        }
+
+        hdrWidth_  = width;
+        hdrHeight_ = height;
+
+        // Color texture (RGBA16F for HDR)
+        glCreateTextures(GL_TEXTURE_2D, 1, &hdrColorTex_);
+        glTextureStorage2D(hdrColorTex_, 1, GL_RGBA16F, width, height);
+        glTextureParameteri(hdrColorTex_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(hdrColorTex_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Depth renderbuffer
+        glCreateRenderbuffers(1, &hdrDepthRBO_);
+        glNamedRenderbufferStorage(hdrDepthRBO_, GL_DEPTH24_STENCIL8, width, height);
+
+        // Framebuffer
+        glCreateFramebuffers(1, &hdrFBO_);
+        glNamedFramebufferTexture(hdrFBO_, GL_COLOR_ATTACHMENT0, hdrColorTex_, 0);
+        glNamedFramebufferRenderbuffer(hdrFBO_, GL_DEPTH_STENCIL_ATTACHMENT,
+                                       GL_RENDERBUFFER, hdrDepthRBO_);
+
+        // Create screen quad VAO (if not already created)
+        if (screenQuadVAO_ == 0) {
+            // Full-screen triangle strip as quad
+            float quadVertices[] = {
+                // pos      uv
+                -1.0f, -1.0f,  0.0f, 0.0f,
+                 1.0f, -1.0f,  1.0f, 0.0f,
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                 1.0f,  1.0f,  1.0f, 1.0f,
+            };
+
+            glCreateVertexArrays(1, &screenQuadVAO_);
+            glCreateBuffers(1, &screenQuadVBO_);
+            glNamedBufferStorage(screenQuadVBO_, sizeof(quadVertices), quadVertices, 0);
+
+            // Position (location 0)
+            glEnableVertexArrayAttrib(screenQuadVAO_, 0);
+            glVertexArrayAttribFormat(screenQuadVAO_, 0, 2, GL_FLOAT, GL_FALSE, 0);
+            glVertexArrayAttribBinding(screenQuadVAO_, 0, 0);
+
+            // UV (location 1)
+            glEnableVertexArrayAttrib(screenQuadVAO_, 1);
+            glVertexArrayAttribFormat(screenQuadVAO_, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
+            glVertexArrayAttribBinding(screenQuadVAO_, 1, 0);
+
+            glVertexArrayVertexBuffer(screenQuadVAO_, 0, screenQuadVBO_, 0, 4 * sizeof(float));
+        }
+
+        NOX_LOG_INFO("HDR framebuffer created ({}x{})", width, height);
+    }
+
+    void Engine::renderToneMapPass() {
+        auto [w, h] = window_->size();
+        glViewport(0, 0, w, h);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+
+        PipelineHandle toneMapPipe{ toneMapPipeline_, 1 };
+        auto& rhi_ref = renderer_->rhi();
+        auto& pipePool = static_cast<OpenGLRHI&>(rhi_ref).pipelinePool();
+        HandlePool<GLPipelineData>::Handle ph{ toneMapPipeline_, 1 };
+        auto* pipeData = pipePool.get(ph);
+
+        if (pipeData) {
+            glUseProgram(pipeData->program);
+            glBindTextureUnit(0, hdrColorTex_);
+            GLint locBuf = glGetUniformLocation(pipeData->program, "uHDRBuffer");
+            glUniform1i(locBuf, 0);
+            GLint locExp = glGetUniformLocation(pipeData->program, "uExposure");
+            glUniform1f(locExp, exposure_);
+
+            glBindVertexArray(screenQuadVAO_);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        }
+
+        glEnable(GL_DEPTH_TEST);
     }
 
 } // namespace Nox
