@@ -276,15 +276,15 @@ Indent what's inside a namespace.
 
 ## Third-Party Libraries
 
-| Library          | Version        | Purpose                                                                     |
-| ---------------- | -------------- | --------------------------------------------------------------------------- |
-| **SDL3**         | 3.x            | Window, input, event loop, audio                                            |
-| **GLM**          | 1.x            | Math (Vec, Mat, Quat) — header only                                         |
-| **OpenGL**       | 4.6 Core       | Rendering backend (DSA API only)                                            |
-| **stb_image**    | latest         | Texture loading — header only. The raw .h file is copied into this project. |
-| **fastgltf**     | 0.9.0          | glTF 2.0 mesh/scene loading                                                 |
-| **Dear ImGui**   | docking branch | Debug UI, editor overlays                                                   |
-| **Jolt Physics** | 5.5.0          | Physics (future integration)                                                |
+| Library          | Version  | Purpose                                                                     |
+| ---------------- | -------- | --------------------------------------------------------------------------- |
+| **SDL3**         | 3.x      | Window, input, event loop, audio                                            |
+| **GLM**          | 1.x      | Math (Vec, Mat, Quat) — header only                                         |
+| **OpenGL**       | 4.6 Core | Rendering backend (DSA API only)                                            |
+| **stb_image**    | latest   | Texture loading — header only. The raw .h file is copied into this project. |
+| **fastgltf**     | 0.9.0    | glTF 2.0 mesh/scene loading                                                 |
+| **Dear ImGui**   | 1.92.x   | Debug UI, editor overlays                                                   |
+| **Jolt Physics** | 5.5.0    | Physics (future integration)                                                |
 
 ### OpenGL usage rules
 
