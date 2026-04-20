@@ -1,7 +1,9 @@
 // Copyright (c) 2026 NoxFly — AGPL-3.0
 #pragma once
 
+#include <NoxEngine/core/AssetCache.hpp>
 #include <NoxEngine/core/DebugOverlay.hpp>
+#include <NoxEngine/core/FileWatcher.hpp>
 #include <NoxEngine/platform/Window.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
 #include <NoxEngine/scene/Scene3D.hpp>
@@ -46,12 +48,17 @@ namespace Nox {
         [[nodiscard]] float fps() const { return currentFps_; }
         [[nodiscard]] float frameTime() const { return currentFrameTime_; }
         [[nodiscard]] DebugOverlay& debugOverlay() { return debugOverlay_; }
+        [[nodiscard]] Input& input() { return window_->input(); }
+        [[nodiscard]] const Input& input() const { return window_->input(); }
+
+        void setShaderDirectory(const std::filesystem::path& dir);
 
     private:
         void uploadMesh(Mesh& mesh);
         void uploadTexture(Mesh& mesh);
         void renderInternal(Scene3D& scene, const Math::Mat4& viewMatrix,
                             const Math::Mat4& projMatrix, const Math::Vec3& cameraPos);
+        void rebuildPipelines();
 
         std::unique_ptr<Window>   window_;
         std::unique_ptr<Renderer> renderer_;
@@ -61,6 +68,9 @@ namespace Nox {
         float    currentFps_       = 0.0f;
         float    currentFrameTime_ = 0.0f;
         DebugOverlay debugOverlay_;
+        AssetCache<uint32_t> textureCache_;
+        FileWatcher shaderWatcher_;
+        std::filesystem::path shaderDir_;
     };
 
 } // namespace Nox

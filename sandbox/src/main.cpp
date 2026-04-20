@@ -17,10 +17,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     // ── Scene ──────────────────────────────────────────────────
     Scene3D scene;
 
-    // ── Camera ─────────────────────────────────────────────────
+    // ── Camera + orbit controller ──────────────────────────────
     PerspectiveCamera camera(45.0f, engine.aspect(), 0.1f, 1000.0f);
     camera.setPosition(3.0f, 2.0f, 3.0f);
     camera.lookAt(0.0f, 0.0f, 0.0f);
+
+    OrbitCameraController orbitController(camera);
 
     // ── Geometry + Material + Mesh ─────────────────────────────
     auto box = Geometry::box(1.0f, 1.0f, 1.0f);
@@ -28,6 +30,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     mat->setColor(Color(0.8f, 0.4f, 0.2f));
 
     auto mesh = std::make_shared<Mesh>(box, mat);
+    mesh->setName("Box");
     mesh->setPosition(0.0f, 0.5f, 0.0f);
     scene.add(mesh);
 
@@ -36,8 +39,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     auto floorMat  = Material::standard();
     floorMat->setColor(Color(0.3f, 0.3f, 0.35f));
 
-    auto floor = std::make_shared<Mesh>(floorGeom, floorMat);
-    scene.add(floor);
+    auto floorMesh = std::make_shared<Mesh>(floorGeom, floorMat);
+    floorMesh->setName("Floor");
+    scene.add(floorMesh);
 
     // ── Lights ─────────────────────────────────────────────────
     auto sun = std::make_shared<DirectionalLight>(Color::White, 1.0f);
@@ -49,6 +53,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 
     // ── Main loop ──────────────────────────────────────────────
     engine.run([&](float dt) {
+        // Escape to close
+        if (engine.input().isKeyPressed(Key::Escape)) {
+            return;
+        }
+
+        orbitController.update(engine.input(), dt);
         mesh->rotate(0.0f, 90.0f * dt, 0.0f);
         engine.render(scene, camera);
     });

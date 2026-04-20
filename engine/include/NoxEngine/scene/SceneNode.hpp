@@ -7,6 +7,7 @@
 #include <any>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
@@ -57,6 +58,17 @@ public:
     virtual void update(float dt, const Math::Mat4& parentWorld = Math::Mat4(1.0f));
 
     [[nodiscard]] const Math::Mat4& worldMatrix() const { return worldMatrix_; }
+
+    // ── Traversal utilities ────────────────────────────────────
+    [[nodiscard]] std::shared_ptr<SceneNode> findByName(std::string_view name);
+
+    template<typename Fn>
+    void traverse(Fn&& fn) {
+        fn(*this);
+        for (auto& child : children_) {
+            child->traverse(std::forward<Fn>(fn));
+        }
+    }
 
 private:
     std::string name_;

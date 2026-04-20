@@ -2,9 +2,11 @@
 #pragma once
 
 // Core
+#include <NoxEngine/core/AssetCache.hpp>
 #include <NoxEngine/core/Assert.hpp>
 #include <NoxEngine/core/Color.hpp>
 #include <NoxEngine/core/Engine.hpp>
+#include <NoxEngine/core/FileWatcher.hpp>
 #include <NoxEngine/core/Logger.hpp>
 #include <NoxEngine/core/Signal.hpp>
 
@@ -13,6 +15,7 @@
 
 // Renderer
 #include <NoxEngine/renderer/Camera.hpp>
+#include <NoxEngine/renderer/CameraController.hpp>
 #include <NoxEngine/renderer/Frustum.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
 
@@ -28,4 +31,5 @@
 #include <NoxEngine/scene/Transform.hpp>
 
 // Platform
+#include <NoxEngine/platform/Input.hpp>
 #include <NoxEngine/platform/Window.hpp>

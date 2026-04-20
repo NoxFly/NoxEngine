@@ -16,9 +16,23 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 namespace Nox {
+
+    namespace {
+        [[nodiscard]] std::string readFileContents(const std::filesystem::path& path) {
+            std::ifstream file(path, std::ios::in);
+            if (!file.is_open()) {
+                return {};
+            }
+            std::ostringstream ss;
+            ss << file.rdbuf();
+            return ss.str();
+        }
+    }
 
     // ── Embedded shaders ───────────────────────────────────────────
 
@@ -178,6 +192,7 @@ namespace Nox {
         // Handle resize
         window_->onResize.connect([this](int w, int h) {
             renderer_->onResize(w, h);
+            glViewport(0, 0, w, h);
         });
 
         if (!config.vsync) {
@@ -246,6 +261,10 @@ namespace Nox {
             if (dt > 0.1f) dt = 0.016f;
 
             currentFrameTime_ = dt;
+
+#ifndef NDEBUG
+            shaderWatcher_.poll();
+#endif
 
             debugOverlay_.beginFrame();
 
@@ -486,7 +505,15 @@ namespace Nox {
     }
 
     void Engine::uploadTexture(Mesh& mesh) {
-        auto texData = TextureLoader::load(mesh.material()->albedoMapPath());
+        const auto& texPath = mesh.material()->albedoMapPath();
+
+        // Check cache first
+        if (textureCache_.contains(texPath)) {
+            mesh.material()->setAlbedoTextureId(textureCache_.get(texPath));
+            return;
+        }
+
+        auto texData = TextureLoader::load(texPath);
         if (!texData.pixels) return;
 
         GLuint texId = 0;
@@ -495,14 +522,99 @@ namespace Nox {
         glTextureSubImage2D(texId, 0, 0, 0, texData.width, texData.height,
                             GL_RGBA, GL_UNSIGNED_BYTE, texData.pixels);
 
-        // Set filtering and wrapping
         glTextureParameteri(texId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(texId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTextureParameteri(texId, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(texId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+        textureCache_.store(texPath, texId);
         mesh.material()->setAlbedoTextureId(texId);
         TextureLoader::free(texData);
+    }
+
+    void Engine::setShaderDirectory(const std::filesystem::path& dir) {
+        shaderDir_ = dir;
+
+#ifndef NDEBUG
+        // Watch all .vert and .frag files in the directory
+        if (std::filesystem::exists(dir)) {
+            for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+                auto ext = entry.path().extension().string();
+                if (ext == ".vert" || ext == ".frag" || ext == ".glsl") {
+                    shaderWatcher_.watch(entry.path());
+                }
+            }
+
+            shaderWatcher_.onFileChanged.connect([this]([[maybe_unused]] const std::filesystem::path& path) {
+                NOX_LOG_INFO("Shader file changed: {}", path.string());
+                rebuildPipelines();
+            });
+        }
+#endif
+    }
+
+    void Engine::rebuildPipelines() {
+        if (shaderDir_.empty()) {
+            return;
+        }
+
+        auto& rhi_ref = renderer_->rhi();
+
+        // Try loading external shader files, fall back to embedded
+        auto litVsPath   = shaderDir_ / "lit.vert";
+        auto litFsPath   = shaderDir_ / "lit.frag";
+        auto unlitVsPath = shaderDir_ / "unlit.vert";
+        auto unlitFsPath = shaderDir_ / "unlit.frag";
+
+        // Rebuild lit pipeline
+        {
+            std::string vsSource = readFileContents(litVsPath);
+            std::string fsSource = readFileContents(litFsPath);
+
+            if (vsSource.empty()) { vsSource = std::string(VertexShaderSource); }
+            if (fsSource.empty()) { fsSource = std::string(FragmentShaderSource); }
+
+            auto vs = rhi_ref.createShader({ .stage = ShaderStage::Vertex,   .source = vsSource });
+            auto fs = rhi_ref.createShader({ .stage = ShaderStage::Fragment, .source = fsSource });
+            auto pipeline = rhi_ref.createPipeline({
+                .vertexShader   = vs,
+                .fragmentShader = fs,
+                .depthTest      = true,
+                .depthWrite     = true,
+                .blending       = false
+            });
+
+            if (pipeline.index != 0) {
+                rhi_ref.destroyPipeline({ litPipeline_ });
+                litPipeline_ = pipeline.index;
+                NOX_LOG_INFO("Lit pipeline reloaded");
+            }
+        }
+
+        // Rebuild unlit pipeline
+        {
+            std::string vsSource = readFileContents(unlitVsPath);
+            std::string fsSource = readFileContents(unlitFsPath);
+
+            if (vsSource.empty()) { vsSource = std::string(UnlitVertexShaderSource); }
+            if (fsSource.empty()) { fsSource = std::string(UnlitFragmentShaderSource); }
+
+            auto vs = rhi_ref.createShader({ .stage = ShaderStage::Vertex,   .source = vsSource });
+            auto fs = rhi_ref.createShader({ .stage = ShaderStage::Fragment, .source = fsSource });
+            auto pipeline = rhi_ref.createPipeline({
+                .vertexShader   = vs,
+                .fragmentShader = fs,
+                .depthTest      = true,
+                .depthWrite     = true,
+                .blending       = false
+            });
+
+            if (pipeline.index != 0) {
+                rhi_ref.destroyPipeline({ unlitPipeline_ });
+                unlitPipeline_ = pipeline.index;
+                NOX_LOG_INFO("Unlit pipeline reloaded");
+            }
+        }
     }
 
 } // namespace Nox

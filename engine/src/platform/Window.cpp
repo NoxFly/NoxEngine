@@ -77,11 +77,15 @@ namespace Nox {
     }
 
     bool Window::pollEvents() {
+        input_.endFrame();
+
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
 #ifdef NOX_HAS_IMGUI
             ImGui_ImplSDL3_ProcessEvent(&event);
 #endif
+            input_.processEvent(event);
+
             switch (event.type) {
                 case SDL_EVENT_QUIT:
                     onClose.emit();

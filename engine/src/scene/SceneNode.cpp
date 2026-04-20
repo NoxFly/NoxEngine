@@ -20,4 +20,17 @@ namespace Nox {
         }
     }
 
+    std::shared_ptr<SceneNode> SceneNode::findByName(std::string_view name) {
+        if (name_ == name) {
+            return shared_from_this();
+        }
+        for (auto& child : children_) {
+            auto found = child->findByName(name);
+            if (found) {
+                return found;
+            }
+        }
+        return nullptr;
+    }
+
 } // namespace Nox

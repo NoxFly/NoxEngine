@@ -20,6 +20,7 @@ namespace Nox {
         [[nodiscard]] const Math::Mat4& viewMatrix() const;
         [[nodiscard]] const Math::Mat4& projectionMatrix() const;
         [[nodiscard]] const Math::Vec3& position() const { return position_; }
+        [[nodiscard]] const Math::Vec3& target() const { return target_; }
 
     private:
         void updateView() const;

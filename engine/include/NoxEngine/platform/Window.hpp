@@ -2,6 +2,7 @@
 #pragma once
 
 #include <NoxEngine/core/Signal.hpp>
+#include <NoxEngine/platform/Input.hpp>
 
 #include <cstdint>
 #include <memory>
@@ -34,6 +35,9 @@ namespace Nox {
         [[nodiscard]] SDL_Window* nativeHandle() const { return window_; }
         [[nodiscard]] void* glContext() const { return glContext_; }
 
+        [[nodiscard]] Input& input() { return input_; }
+        [[nodiscard]] const Input& input() const { return input_; }
+
         Signal<int, int> onResize;
         Signal<>         onClose;
 
@@ -42,6 +46,7 @@ namespace Nox {
         void*       glContext_ = nullptr;
         int         width_   = 0;
         int         height_  = 0;
+        Input       input_;
     };
 
 } // namespace Nox

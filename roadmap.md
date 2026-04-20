@@ -25,13 +25,13 @@
 - [x] OrthographicCamera
 - [x] FPS counter + debug overlay (Dear ImGui)
 
-### v0.3 — Quality of life
-- [ ] Scene graph traversal utilities (find by name, iterate by type)
-- [ ] Asset cache (no double-load for same path)
-- [ ] Hot-reload shaders in Debug builds
-- [ ] CameraController helpers (orbit, fly, first-person)
-- [ ] Input system (keyboard, mouse, gamepad via SDL3)
-- [ ] Window resize handling (framebuffer + camera aspect)
+### v0.3 — Quality of life  ✅ done
+- [x] Scene graph traversal utilities (find by name, iterate by type)
+- [x] Asset cache (no double-load for same path)
+- [x] Hot-reload shaders in Debug builds
+- [x] CameraController helpers (orbit, fly, first-person)
+- [x] Input system (keyboard, mouse, gamepad via SDL3)
+- [x] Window resize handling (framebuffer + camera aspect)
 
 ### v0.4 — PBR & lighting
 - [ ] PBR Material (metallic/roughness workflow)
