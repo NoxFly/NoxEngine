@@ -3,6 +3,7 @@
 
 #include <NoxEngine/core/Color.hpp>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -24,6 +25,11 @@ namespace Nox {
         [[nodiscard]] bool  isLit()          const { return lit_; }
         [[nodiscard]] const std::string& albedoMapPath() const { return albedoMapPath_; }
 
+        // Internal GPU state — set by engine, not user code
+        void setAlbedoTextureId(uint32_t id) { albedoTexId_ = id; }
+        [[nodiscard]] uint32_t albedoTextureId() const { return albedoTexId_; }
+        [[nodiscard]] bool hasAlbedoTexture() const { return albedoTexId_ != 0; }
+
     private:
         explicit Material(bool lit);
 
@@ -32,6 +38,7 @@ namespace Nox {
         float       metallic_      = 0.0f;
         bool        lit_           = true;
         std::string albedoMapPath_;
+        uint32_t    albedoTexId_   = 0;
     };
 
 } // namespace Nox

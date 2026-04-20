@@ -197,7 +197,8 @@ private:
 };
 ```
 
-Indent what's inside a namespace.
+Indent what's inside a namespace, switch.
+Always add braces even for single-line `if`, `for`, `while` blocks.
 
 ---
 

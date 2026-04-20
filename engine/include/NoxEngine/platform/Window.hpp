@@ -32,6 +32,7 @@ namespace Nox {
         [[nodiscard]] float aspect() const;
 
         [[nodiscard]] SDL_Window* nativeHandle() const { return window_; }
+        [[nodiscard]] void* glContext() const { return glContext_; }
 
         Signal<int, int> onResize;
         Signal<>         onClose;

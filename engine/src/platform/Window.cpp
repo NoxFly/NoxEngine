@@ -7,6 +7,10 @@
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
 
+#ifdef NOX_HAS_IMGUI
+#include <imgui_impl_sdl3.h>
+#endif
+
 #include <stdexcept>
 #include <string>
 
@@ -75,6 +79,9 @@ namespace Nox {
     bool Window::pollEvents() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+#ifdef NOX_HAS_IMGUI
+            ImGui_ImplSDL3_ProcessEvent(&event);
+#endif
             switch (event.type) {
                 case SDL_EVENT_QUIT:
                     onClose.emit();

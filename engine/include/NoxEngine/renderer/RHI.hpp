@@ -62,6 +62,7 @@ namespace Nox {
         virtual void pushConstant(std::string_view name, const Math::Mat4& value) = 0;
         virtual void pushConstant(std::string_view name, const Math::Vec3& value) = 0;
         virtual void pushConstant(std::string_view name, float value) = 0;
+        virtual void pushConstant(std::string_view name, int value) = 0;
         virtual void drawIndexed(uint32_t indexCount) = 0;
         virtual void drawIndexedInstanced(uint32_t indexCount, uint32_t instanceCount) = 0;
     };

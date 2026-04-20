@@ -53,6 +53,7 @@ namespace Nox {
         void pushConstant(std::string_view name, const Math::Mat4& value) override;
         void pushConstant(std::string_view name, const Math::Vec3& value) override;
         void pushConstant(std::string_view name, float value) override;
+        void pushConstant(std::string_view name, int value) override;
         void drawIndexed(uint32_t indexCount) override;
         void drawIndexedInstanced(uint32_t indexCount, uint32_t instanceCount) override;
 

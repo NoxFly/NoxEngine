@@ -94,6 +94,13 @@ namespace Nox {
         }
     }
 
+    void OpenGLCommandBuffer::pushConstant(std::string_view name, int value) {
+        GLint loc = getUniformLocation(name);
+        if (loc >= 0) {
+            glUniform1i(loc, value);
+        }
+    }
+
     void OpenGLCommandBuffer::drawIndexed(uint32_t indexCount) {
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indexCount),
                     GL_UNSIGNED_INT, nullptr);

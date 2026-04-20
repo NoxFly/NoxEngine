@@ -1,6 +1,6 @@
 ## Roadmap
 
-### v0.1 — Foundation  🔨 in progress
+### v0.1 — Foundation  ✅ done
 - [x] CMake project structure (engine lib + sandbox exe)
 - [x] SDL3 window + OpenGL 4.6 context
 - [x] Core systems: Logger, Assert, HandlePool, Signal
@@ -12,18 +12,18 @@
 - [x] Material::standard() — Blinn-Phong shading
 - [x] DirectionalLight, PointLight, AmbientLight
 - [x] Main loop via engine.run(fn)
-- [ ] Ray math type
+- [x] Ray math type
 
-### v0.2 — Usable renderer
-- [ ] Frustum culling (AABB per mesh)
-- [ ] Render queue sorting (opaque front-to-back, transparent back-to-front)
-- [ ] Multiple lights (up to 8 point lights + 1 directional)
-- [ ] Texture loading via stb_image (albedo, normal maps)
-- [ ] glTF 2.0 model import via fastgltf (engine.load)
-- [ ] Geometry::cylinder, Geometry::fromVertices
-- [ ] Material::unlit()
-- [ ] OrthographicCamera
-- [ ] FPS counter + debug overlay (Dear ImGui)
+### v0.2 — Usable renderer  ✅ done
+- [x] Frustum culling (AABB per mesh)
+- [x] Render queue sorting (opaque front-to-back, transparent back-to-front)
+- [x] Multiple lights (up to 8 point lights + 4 directional)
+- [x] Texture loading via stb_image (albedo map)
+- [x] glTF 2.0 model import via fastgltf (engine.load)
+- [x] Geometry::cylinder, Geometry::fromVertices
+- [x] Material::unlit()
+- [x] OrthographicCamera
+- [x] FPS counter + debug overlay (Dear ImGui)
 
 ### v0.3 — Quality of life
 - [ ] Scene graph traversal utilities (find by name, iterate by type)

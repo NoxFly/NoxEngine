@@ -20,6 +20,7 @@ namespace Nox {
         [[nodiscard]] static std::shared_ptr<Geometry> box(float width, float height, float depth);
         [[nodiscard]] static std::shared_ptr<Geometry> sphere(float radius, uint32_t segments, uint32_t rings);
         [[nodiscard]] static std::shared_ptr<Geometry> plane(float width, float height);
+        [[nodiscard]] static std::shared_ptr<Geometry> cylinder(float radiusTop, float radiusBottom, float height, uint32_t segments);
         [[nodiscard]] static std::shared_ptr<Geometry> fromVertices(
             std::vector<Vertex> vertices,
             std::vector<uint32_t> indices
@@ -27,12 +28,15 @@ namespace Nox {
 
         [[nodiscard]] const std::vector<Vertex>&   vertices() const { return vertices_; }
         [[nodiscard]] const std::vector<uint32_t>& indices()  const { return indices_; }
+        [[nodiscard]] const Math::AABB& boundingBox() const { return aabb_; }
 
     private:
         Geometry(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
+        void computeAABB();
 
         std::vector<Vertex>   vertices_;
         std::vector<uint32_t> indices_;
+        Math::AABB            aabb_;
     };
 
 } // namespace Nox

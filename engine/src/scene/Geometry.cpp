@@ -9,7 +9,21 @@ namespace Nox {
 
     Geometry::Geometry(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
         : vertices_(std::move(vertices))
-        , indices_(std::move(indices)) {}
+        , indices_(std::move(indices)) {
+        computeAABB();
+    }
+
+    void Geometry::computeAABB() {
+        if (vertices_.empty()) return;
+
+        aabb_.min = vertices_[0].position;
+        aabb_.max = vertices_[0].position;
+
+        for (const auto& v : vertices_) {
+            aabb_.min = glm::min(aabb_.min, v.position);
+            aabb_.max = glm::max(aabb_.max, v.position);
+        }
+    }
 
     std::shared_ptr<Geometry> Geometry::box(float width, float height, float depth) {
         float hw = width  * 0.5f;
@@ -98,6 +112,83 @@ namespace Nox {
             { {-hw, 0.0f, -hh}, n, { 0.0f, 1.0f } },
         };
         std::vector<uint32_t> idx = { 0, 1, 2, 0, 2, 3 };
+
+        return std::shared_ptr<Geometry>(new Geometry(std::move(verts), std::move(idx)));
+    }
+
+    std::shared_ptr<Geometry> Geometry::cylinder(float radiusTop, float radiusBottom, float height, uint32_t segments) {
+        std::vector<Vertex> verts;
+        std::vector<uint32_t> idx;
+
+        float halfH = height * 0.5f;
+
+        // Side vertices: 2 rings
+        for (uint32_t i = 0; i <= segments; ++i) {
+            float angle = static_cast<float>(i) / static_cast<float>(segments) * 2.0f * std::numbers::pi_v<float>;
+            float cosA = std::cos(angle);
+            float sinA = std::sin(angle);
+            float u = static_cast<float>(i) / static_cast<float>(segments);
+
+            // Normal for the side (approximate for truncated cone)
+            float slope = radiusBottom - radiusTop;
+            Math::Vec3 sideNormal = glm::normalize(Math::Vec3(cosA * height, slope, sinA * height));
+
+            // Top ring
+            verts.push_back({
+                Math::Vec3(radiusTop * cosA, halfH, radiusTop * sinA),
+                sideNormal,
+                Math::Vec2(u, 0.0f)
+            });
+            // Bottom ring
+            verts.push_back({
+                Math::Vec3(radiusBottom * cosA, -halfH, radiusBottom * sinA),
+                sideNormal,
+                Math::Vec2(u, 1.0f)
+            });
+        }
+
+        // Side indices
+        for (uint32_t i = 0; i < segments; ++i) {
+            uint32_t top0 = i * 2;
+            uint32_t bot0 = i * 2 + 1;
+            uint32_t top1 = (i + 1) * 2;
+            uint32_t bot1 = (i + 1) * 2 + 1;
+            idx.insert(idx.end(), { top0, bot0, top1, top1, bot0, bot1 });
+        }
+
+        // Top cap
+        uint32_t topCenter = static_cast<uint32_t>(verts.size());
+        verts.push_back({ Math::Vec3(0.0f, halfH, 0.0f), Math::Vec3(0.0f, 1.0f, 0.0f), Math::Vec2(0.5f, 0.5f) });
+        for (uint32_t i = 0; i <= segments; ++i) {
+            float angle = static_cast<float>(i) / static_cast<float>(segments) * 2.0f * std::numbers::pi_v<float>;
+            float cosA = std::cos(angle);
+            float sinA = std::sin(angle);
+            verts.push_back({
+                Math::Vec3(radiusTop * cosA, halfH, radiusTop * sinA),
+                Math::Vec3(0.0f, 1.0f, 0.0f),
+                Math::Vec2(cosA * 0.5f + 0.5f, sinA * 0.5f + 0.5f)
+            });
+        }
+        for (uint32_t i = 0; i < segments; ++i) {
+            idx.insert(idx.end(), { topCenter, topCenter + 1 + i + 1, topCenter + 1 + i });
+        }
+
+        // Bottom cap
+        uint32_t botCenter = static_cast<uint32_t>(verts.size());
+        verts.push_back({ Math::Vec3(0.0f, -halfH, 0.0f), Math::Vec3(0.0f, -1.0f, 0.0f), Math::Vec2(0.5f, 0.5f) });
+        for (uint32_t i = 0; i <= segments; ++i) {
+            float angle = static_cast<float>(i) / static_cast<float>(segments) * 2.0f * std::numbers::pi_v<float>;
+            float cosA = std::cos(angle);
+            float sinA = std::sin(angle);
+            verts.push_back({
+                Math::Vec3(radiusBottom * cosA, -halfH, radiusBottom * sinA),
+                Math::Vec3(0.0f, -1.0f, 0.0f),
+                Math::Vec2(cosA * 0.5f + 0.5f, sinA * 0.5f + 0.5f)
+            });
+        }
+        for (uint32_t i = 0; i < segments; ++i) {
+            idx.insert(idx.end(), { botCenter, botCenter + 1 + i, botCenter + 1 + i + 1 });
+        }
 
         return std::shared_ptr<Geometry>(new Geometry(std::move(verts), std::move(idx)));
     }

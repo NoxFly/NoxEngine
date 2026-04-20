@@ -66,6 +66,7 @@ endif()
 
 # ── fastgltf (optional for now) ────────────────────────────────
 if(FASTGLTF_DIR)
+    set(fastgltf_DIR "${FASTGLTF_DIR}" CACHE PATH "" FORCE)
     find_package(fastgltf REQUIRED CONFIG)
     target_link_libraries(NoxEngine PRIVATE fastgltf::fastgltf)
     target_compile_definitions(NoxEngine PRIVATE NOX_HAS_FASTGLTF)

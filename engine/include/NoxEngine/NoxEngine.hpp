@@ -13,13 +13,17 @@
 
 // Renderer
 #include <NoxEngine/renderer/Camera.hpp>
+#include <NoxEngine/renderer/Frustum.hpp>
+#include <NoxEngine/renderer/TextureLoader.hpp>
 
 // Scene
 #include <NoxEngine/scene/Geometry.hpp>
 #include <NoxEngine/scene/Light.hpp>
 #include <NoxEngine/scene/Material.hpp>
 #include <NoxEngine/scene/Mesh.hpp>
+#include <NoxEngine/scene/ModelLoader.hpp>
 #include <NoxEngine/scene/Scene3D.hpp>
+#include <NoxEngine/scene/SceneNode.hpp>
 #include <NoxEngine/scene/SceneObject.hpp>
 #include <NoxEngine/scene/Transform.hpp>
 
