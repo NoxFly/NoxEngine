@@ -1,0 +1,80 @@
+# paths.local.cmake — local dependency paths (gitignored)
+# Copy this file to paths.local.cmake and adjust the paths for your machine.
+#
+# Each variable tells CMake where to find a specific library.
+# The value should point to the library's root or install prefix.
+
+# ─── SDL3 ───────────────────────────────────────────────────────
+# Root of the SDL3 install tree (contains lib/, include/, bin/).
+#
+# Windows:
+#   set(SDL3_DIR "C:/cpp-libs/SDL3-3.4.4/install/lib/cmake/SDL3")
+#
+# WSL (Ubuntu):
+#   set(SDL3_DIR "/home/user/libs/SDL3/install/lib/cmake/SDL3")
+#
+# Linux native (system install, usually not needed):
+#   set(SDL3_DIR "/usr/lib/x86_64-linux-gnu/cmake/SDL3")
+#
+# set(SDL3_DIR "")
+
+# ─── GLM ────────────────────────────────────────────────────────
+# Root of the GLM source tree (contains glm/ header directory).
+#
+# Windows:
+#   set(GLM_DIR "C:/cpp-libs/glm-1.0.3")
+#
+# WSL (Ubuntu):
+#   set(GLM_DIR "/home/user/libs/glm-1.0.3")
+#
+# Linux native (system install, usually not needed):
+#   set(GLM_DIR "/usr/include")
+#
+# set(GLM_DIR "")
+
+# ─── GLEW ───────────────────────────────────────────────────────
+# Root of the GLEW distribution (contains include/GL/ and lib/).
+#
+# Windows:
+#   set(GLEW_DIR "C:/cpp-libs/glew-2.2.0")
+#
+# WSL (Ubuntu):
+#   set(GLEW_DIR "/home/user/libs/glew-2.2.0")
+#
+# Linux native (system package):
+#   # Usually not needed — find_package(GLEW) finds the system install.
+#
+# set(GLEW_DIR "")
+
+# ─── stb_image ──────────────────────────────────────────────────
+# Directory containing stb_image.h (header only).
+#
+# Windows:
+#   set(STB_INCLUDE_DIR "C:/cpp-libs/stb")
+#
+# WSL / Linux:
+#   set(STB_INCLUDE_DIR "/home/user/libs/stb")
+#
+# set(STB_INCLUDE_DIR "")
+
+# ─── fastgltf ──────────────────────────────────────────────────
+# Root of the fastgltf install prefix (contains lib/cmake/fastgltf/).
+#
+# Windows:
+#   set(FASTGLTF_DIR "C:/cpp-libs/fastgltf/install/lib/cmake/fastgltf")
+#
+# WSL / Linux:
+#   set(FASTGLTF_DIR "/home/user/libs/fastgltf/install/lib/cmake/fastgltf")
+#
+# set(FASTGLTF_DIR "")
+
+# ─── Dear ImGui ─────────────────────────────────────────────────
+# Root of the Dear ImGui source tree (contains imgui.h, backends/).
+#
+# Windows:
+#   set(IMGUI_DIR "C:/cpp-libs/imgui")
+#
+# WSL / Linux:
+#   set(IMGUI_DIR "/home/user/libs/imgui")
+#
+# set(IMGUI_DIR "")

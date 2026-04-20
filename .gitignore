@@ -1,53 +1,41 @@
+# Build outputs
 build/
-bin/
-bin/debug
-bin/release
-bin/lib
-bin/include
-bin/examples
+cmake-build-*/
 out/
+bin/
+
+# IDE
+.vs/
+.vscode/*.log
+.vscode/c_cpp_properties.json
+*.user
+.cache/
 
 # User-specific configuration (contains local paths)
+paths.local.cmake
 config.cmake
 CMakeUserPresets.json
 CMakePresets.json.user
 
-**/*.o
+# Compiled objects and libraries
+*.o
+*.obj
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+*.exe
 
-.old/
-
-
-.vscode/*.log
-.vs/
-x86/
-x64/
-
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-#[Oo]bj/
-[Ll]og/
-[Ll]ogs/
-
-*_i.c
-*_p.c
-*_h.h
+# Misc
 *.ilk
-*.meta
-#*.obj
-*.iobj
 *.pch
 *.pdb
 *.ipdb
+*.iobj
 *.pgc
 *.pgd
-*.rsp
-*.sbr
+.old/
 *.tlb
 *.tli
 *.tlh

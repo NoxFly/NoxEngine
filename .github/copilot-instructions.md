@@ -312,6 +312,7 @@ private:
 - Generated files (`build/`, `*.user`, `.vs/`, `cmake-build-*/`) — gitignored.
 - One logical change per commit. Commit messages: `type(scope): description`
   (e.g., `feat(renderer): add DSA buffer upload`, `fix(scene): dirty flag not propagated`).
+- Always add copyrights and license headers to new files (NoxFly 2026 AGPL-3.0).
 
 ---
 

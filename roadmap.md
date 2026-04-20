@@ -1,17 +1,18 @@
 ## Roadmap
 
 ### v0.1 — Foundation  🔨 in progress
-- [ ] CMake project structure (engine lib + sandbox exe)
-- [ ] SDL3 window + OpenGL 4.6 context
-- [ ] Core systems: Logger, Assert, HandlePool, Signal
-- [ ] Math types (GLM wrappers + AABB, Ray)
-- [ ] OpenGL RHI — buffers, textures, shaders (DSA)
-- [ ] Transform + SceneNode hierarchy
-- [ ] Friendly high-level API: Engine, Scene3D, PerspectiveCamera
-- [ ] Mesh + Geometry factory (box, sphere, plane)
-- [ ] Material::standard() — Blinn-Phong shading
-- [ ] DirectionalLight, PointLight, AmbientLight
-- [ ] Main loop via engine.run(fn)
+- [x] CMake project structure (engine lib + sandbox exe)
+- [x] SDL3 window + OpenGL 4.6 context
+- [x] Core systems: Logger, Assert, HandlePool, Signal
+- [x] Math types (GLM wrappers + AABB)
+- [x] OpenGL RHI — buffers, textures, shaders (DSA)
+- [x] Transform + SceneNode hierarchy
+- [x] Friendly high-level API: Engine, Scene3D, PerspectiveCamera
+- [x] Mesh + Geometry factory (box, sphere, plane)
+- [x] Material::standard() — Blinn-Phong shading
+- [x] DirectionalLight, PointLight, AmbientLight
+- [x] Main loop via engine.run(fn)
+- [ ] Ray math type
 
 ### v0.2 — Usable renderer
 - [ ] Frustum culling (AABB per mesh)
