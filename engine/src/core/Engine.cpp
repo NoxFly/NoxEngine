@@ -919,6 +919,11 @@ namespace Nox {
 
 
 
+        // Custom render hook — called while the HDR FBO is still bound, before tone-mapping.
+        if (preToneMapCallback_) {
+            preToneMapCallback_();
+        }
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // â”€â”€ Tone mapping pass â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

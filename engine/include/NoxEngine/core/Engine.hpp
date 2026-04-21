@@ -62,6 +62,10 @@ namespace Nox {
         void setExposure(float e) { renderCtx_.exposure = e; }
         [[nodiscard]] float exposure() const { return renderCtx_.exposure; }
 
+        /// Register a callback invoked after the main scene render but before tone-mapping.
+        /// The HDR framebuffer is bound when the callback fires — use it for custom raw GL draws.
+        void setPreToneMapCallback(std::function<void()> callback) { preToneMapCallback_ = std::move(callback); }
+
         [[nodiscard]] PostProcessStack& postProcessStack() { return renderCtx_.postProcessStack; }
         [[nodiscard]] RenderContext& renderContext() { return renderCtx_; }
         [[nodiscard]] const RenderContext& renderContext() const { return renderCtx_; }
@@ -89,6 +93,9 @@ namespace Nox {
 
         // All GPU rendering state lives here.
         RenderContext renderCtx_;
+
+        /// Optional callback invoked while the HDR FBO is bound, before tone-mapping.
+        std::function<void()> preToneMapCallback_;
     };
 
 } // namespace Nox
