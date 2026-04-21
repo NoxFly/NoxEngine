@@ -42,17 +42,12 @@ namespace Nox {
 
         // Determine icon based on type
         const char* icon = "  ";
-        if (dynamic_cast<Mesh*>(&object)) {
-            icon = "[M] ";
-        }
-        else if (dynamic_cast<DirectionalLight*>(&object)) {
-            icon = "[D] ";
-        }
-        else if (dynamic_cast<PointLight*>(&object)) {
-            icon = "[P] ";
-        }
-        else if (dynamic_cast<AmbientLight*>(&object)) {
-            icon = "[A] ";
+        switch (object.objectType()) {
+            case SceneObjectType::Mesh:             icon = "[M] "; break;
+            case SceneObjectType::DirectionalLight: icon = "[D] "; break;
+            case SceneObjectType::PointLight:       icon = "[P] "; break;
+            case SceneObjectType::AmbientLight:     icon = "[A] "; break;
+            default: break;
         }
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf

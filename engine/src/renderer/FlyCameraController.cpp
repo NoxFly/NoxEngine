@@ -3,6 +3,7 @@
 #include <NoxEngine/renderer/CameraController.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
 #include <NoxEngine/platform/Input.hpp>
+#include <NoxEngine/platform/InputMapping.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -41,14 +42,14 @@ namespace Nox {
         Math::Vec3 right = glm::normalize(glm::cross(forward, Math::Vec3(0.0f, 1.0f, 0.0f)));
         Math::Vec3 up    = glm::normalize(glm::cross(right, forward));
 
-        // WASD movement
+        // Movement (layout-aware via InputMapping)
         Math::Vec3 velocity{ 0.0f };
-        if (input.isKeyDown(Key::W)) { velocity += forward; }
-        if (input.isKeyDown(Key::S)) { velocity -= forward; }
-        if (input.isKeyDown(Key::D)) { velocity += right; }
-        if (input.isKeyDown(Key::A)) { velocity -= right; }
-        if (input.isKeyDown(Key::Space)) { velocity += up; }
-        if (input.isKeyDown(Key::LShift)) { velocity -= up; }
+        if (inputMapping_.isActionDown(input, Action::MoveForward))  { velocity += forward; }
+        if (inputMapping_.isActionDown(input, Action::MoveBackward)) { velocity -= forward; }
+        if (inputMapping_.isActionDown(input, Action::MoveRight))    { velocity += right; }
+        if (inputMapping_.isActionDown(input, Action::MoveLeft))     { velocity -= right; }
+        if (inputMapping_.isActionDown(input, Action::MoveUp))       { velocity += up; }
+        if (inputMapping_.isActionDown(input, Action::MoveDown))     { velocity -= up; }
 
         if (glm::length(velocity) > 0.0f) {
             velocity = glm::normalize(velocity);

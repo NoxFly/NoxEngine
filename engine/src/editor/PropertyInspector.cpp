@@ -43,12 +43,12 @@ namespace Nox {
 
             ImGui::Separator();
 
-            // Type-specific properties
-            if (auto* mesh = dynamic_cast<Mesh*>(object)) {
-                drawMeshProperties(*mesh);
+            // Type-specific properties (using type tags — no RTTI)
+            if (object->isMesh()) {
+                drawMeshProperties(static_cast<Mesh&>(*object));
             }
-            else if (auto* light = dynamic_cast<Light*>(object)) {
-                drawLightProperties(*light);
+            else if (object->isLight()) {
+                drawLightProperties(static_cast<Light&>(*object));
             }
         }
         ImGui::End();
@@ -140,14 +140,18 @@ namespace Nox {
     }
 
     void PropertyInspector::drawLightProperties(Light& light) {
-        if (auto* dir = dynamic_cast<DirectionalLight*>(&light)) {
-            drawDirectionalLightProperties(*dir);
-        }
-        else if (auto* pt = dynamic_cast<PointLight*>(&light)) {
-            drawPointLightProperties(*pt);
-        }
-        else if (auto* amb = dynamic_cast<AmbientLight*>(&light)) {
-            drawAmbientLightProperties(*amb);
+        switch (light.objectType()) {
+            case SceneObjectType::DirectionalLight:
+                drawDirectionalLightProperties(static_cast<DirectionalLight&>(light));
+                break;
+            case SceneObjectType::PointLight:
+                drawPointLightProperties(static_cast<PointLight&>(light));
+                break;
+            case SceneObjectType::AmbientLight:
+                drawAmbientLightProperties(static_cast<AmbientLight&>(light));
+                break;
+            default:
+                break;
         }
     }
 

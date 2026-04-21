@@ -5,7 +5,7 @@
 namespace Nox {
 
     Mesh::Mesh(std::shared_ptr<Geometry> geometry, std::shared_ptr<Material> material)
-        : SceneObject("Mesh")
+        : SceneObject("Mesh", SceneObjectType::Mesh)
         , geometry_(std::move(geometry))
         , material_(std::move(material)) {}
 

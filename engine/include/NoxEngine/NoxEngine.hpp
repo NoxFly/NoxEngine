@@ -28,6 +28,8 @@
 // Renderer
 #include <NoxEngine/renderer/Billboard.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
+#include <NoxEngine/renderer/PerspectiveCamera.hpp>
+#include <NoxEngine/renderer/OrthographicCamera.hpp>
 #include <NoxEngine/renderer/CameraController.hpp>
 #include <NoxEngine/renderer/CascadedShadowMap.hpp>
 #include <NoxEngine/renderer/ClusteredLighting.hpp>
@@ -39,13 +41,17 @@
 #include <NoxEngine/renderer/InstancedVegetation.hpp>
 #include <NoxEngine/renderer/OcclusionCulling.hpp>
 #include <NoxEngine/renderer/PostProcessStack.hpp>
+#include <NoxEngine/renderer/RenderContext.hpp>
 #include <NoxEngine/renderer/Sky.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
 #include <NoxEngine/renderer/effects/BloomEffect.hpp>
+#include <NoxEngine/renderer/effects/ChromaticAberrationEffect.hpp>
 #include <NoxEngine/renderer/effects/FXAAEffect.hpp>
+#include <NoxEngine/renderer/effects/FilmGrainEffect.hpp>
 #include <NoxEngine/renderer/effects/SSAOEffect.hpp>
 #include <NoxEngine/renderer/effects/SSREffect.hpp>
 #include <NoxEngine/renderer/effects/TAAEffect.hpp>
+#include <NoxEngine/renderer/effects/VignetteEffect.hpp>
 #include <NoxEngine/renderer/effects/VolumetricFogEffect.hpp>
 
 // Physics
@@ -69,4 +75,5 @@
 
 // Platform
 #include <NoxEngine/platform/Input.hpp>
+#include <NoxEngine/platform/InputMapping.hpp>
 #include <NoxEngine/platform/Window.hpp>

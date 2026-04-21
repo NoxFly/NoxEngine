@@ -268,21 +268,14 @@ namespace Nox {
         void serializeObject(JsonWriter& w, const SceneObject& obj) {
             w.beginObject();
 
-            // Type
-            if (dynamic_cast<const Mesh*>(&obj)) {
-                w.key("type"); w.value("Mesh");
-            }
-            else if (dynamic_cast<const DirectionalLight*>(&obj)) {
-                w.key("type"); w.value("DirectionalLight");
-            }
-            else if (dynamic_cast<const PointLight*>(&obj)) {
-                w.key("type"); w.value("PointLight");
-            }
-            else if (dynamic_cast<const AmbientLight*>(&obj)) {
-                w.key("type"); w.value("AmbientLight");
-            }
-            else {
-                w.key("type"); w.value("SceneObject");
+            // Type (using type tags — no RTTI)
+            w.key("type");
+            switch (obj.objectType()) {
+                case SceneObjectType::Mesh:             w.value("Mesh"); break;
+                case SceneObjectType::DirectionalLight: w.value("DirectionalLight"); break;
+                case SceneObjectType::PointLight:       w.value("PointLight"); break;
+                case SceneObjectType::AmbientLight:     w.value("AmbientLight"); break;
+                default:                                w.value("SceneObject"); break;
             }
             w.comma();
 
@@ -292,30 +285,42 @@ namespace Nox {
             // Transform
             serializeTransform(w, obj.transform());
 
-            // Type-specific
-            if (const auto* mesh = dynamic_cast<const Mesh*>(&obj)) {
-                w.comma();
-                serializeMaterial(w, *mesh->material());
-            }
-            else if (const auto* dir = dynamic_cast<const DirectionalLight*>(&obj)) {
-                w.comma();
-                const auto& c = dir->color();
-                w.key("color"); w.vec4(c.r, c.g, c.b, c.a); w.comma();
-                w.key("intensity"); w.value(dir->intensity()); w.comma();
-                w.key("direction"); w.vec3(dir->direction());
-            }
-            else if (const auto* pt = dynamic_cast<const PointLight*>(&obj)) {
-                w.comma();
-                const auto& c = pt->color();
-                w.key("color"); w.vec4(c.r, c.g, c.b, c.a); w.comma();
-                w.key("intensity"); w.value(pt->intensity()); w.comma();
-                w.key("range"); w.value(pt->range());
-            }
-            else if (const auto* amb = dynamic_cast<const AmbientLight*>(&obj)) {
-                w.comma();
-                const auto& c = amb->color();
-                w.key("color"); w.vec4(c.r, c.g, c.b, c.a); w.comma();
-                w.key("intensity"); w.value(amb->intensity());
+            // Type-specific (using type tags — no RTTI)
+            switch (obj.objectType()) {
+                case SceneObjectType::Mesh: {
+                    const auto& mesh = static_cast<const Mesh&>(obj);
+                    w.comma();
+                    serializeMaterial(w, *mesh.material());
+                    break;
+                }
+                case SceneObjectType::DirectionalLight: {
+                    const auto& dir = static_cast<const DirectionalLight&>(obj);
+                    w.comma();
+                    const auto& c = dir.color();
+                    w.key("color"); w.vec4(c.r, c.g, c.b, c.a); w.comma();
+                    w.key("intensity"); w.value(dir.intensity()); w.comma();
+                    w.key("direction"); w.vec3(dir.direction());
+                    break;
+                }
+                case SceneObjectType::PointLight: {
+                    const auto& pt = static_cast<const PointLight&>(obj);
+                    w.comma();
+                    const auto& c = pt.color();
+                    w.key("color"); w.vec4(c.r, c.g, c.b, c.a); w.comma();
+                    w.key("intensity"); w.value(pt.intensity()); w.comma();
+                    w.key("range"); w.value(pt.range());
+                    break;
+                }
+                case SceneObjectType::AmbientLight: {
+                    const auto& amb = static_cast<const AmbientLight&>(obj);
+                    w.comma();
+                    const auto& c = amb.color();
+                    w.key("color"); w.vec4(c.r, c.g, c.b, c.a); w.comma();
+                    w.key("intensity"); w.value(amb.intensity());
+                    break;
+                }
+                default:
+                    break;
             }
 
             w.endObject();

@@ -6,7 +6,7 @@
 #include <NoxEngine/core/FileWatcher.hpp>
 #include <NoxEngine/platform/Window.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
-#include <NoxEngine/renderer/PostProcessStack.hpp>
+#include <NoxEngine/renderer/RenderContext.hpp>
 #include <NoxEngine/scene/Scene3D.hpp>
 #include <NoxEngine/scene/SceneNode.hpp>
 
@@ -39,8 +39,13 @@ namespace Nox {
 
         void run(std::function<void(float dt)> loopFn);
         void stop();
+
+        /// Render a scene from any camera satisfying CameraLike.
+        template<CameraLike CamT>
+        void render(Scene3D& scene, CamT& camera);
+
+        /// Convenience overload: sets aspect ratio automatically for perspective cameras.
         void render(Scene3D& scene, PerspectiveCamera& camera);
-        void render(Scene3D& scene, OrthographicCamera& camera);
 
         [[nodiscard]] std::shared_ptr<SceneNode> load(const std::filesystem::path& path);
 
@@ -54,10 +59,12 @@ namespace Nox {
         [[nodiscard]] const Input& input() const { return window_->input(); }
 
         void setShaderDirectory(const std::filesystem::path& dir);
-        void setExposure(float e) { exposure_ = e; }
-        [[nodiscard]] float exposure() const { return exposure_; }
+        void setExposure(float e) { renderCtx_.exposure = e; }
+        [[nodiscard]] float exposure() const { return renderCtx_.exposure; }
 
-        [[nodiscard]] PostProcessStack& postProcessStack() { return postProcessStack_; }
+        [[nodiscard]] PostProcessStack& postProcessStack() { return renderCtx_.postProcessStack; }
+        [[nodiscard]] RenderContext& renderContext() { return renderCtx_; }
+        [[nodiscard]] const RenderContext& renderContext() const { return renderCtx_; }
 
     private:
         void uploadMesh(Mesh& mesh);
@@ -72,9 +79,6 @@ namespace Nox {
 
         std::unique_ptr<Window>   window_;
         std::unique_ptr<Renderer> renderer_;
-        uint32_t litPipeline_   = 0;
-        uint32_t unlitPipeline_ = 0;
-        bool     pipelineReady_ = false;
         float    currentFps_       = 0.0f;
         float    currentFrameTime_ = 0.0f;
         bool     running_          = false;
@@ -83,34 +87,8 @@ namespace Nox {
         FileWatcher shaderWatcher_;
         std::filesystem::path shaderDir_;
 
-        // Shadow mapping
-        uint32_t shadowPipeline_  = 0;
-        uint32_t shadowFBO_       = 0;
-        uint32_t shadowDepthTex_  = 0;
-        static constexpr int ShadowMapSize = 2048;
-        Math::Mat4 lightSpaceMatrix_{ 1.0f };
-
-        // Point light shadow mapping
-        uint32_t pointShadowPipeline_ = 0;
-        static constexpr int MaxShadowPointLights = 4;
-        static constexpr int PointShadowMapSize = 1024;
-        uint32_t pointShadowFBOs_[MaxShadowPointLights] = {};
-        uint32_t pointShadowCubemaps_[MaxShadowPointLights] = {};
-        int      numShadowPointLights_ = 0;
-
-        // HDR rendering
-        uint32_t hdrFBO_         = 0;
-        uint32_t hdrColorTex_    = 0;
-        uint32_t hdrDepthTex_    = 0;
-        uint32_t toneMapPipeline_ = 0;
-        uint32_t screenQuadVAO_  = 0;
-        uint32_t screenQuadVBO_  = 0;
-        int      hdrWidth_       = 0;
-        int      hdrHeight_      = 0;
-        float    exposure_       = 1.0f;
-
-        // Post-processing
-        PostProcessStack postProcessStack_;
+        // All GPU rendering state lives here.
+        RenderContext renderCtx_;
     };
 
 } // namespace Nox

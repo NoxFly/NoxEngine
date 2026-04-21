@@ -7,11 +7,11 @@
 namespace Nox {
 
     void Scene3D::add(std::shared_ptr<SceneObject> object) {
-        if (auto mesh = std::dynamic_pointer_cast<Mesh>(object)) {
-            meshes_.push_back(mesh);
+        if (object->isMesh()) {
+            meshes_.push_back(std::static_pointer_cast<Mesh>(object));
         }
-        else if (auto light = std::dynamic_pointer_cast<Light>(object)) {
-            lights_.push_back(light);
+        else if (object->isLight()) {
+            lights_.push_back(std::static_pointer_cast<Light>(object));
         }
         objects_.push_back(std::move(object));
     }
@@ -19,11 +19,11 @@ namespace Nox {
     void Scene3D::remove(const std::shared_ptr<SceneObject>& object) {
         std::erase(objects_, object);
 
-        if (auto mesh = std::dynamic_pointer_cast<Mesh>(object)) {
-            std::erase(meshes_, mesh);
+        if (object->isMesh()) {
+            std::erase(meshes_, std::static_pointer_cast<Mesh>(object));
         }
-        else if (auto light = std::dynamic_pointer_cast<Light>(object)) {
-            std::erase(lights_, light);
+        else if (object->isLight()) {
+            std::erase(lights_, std::static_pointer_cast<Light>(object));
         }
     }
 

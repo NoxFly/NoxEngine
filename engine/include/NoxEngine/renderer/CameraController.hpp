@@ -2,6 +2,7 @@
 #pragma once
 
 #include <NoxEngine/math/Types.hpp>
+#include <NoxEngine/platform/InputMapping.hpp>
 
 namespace Nox {
 
@@ -39,7 +40,7 @@ namespace Nox {
     };
 
     // ── FlyCameraController ────────────────────────────────────────
-    // Free-flight camera. WASD to move, mouse drag to look around.
+    // Free-flight camera. Movement keys adapt to keyboard layout (WASD / ZQSD).
     class FlyCameraController {
     public:
         explicit FlyCameraController(PerspectiveCamera& camera);
@@ -48,9 +49,11 @@ namespace Nox {
 
         void setMoveSpeed(float speed) { moveSpeed_ = speed; }
         void setLookSpeed(float speed) { lookSpeed_ = speed; }
+        [[nodiscard]] InputMapping& inputMapping() { return inputMapping_; }
 
     private:
         PerspectiveCamera& camera_;
+        InputMapping inputMapping_;
         float yaw_   = -90.0f; // degrees, facing -Z by default
         float pitch_ = 0.0f;   // degrees
         float moveSpeed_ = 5.0f;
@@ -58,7 +61,7 @@ namespace Nox {
     };
 
     // ── FirstPersonCameraController ────────────────────────────────
-    // First-person style. WASD to move (constrained to ground plane), mouse to look.
+    // First-person style. Movement keys adapt to keyboard layout (WASD / ZQSD).
     class FirstPersonCameraController {
     public:
         explicit FirstPersonCameraController(PerspectiveCamera& camera);
@@ -68,9 +71,11 @@ namespace Nox {
         void setMoveSpeed(float speed) { moveSpeed_ = speed; }
         void setLookSpeed(float speed) { lookSpeed_ = speed; }
         void setHeight(float h) { height_ = h; }
+        [[nodiscard]] InputMapping& inputMapping() { return inputMapping_; }
 
     private:
         PerspectiveCamera& camera_;
+        InputMapping inputMapping_;
         float yaw_   = -90.0f;
         float pitch_ = 0.0f;
         float moveSpeed_ = 5.0f;

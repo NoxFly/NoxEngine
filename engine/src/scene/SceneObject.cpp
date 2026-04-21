@@ -6,8 +6,9 @@
 
 namespace Nox {
 
-    SceneObject::SceneObject(std::string name)
-        : name_(std::move(name)) {}
+    SceneObject::SceneObject(std::string name, SceneObjectType type)
+        : name_(std::move(name))
+        , objectType_(type) {}
 
     void SceneObject::setPosition(float x, float y, float z) {
         transform_.setPosition({ x, y, z });

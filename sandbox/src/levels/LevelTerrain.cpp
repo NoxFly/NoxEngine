@@ -2,8 +2,6 @@
 
 #include "LevelTerrain.hpp"
 
-#include <GL/glew.h>
-
 #ifdef NOX_HAS_IMGUI
 #include <imgui.h>
 #endif
@@ -85,9 +83,9 @@ void LevelTerrain::update(Nox::Engine& engine, float dt) {
     auto viewMat = camera_.viewMatrix();
     auto projMat = camera_.projectionMatrix();
 
-    if (showWireframe_) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
+    engine.renderContext().setWireframe(showWireframe_);
     terrain_.render(viewMat, projMat, camPos);
-    if (showWireframe_) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+    engine.renderContext().setWireframe(false);
 
     engine.render(scene_, camera_);
 }

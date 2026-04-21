@@ -5,20 +5,48 @@
 #include <NoxEngine/math/Types.hpp>
 #include <NoxEngine/scene/Transform.hpp>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 namespace Nox {
 
+    /// Runtime type tag for SceneObject subclasses.
+    /// Avoids dynamic_cast / RTTI in hot paths (Scene3D::add, renderInternal).
+    enum class SceneObjectType : uint8_t {
+        Unknown,
+        Mesh,
+        Light,              ///< Generic light (base)
+        DirectionalLight,
+        PointLight,
+        AmbientLight,
+    };
+
     class SceneObject : public std::enable_shared_from_this<SceneObject> {
     public:
-        explicit SceneObject(std::string name = "Object");
+        explicit SceneObject(std::string name = "Object",
+                             SceneObjectType type = SceneObjectType::Unknown);
         virtual ~SceneObject() = default;
 
         SceneObject(const SceneObject&) = delete;
         SceneObject& operator=(const SceneObject&) = delete;
         SceneObject(SceneObject&&) = default;
         SceneObject& operator=(SceneObject&&) = default;
+
+        [[nodiscard]] SceneObjectType objectType() const { return objectType_; }
+
+        /// Returns true if this object is a Light or any Light subtype.
+        [[nodiscard]] bool isLight() const {
+            return objectType_ == SceneObjectType::Light
+                || objectType_ == SceneObjectType::DirectionalLight
+                || objectType_ == SceneObjectType::PointLight
+                || objectType_ == SceneObjectType::AmbientLight;
+        }
+
+        /// Returns true if this object is a Mesh.
+        [[nodiscard]] bool isMesh() const {
+            return objectType_ == SceneObjectType::Mesh;
+        }
 
         [[nodiscard]] const std::string& name() const { return name_; }
         void setName(std::string name) { name_ = std::move(name); }
@@ -40,9 +68,10 @@ namespace Nox {
         virtual void updateWorldMatrix(const Math::Mat4& parentWorld = Math::Mat4(1.0f));
 
     private:
-        std::string name_;
-        Transform   transform_;
-        Math::Mat4  worldMatrix_{ 1.0f };
+        std::string     name_;
+        SceneObjectType objectType_;
+        Transform       transform_;
+        Math::Mat4      worldMatrix_{ 1.0f };
     };
 
 } // namespace Nox

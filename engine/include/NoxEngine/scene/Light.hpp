@@ -12,7 +12,8 @@ namespace Nox {
     // ── Light base ─────────────────────────────────────────────────
     class Light : public SceneObject {
     public:
-        Light(std::string name, const Color& color, float intensity);
+        Light(std::string name, const Color& color, float intensity,
+              SceneObjectType type = SceneObjectType::Light);
         ~Light() override = default;
 
         void setColor(const Color& c)    { color_ = c; }

@@ -6,14 +6,14 @@
 
 namespace Nox {
 
-    Light::Light(std::string name, const Color& color, float intensity)
-        : SceneObject(std::move(name))
+    Light::Light(std::string name, const Color& color, float intensity, SceneObjectType type)
+        : SceneObject(std::move(name), type)
         , color_(color)
         , intensity_(intensity) {}
 
     // ── DirectionalLight ───────────────────────────────────────────
     DirectionalLight::DirectionalLight(const Color& color, float intensity)
-        : Light("DirectionalLight", color, intensity) {}
+        : Light("DirectionalLight", color, intensity, SceneObjectType::DirectionalLight) {}
 
     void DirectionalLight::setDirection(float x, float y, float z) {
         direction_ = glm::normalize(Math::Vec3(x, y, z));
@@ -25,10 +25,10 @@ namespace Nox {
 
     // ── PointLight ─────────────────────────────────────────────────
     PointLight::PointLight(const Color& color, float intensity)
-        : Light("PointLight", color, intensity) {}
+        : Light("PointLight", color, intensity, SceneObjectType::PointLight) {}
 
     // ── AmbientLight ───────────────────────────────────────────────
     AmbientLight::AmbientLight(const Color& color, float intensity)
-        : Light("AmbientLight", color, intensity) {}
+        : Light("AmbientLight", color, intensity, SceneObjectType::AmbientLight) {}
 
 } // namespace Nox
