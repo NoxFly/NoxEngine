@@ -63,13 +63,6 @@
 - [x] Ray casting API (scene.raycast(origin, direction))
 - [x] Collision event callbacks (Signal-based)
 
-### v0.8 — Vulkan backend
-- [ ] VulkanRHI implementing the RHI interface
-- [ ] Vulkan Memory Allocator (VMA) integration
-- [ ] Backend selection at startup (--backend vulkan / opengl)
-- [ ] Feature parity with OpenGL backend
-- [ ] Validation layers in Debug builds
-
 ### v0.9 — Editor tooling
 - [ ] Dear ImGui scene hierarchy panel
 - [ ] Property inspector (transform, material, light params)
@@ -77,13 +70,14 @@
 - [ ] Gizmos (translate, rotate, scale handles)
 - [ ] Scene save/load (JSON or custom binary format)
 
-### v1.0 — Stable public release
-- [ ] API stability guarantee — semver from here
-- [ ] Full Doxygen documentation
-- [ ] Tutorial series (01-window, 02-mesh, 03-lighting, 04-model-import...)
-- [ ] CMake install target + find_package(NoxEngine) support
-- [ ] CI/CD on GitHub Actions (Windows MSVC, Ubuntu GCC, Ubuntu Clang)
-- [ ] vcpkg port
+### v1.0 — Miscellaneous improvements
+- [ ] Physically-based sky model (preetham or Hosek-Wilkie)
+- [ ] Atmospheric scattering (Rayleigh + Mie)
+- [ ] Add text rendering, UI system, billboard
+- [ ] Support for multiple render windows (editor + game view)
+- [ ] Jolt physics debug renderer (visualize colliders, joints, contact points)
+- [ ] Jolt physics character controller (capsule-based, with slope handling and step climbing)
+- [ ] Object picking / interaction / detection from user (raycast from mouse cursor to select objects in the scene)
 
 ### v1.1 — Advanced rendering
 - [ ] Deferred rendering pipeline (G-Buffer : position, normal, albedo, material)
@@ -97,7 +91,7 @@
 ### v1.2 — Terrain & large worlds
 - [ ] Heightmap terrain with LOD (geomipmapping)
 - [ ] Terrain splatting (blend of many textures depending the pente/altitude)
-- [ ] Streaming of terrain's chunks (loading/unloading on the fly around the player)
+- [ ] Streaming of terrain's chunks (loading/unloading on the fly around the player and the player's view)
 - [ ] Instantiated vegetation (grass, trees) via GPU instancing
 - [ ] Imposters for the remote objects (automatic billboard)
 - [ ] Occlusion culling (GPU occlusion queries or HZB)
@@ -131,11 +125,26 @@
 - [ ] Lobby / session management API
 - [ ] Deterministic simulation (Guaranteed fixed timestep + shared seed)
 
-### v1.7 — DirectX 12 backend
+### v1.7 — Vulkan backend
+- [ ] VulkanRHI implementing the RHI interface
+- [ ] Vulkan Memory Allocator (VMA) integration
+- [ ] Backend selection at startup (--backend vulkan / opengl)
+- [ ] Feature parity with OpenGL backend
+- [ ] Validation layers in Debug builds
+
+### v1.8 — DirectX 12 backend
 - [ ] DX12RHI implementing the RHI interface
 - [ ] DirectStorage for ultra-fast asset loading (Windows only)
 - [ ] PIX integration for GPU profiling on Windows
 - [ ] Feature parity Vulkan/DX12/OpenGL
+
+### v1.9 — Stable public release
+- [ ] API stability guarantee — semver from here
+- [ ] Full Doxygen documentation
+- [ ] Tutorial series (01-window, 02-mesh, 03-lighting, 04-model-import...)
+- [ ] CMake install target + find_package(NoxEngine) support
+- [ ] CI/CD on GitHub Actions (Windows MSVC, Ubuntu GCC, Ubuntu Clang)
+- [ ] vcpkg port
 
 ### v2.0 — Complete Engine production-ready
 - [ ] Complete world streaming (open world without visible loading time)
