@@ -89,12 +89,12 @@
 - [x] Decals (bullet impacts, stains, splashes on surfaces)
 
 ### v1.2 — Terrain & large worlds
-- [ ] Heightmap terrain with LOD (geomipmapping)
-- [ ] Terrain splatting (blend of many textures depending the pente/altitude)
-- [ ] Streaming of terrain's chunks (loading/unloading on the fly around the player and the player's view)
-- [ ] Instantiated vegetation (grass, trees) via GPU instancing
-- [ ] Imposters for the remote objects (automatic billboard)
-- [ ] Occlusion culling (GPU occlusion queries or HZB)
+- [x] Heightmap terrain with LOD (geomipmapping)
+- [x] Terrain splatting (blend of many textures depending the pente/altitude)
+- [x] Streaming of terrain's chunks (loading/unloading on the fly around the player and the player's view)
+- [x] Instantiated vegetation (grass, trees) via GPU instancing
+- [x] Imposters for the remote objects (automatic billboard)
+- [x] Occlusion culling (GPU occlusion queries or HZB)
 
 ### v1.3 — GPU & advanced performance
 - [ ] GPU instancing API high level (scene.addInstanced(mesh, transforms))

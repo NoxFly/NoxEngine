@@ -35,6 +35,9 @@
 #include <NoxEngine/renderer/Frustum.hpp>
 #include <NoxEngine/renderer/GBuffer.hpp>
 #include <NoxEngine/renderer/PostProcessEffect.hpp>
+#include <NoxEngine/renderer/ImposterSystem.hpp>
+#include <NoxEngine/renderer/InstancedVegetation.hpp>
+#include <NoxEngine/renderer/OcclusionCulling.hpp>
 #include <NoxEngine/renderer/PostProcessStack.hpp>
 #include <NoxEngine/renderer/Sky.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
@@ -61,6 +64,7 @@
 #include <NoxEngine/scene/Scene3D.hpp>
 #include <NoxEngine/scene/SceneNode.hpp>
 #include <NoxEngine/scene/SceneObject.hpp>
+#include <NoxEngine/scene/Terrain.hpp>
 #include <NoxEngine/scene/Transform.hpp>
 
 // Platform
