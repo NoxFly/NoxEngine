@@ -26,17 +26,21 @@
 #include <NoxEngine/math/Types.hpp>
 
 // Renderer
+#include <NoxEngine/renderer/Billboard.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
 #include <NoxEngine/renderer/CameraController.hpp>
 #include <NoxEngine/renderer/Frustum.hpp>
 #include <NoxEngine/renderer/PostProcessEffect.hpp>
 #include <NoxEngine/renderer/PostProcessStack.hpp>
+#include <NoxEngine/renderer/Sky.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
 #include <NoxEngine/renderer/effects/BloomEffect.hpp>
 #include <NoxEngine/renderer/effects/FXAAEffect.hpp>
 #include <NoxEngine/renderer/effects/SSAOEffect.hpp>
 
 // Physics
+#include <NoxEngine/physics/CharacterController.hpp>
+#include <NoxEngine/physics/PhysicsDebugRenderer.hpp>
 #include <NoxEngine/physics/PhysicsWorld.hpp>
 #include <NoxEngine/physics/RigidBody.hpp>
 
@@ -46,6 +50,7 @@
 #include <NoxEngine/scene/Material.hpp>
 #include <NoxEngine/scene/Mesh.hpp>
 #include <NoxEngine/scene/ModelLoader.hpp>
+#include <NoxEngine/scene/ObjectPicker.hpp>
 #include <NoxEngine/scene/Scene3D.hpp>
 #include <NoxEngine/scene/SceneNode.hpp>
 #include <NoxEngine/scene/SceneObject.hpp>

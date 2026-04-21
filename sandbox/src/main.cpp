@@ -9,6 +9,7 @@
 #include "levels/LevelPhysicsBasic.hpp"
 #include "levels/LevelPhysicsMarbles.hpp"
 #include "levels/LevelEditor.hpp"
+#include "levels/LevelSky.hpp"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     using namespace Nox;
@@ -29,6 +30,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     levels.addLevel(std::make_unique<LevelPhysicsBasic>());
     levels.addLevel(std::make_unique<LevelPhysicsMarbles>());
     levels.addLevel(std::make_unique<LevelEditor>());
+    levels.addLevel(std::make_unique<LevelSky>());
     levels.init(engine);
 
     engine.run([&](float dt) {

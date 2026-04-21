@@ -70,14 +70,14 @@
 - [x] Gizmos (translate, rotate, scale handles)
 - [x] Scene save/load (JSON or custom binary format)
 
-### v1.0 — Miscellaneous improvements
-- [ ] Physically-based sky model (preetham or Hosek-Wilkie)
-- [ ] Atmospheric scattering (Rayleigh + Mie)
-- [ ] Add text rendering, UI system, billboard
+### v1.0 — Miscellaneous improvements  ✅ done
+- [x] Physically-based sky model (preetham or Hosek-Wilkie)
+- [x] Atmospheric scattering (Rayleigh + Mie)
+- [x] Add text rendering, UI system, billboard
 - [ ] Support for multiple render windows (editor + game view)
-- [ ] Jolt physics debug renderer (visualize colliders, joints, contact points)
-- [ ] Jolt physics character controller (capsule-based, with slope handling and step climbing)
-- [ ] Object picking / interaction / detection from user (raycast from mouse cursor to select objects in the scene)
+- [x] Jolt physics debug renderer (visualize colliders, joints, contact points)
+- [x] Jolt physics character controller (capsule-based, with slope handling and step climbing)
+- [x] Object picking / interaction / detection from user (raycast from mouse cursor to select objects in the scene)
 
 ### v1.1 — Advanced rendering
 - [ ] Deferred rendering pipeline (G-Buffer : position, normal, albedo, material)
