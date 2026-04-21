@@ -1,6 +1,7 @@
 // Copyright (c) 2026 NoxFly — AGPL-3.0
 
 #include <NoxEngine/scene/Scene3D.hpp>
+#include <NoxEngine/renderer/GPUInstancing.hpp>
 
 #include <algorithm>
 
@@ -25,6 +26,18 @@ namespace Nox {
         else if (object->isLight()) {
             std::erase(lights_, std::static_pointer_cast<Light>(object));
         }
+    }
+
+    std::shared_ptr<InstancedMesh> Scene3D::addInstanced(
+        std::shared_ptr<Geometry> geometry,
+        std::shared_ptr<Material> material,
+        std::vector<Math::Mat4> transforms)
+    {
+        auto instanced = std::make_shared<InstancedMesh>(
+            std::move(geometry), std::move(material), std::move(transforms));
+        instancedMeshes_.push_back(instanced);
+        objects_.push_back(instanced);
+        return instanced;
     }
 
     std::shared_ptr<SceneObject> Scene3D::findByName(std::string_view name) const {

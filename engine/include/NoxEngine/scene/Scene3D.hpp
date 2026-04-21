@@ -10,6 +10,8 @@
 #include <string_view>
 #include <vector>
 
+namespace Nox { class InstancedMesh; }
+
 namespace Nox {
 
     class Scene3D {
@@ -19,9 +21,16 @@ namespace Nox {
         void add(std::shared_ptr<SceneObject> object);
         void remove(const std::shared_ptr<SceneObject>& object);
 
+        /// Add a GPU-instanced mesh: draws many copies of one mesh in a single call.
+        std::shared_ptr<InstancedMesh> addInstanced(
+            std::shared_ptr<Geometry> geometry,
+            std::shared_ptr<Material> material,
+            std::vector<Math::Mat4> transforms);
+
         [[nodiscard]] const std::vector<std::shared_ptr<Mesh>>&  meshes() const { return meshes_; }
         [[nodiscard]] const std::vector<std::shared_ptr<Light>>& lights() const { return lights_; }
         [[nodiscard]] const std::vector<std::shared_ptr<SceneObject>>& objects() const { return objects_; }
+        [[nodiscard]] const std::vector<std::shared_ptr<InstancedMesh>>& instancedMeshes() const { return instancedMeshes_; }
 
         // ── Traversal utilities ────────────────────────────────────
         [[nodiscard]] std::shared_ptr<SceneObject> findByName(std::string_view name) const;
@@ -52,6 +61,7 @@ namespace Nox {
         std::vector<std::shared_ptr<SceneObject>> objects_;
         std::vector<std::shared_ptr<Mesh>>        meshes_;
         std::vector<std::shared_ptr<Light>>       lights_;
+        std::vector<std::shared_ptr<InstancedMesh>> instancedMeshes_;
     };
 
 } // namespace Nox
