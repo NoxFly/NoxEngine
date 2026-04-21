@@ -63,12 +63,12 @@
 - [x] Ray casting API (scene.raycast(origin, direction))
 - [x] Collision event callbacks (Signal-based)
 
-### v0.9 — Editor tooling
-- [ ] Dear ImGui scene hierarchy panel
-- [ ] Property inspector (transform, material, light params)
-- [ ] Asset browser
-- [ ] Gizmos (translate, rotate, scale handles)
-- [ ] Scene save/load (JSON or custom binary format)
+### v0.9 — Editor tooling  ✅ done
+- [x] Dear ImGui scene hierarchy panel
+- [x] Property inspector (transform, material, light params)
+- [x] Asset browser
+- [x] Gizmos (translate, rotate, scale handles)
+- [x] Scene save/load (JSON or custom binary format)
 
 ### v1.0 — Miscellaneous improvements
 - [ ] Physically-based sky model (preetham or Hosek-Wilkie)

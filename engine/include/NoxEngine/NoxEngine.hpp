@@ -6,6 +6,13 @@
 #include <NoxEngine/animation/AnimationPlayer.hpp>
 #include <NoxEngine/animation/Skeleton.hpp>
 
+// Editor
+#include <NoxEngine/editor/AssetBrowser.hpp>
+#include <NoxEngine/editor/Gizmo.hpp>
+#include <NoxEngine/editor/PropertyInspector.hpp>
+#include <NoxEngine/editor/SceneHierarchy.hpp>
+#include <NoxEngine/editor/SceneSerializer.hpp>
+
 // Core
 #include <NoxEngine/core/AssetCache.hpp>
 #include <NoxEngine/core/Assert.hpp>
