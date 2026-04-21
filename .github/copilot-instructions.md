@@ -421,3 +421,12 @@ engine.run([&](float dt) {
   from the file. The developer adds it to the scene directly.
 - Angles in the public API are always **degrees** (converted to radians internally).
 - Colors in the public API are always **linear float RGB(A)** in range [0, 1].
+
+# Other
+
+Always maintain documentation inside the code.
+Always write clear, descriptive commit messages.
+Always ensure the code is compiling.
+Always ensure each features of the engine is present at least in one of the level of the sandbox.
+Possibly, some feature can be present in multiple levels of the sandbox, if it has special interaction
+with some other feature.
