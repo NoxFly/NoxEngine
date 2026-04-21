@@ -13,6 +13,10 @@
 #include "levels/LevelAdvancedRendering.hpp"
 #include "levels/LevelTerrain.hpp"
 #include "levels/LevelCinematic.hpp"
+#include "levels/LevelGPUPerformance.hpp"
+#include "levels/LevelAudio.hpp"
+#include "levels/LevelScripting.hpp"
+#include "levels/LevelNetworking.hpp"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     using namespace Nox;
@@ -37,6 +41,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     levels.addLevel(std::make_unique<LevelAdvancedRendering>());
     levels.addLevel(std::make_unique<LevelTerrain>());
     levels.addLevel(std::make_unique<LevelCinematic>());
+    levels.addLevel(std::make_unique<LevelGPUPerformance>());
+    levels.addLevel(std::make_unique<LevelAudio>());
+    levels.addLevel(std::make_unique<LevelScripting>());
+    levels.addLevel(std::make_unique<LevelNetworking>());
     levels.init(engine);
 
     engine.run([&](float dt) {

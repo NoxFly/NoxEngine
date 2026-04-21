@@ -96,33 +96,33 @@
 - [x] Imposters for the remote objects (automatic billboard)
 - [x] Occlusion culling (GPU occlusion queries or HZB)
 
-### v1.3 — GPU & advanced performance
-- [ ] GPU instancing API high level (scene.addInstanced(mesh, transforms))
-- [ ] Indirect draw calls (GL_DRAW_INDIRECT_BUFFER / VkDrawIndirectCommand)
-- [ ] Compute shaders — exposed API to engine's level
-- [ ] GPU particle system (compute-driven, millions of particles)
+### v1.3 — GPU & advanced performance  ✅ done
+- [x] GPU instancing API high level (scene.addInstanced(mesh, transforms))
+- [x] Indirect draw calls (GL_DRAW_INDIRECT_BUFFER / VkDrawIndirectCommand)
+- [x] Compute shaders — exposed API to engine's level
+- [x] GPU particle system (compute-driven, millions of particles)
 - [ ] Mesh shaders (Vulkan / DX12 backend required)
 - [ ] Bindless textures (Vulkan)
 
-### v1.4 — Spatial audio
-- [ ] Integration of miniaudio (header-only)
-- [ ] 3D positionnal Audio (distance attenuation, Doppler effect)
-- [ ] Reverb zones (interior/exterior environnement)
-- [ ] Audio streaming for long musics
-- [ ] API : AudioSource component, AudioListener on the camera
+### v1.4 — Spatial audio  ✅ done
+- [x] Integration of SDL3_mixer (track-based audio system)
+- [x] 3D positionnal Audio (distance attenuation, Doppler effect)
+- [x] Reverb zones (interior/exterior environnement)
+- [x] Audio streaming for long musics
+- [x] API : AudioSource component, AudioListener on the camera
 
-### v1.5 — Scripting & extensibility
-- [ ] Plugin system (.dll/.so dynamically loaded)
-- [ ] Bindings Lua via sol2 (lightweight scripting for game's logic)
-- [ ] Hot-reload for the scripts on Debug mode
-- [ ] Generic serialization API (static reflection via macros or concepts)
-- [ ] Custom render passes recordable from the application
+### v1.5 — Scripting & extensibility  ✅ done
+- [x] Plugin system (.dll/.so dynamically loaded)
+- [x] Bindings Lua via sol2 (lightweight scripting for game's logic)
+- [x] Hot-reload for the scripts on Debug mode
+- [x] Generic serialization API (binary archive with read/write)
+- [x] Custom render passes recordable from the application
 
-### v1.6 — Networking foundation
-- [ ] Low level network abstraction (UDP via ENet or GameNetworkingSockets)
-- [ ] Snapshot interpolation + client reconciliation
-- [ ] basic Entity replication (position, rotation synchronized)
-- [ ] Lobby / session management API
+### v1.6 — Networking foundation  ✅ done
+- [x] Low level network abstraction (TCP/UDP via SDL3_net)
+- [x] Snapshot interpolation + client reconciliation
+- [x] basic Entity replication (position, rotation synchronized)
+- [x] Lobby / session management API
 - [ ] Deterministic simulation (Guaranteed fixed timestep + shared seed)
 
 ### v1.7 — Vulkan backend

@@ -90,3 +90,48 @@
 #   set(JOLT_DIR "/home/user/libs/JoltPhysics-5.5.0")
 #
 # set(JOLT_DIR "")
+
+# ─── SDL3_mixer ─────────────────────────────────────────────────
+# Root of the SDL3_mixer install prefix (contains lib/, include/).
+# Built with built-in decoders only (WAV, MP3, OGG, FLAC).
+#
+# Windows:
+#   set(SDL3_MIXER_DIR "C:/cpp-libs/SDL3_mixer-3.2.0/install")
+#
+# WSL / Linux:
+#   set(SDL3_MIXER_DIR "/home/user/libs/SDL3_mixer-3.2.0/install")
+#
+# set(SDL3_MIXER_DIR "")
+
+# ─── SDL3_net ───────────────────────────────────────────────────
+# Root of the SDL3_net install prefix (contains lib/, include/).
+#
+# Windows:
+#   set(SDL3_NET_DIR "C:/cpp-libs/SDL3_net-main/install")
+#
+# WSL / Linux:
+#   set(SDL3_NET_DIR "/home/user/libs/SDL3_net-main/install")
+#
+# set(SDL3_NET_DIR "")
+
+# ─── Lua ────────────────────────────────────────────────────────
+# Root of the Lua install prefix (contains lib/, include/).
+#
+# Windows:
+#   set(LUA_DIR "C:/cpp-libs/lua-5.4.7/install")
+#
+# WSL / Linux:
+#   set(LUA_DIR "/home/user/libs/lua-5.4.7/install")
+#
+# set(LUA_DIR "")
+
+# ─── sol2 ───────────────────────────────────────────────────────
+# Root of the sol2 source tree (header-only, contains include/sol/).
+#
+# Windows:
+#   set(SOL2_DIR "C:/cpp-libs/sol2-3.3.0")
+#
+# WSL / Linux:
+#   set(SOL2_DIR "/home/user/libs/sol2-3.3.0")
+#
+# set(SOL2_DIR "")

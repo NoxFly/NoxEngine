@@ -113,3 +113,56 @@ if(JOLT_DIR)
 else()
     message(STATUS "NoxEngine: Jolt not found — physics disabled")
 endif()
+
+# ── SDL3_mixer (optional) ──────────────────────────────────────
+if(SDL3_MIXER_DIR)
+    target_include_directories(NoxEngine PUBLIC "${SDL3_MIXER_DIR}/include")
+    if(MSVC)
+        target_link_libraries(NoxEngine PUBLIC
+            "$<IF:$<CONFIG:Debug>,${SDL3_MIXER_DIR}/lib/SDL3_mixer-static.lib,${SDL3_MIXER_DIR}/lib/SDL3_mixer-static.lib>"
+        )
+    else()
+        target_link_libraries(NoxEngine PUBLIC "${SDL3_MIXER_DIR}/lib/libSDL3_mixer-static.a")
+    endif()
+    target_compile_definitions(NoxEngine PUBLIC NOX_HAS_SDL3_MIXER)
+else()
+    message(STATUS "NoxEngine: SDL3_mixer not found — audio disabled")
+endif()
+
+# ── SDL3_net (optional) ────────────────────────────────────────
+if(SDL3_NET_DIR)
+    target_include_directories(NoxEngine PUBLIC "${SDL3_NET_DIR}/include")
+    if(MSVC)
+        target_link_libraries(NoxEngine PUBLIC
+            "$<IF:$<CONFIG:Debug>,${SDL3_NET_DIR}/lib/SDL3_net-static.lib,${SDL3_NET_DIR}/lib/SDL3_net-static.lib>"
+        )
+        # SDL3_net uses Winsock2 on Windows
+        target_link_libraries(NoxEngine PUBLIC ws2_32 iphlpapi)
+    else()
+        target_link_libraries(NoxEngine PUBLIC "${SDL3_NET_DIR}/lib/libSDL3_net-static.a")
+    endif()
+    target_compile_definitions(NoxEngine PUBLIC NOX_HAS_SDL3_NET)
+else()
+    message(STATUS "NoxEngine: SDL3_net not found — networking disabled")
+endif()
+
+# ── Lua (optional) ─────────────────────────────────────────────
+if(LUA_DIR)
+    target_include_directories(NoxEngine PUBLIC "${LUA_DIR}/include")
+    if(MSVC)
+        target_link_libraries(NoxEngine PUBLIC
+            "$<IF:$<CONFIG:Debug>,${LUA_DIR}/lib/lua_static.lib,${LUA_DIR}/lib/lua_static.lib>"
+        )
+    else()
+        target_link_libraries(NoxEngine PUBLIC "${LUA_DIR}/lib/liblua_static.a")
+    endif()
+    target_compile_definitions(NoxEngine PUBLIC NOX_HAS_LUA)
+else()
+    message(STATUS "NoxEngine: Lua not found — scripting disabled")
+endif()
+
+# ── sol2 (header only, optional) ───────────────────────────────
+if(SOL2_DIR)
+    target_include_directories(NoxEngine SYSTEM PUBLIC "${SOL2_DIR}/include")
+    target_compile_definitions(NoxEngine PUBLIC NOX_HAS_SOL2)
+endif()

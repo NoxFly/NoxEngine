@@ -6,6 +6,9 @@
 #include <NoxEngine/animation/AnimationPlayer.hpp>
 #include <NoxEngine/animation/Skeleton.hpp>
 
+// Audio
+#include <NoxEngine/audio/AudioSystem.hpp>
+
 // Editor
 #include <NoxEngine/editor/AssetBrowser.hpp>
 #include <NoxEngine/editor/Gizmo.hpp>
@@ -20,10 +23,16 @@
 #include <NoxEngine/core/Engine.hpp>
 #include <NoxEngine/core/FileWatcher.hpp>
 #include <NoxEngine/core/Logger.hpp>
+#include <NoxEngine/core/Serialization.hpp>
 #include <NoxEngine/core/Signal.hpp>
 
 // Math
 #include <NoxEngine/math/Types.hpp>
+
+// Network
+#include <NoxEngine/network/EntityReplication.hpp>
+#include <NoxEngine/network/NetworkSession.hpp>
+#include <NoxEngine/network/NetworkSystem.hpp>
 
 // Renderer
 #include <NoxEngine/renderer/Billboard.hpp>
@@ -33,9 +42,14 @@
 #include <NoxEngine/renderer/CameraController.hpp>
 #include <NoxEngine/renderer/CascadedShadowMap.hpp>
 #include <NoxEngine/renderer/ClusteredLighting.hpp>
+#include <NoxEngine/renderer/ComputeShader.hpp>
+#include <NoxEngine/renderer/CustomRenderPass.hpp>
 #include <NoxEngine/renderer/Decal.hpp>
 #include <NoxEngine/renderer/Frustum.hpp>
 #include <NoxEngine/renderer/GBuffer.hpp>
+#include <NoxEngine/renderer/GPUInstancing.hpp>
+#include <NoxEngine/renderer/GPUParticleSystem.hpp>
+#include <NoxEngine/renderer/IndirectDraw.hpp>
 #include <NoxEngine/renderer/PostProcessEffect.hpp>
 #include <NoxEngine/renderer/ImposterSystem.hpp>
 #include <NoxEngine/renderer/InstancedVegetation.hpp>
@@ -71,6 +85,10 @@
 #include <NoxEngine/scene/SceneNode.hpp>
 #include <NoxEngine/scene/SceneObject.hpp>
 #include <NoxEngine/scene/Terrain.hpp>
+
+// Scripting
+#include <NoxEngine/scripting/LuaScriptEngine.hpp>
+#include <NoxEngine/scripting/PluginSystem.hpp>
 #include <NoxEngine/scene/Transform.hpp>
 
 // Platform
