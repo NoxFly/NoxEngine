@@ -21,6 +21,10 @@ namespace Nox {
         [[nodiscard]] const Math::Mat4& projectionMatrix() const;
         [[nodiscard]] const Math::Vec3& position() const { return position_; }
         [[nodiscard]] const Math::Vec3& target() const { return target_; }
+        [[nodiscard]] float near() const { return near_; }
+        [[nodiscard]] float far() const { return far_; }
+        [[nodiscard]] float fovDegrees() const { return glm::degrees(fovRadians_); }
+        [[nodiscard]] float aspect() const { return aspect_; }
 
     private:
         void updateView() const;

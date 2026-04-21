@@ -79,14 +79,14 @@
 - [x] Jolt physics character controller (capsule-based, with slope handling and step climbing)
 - [x] Object picking / interaction / detection from user (raycast from mouse cursor to select objects in the scene)
 
-### v1.1 — Advanced rendering
-- [ ] Deferred rendering pipeline (G-Buffer : position, normal, albedo, material)
-- [ ] Tiled / Clustered lighting (hundreds of lights perf loss)
-- [ ] Cascaded Shadow Maps (CSM) for large exterior scenes
-- [ ] Screen Space Reflections (SSR)
-- [ ] Temporal Anti-Aliasing (TAA)
-- [ ] Volumetric fog / god rays
-- [ ] Decals (bullet impacts, stains, splashes on surfaces)
+### v1.1 — Advanced rendering  ✅ done
+- [x] Deferred rendering pipeline (G-Buffer : position, normal, albedo, material)
+- [x] Tiled / Clustered lighting (hundreds of lights perf loss)
+- [x] Cascaded Shadow Maps (CSM) for large exterior scenes
+- [x] Screen Space Reflections (SSR)
+- [x] Temporal Anti-Aliasing (TAA)
+- [x] Volumetric fog / god rays
+- [x] Decals (bullet impacts, stains, splashes on surfaces)
 
 ### v1.2 — Terrain & large worlds
 - [ ] Heightmap terrain with LOD (geomipmapping)

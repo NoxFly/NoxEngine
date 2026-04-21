@@ -29,7 +29,11 @@
 #include <NoxEngine/renderer/Billboard.hpp>
 #include <NoxEngine/renderer/Camera.hpp>
 #include <NoxEngine/renderer/CameraController.hpp>
+#include <NoxEngine/renderer/CascadedShadowMap.hpp>
+#include <NoxEngine/renderer/ClusteredLighting.hpp>
+#include <NoxEngine/renderer/Decal.hpp>
 #include <NoxEngine/renderer/Frustum.hpp>
+#include <NoxEngine/renderer/GBuffer.hpp>
 #include <NoxEngine/renderer/PostProcessEffect.hpp>
 #include <NoxEngine/renderer/PostProcessStack.hpp>
 #include <NoxEngine/renderer/Sky.hpp>
@@ -37,6 +41,9 @@
 #include <NoxEngine/renderer/effects/BloomEffect.hpp>
 #include <NoxEngine/renderer/effects/FXAAEffect.hpp>
 #include <NoxEngine/renderer/effects/SSAOEffect.hpp>
+#include <NoxEngine/renderer/effects/SSREffect.hpp>
+#include <NoxEngine/renderer/effects/TAAEffect.hpp>
+#include <NoxEngine/renderer/effects/VolumetricFogEffect.hpp>
 
 // Physics
 #include <NoxEngine/physics/CharacterController.hpp>
