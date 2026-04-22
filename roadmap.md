@@ -140,8 +140,7 @@
 
 ### v1.9 — Stable public release
 - [ ] API stability guarantee — semver from here
-- [ ] Full Doxygen documentation
-- [ ] Tutorial series (01-window, 02-mesh, 03-lighting, 04-model-import...)
+- [ ] Tutorial series (01-window, 02-mesh, 03-lighting, 04-model-import...) in a docs/ or wiki/ folder.
 - [ ] CMake install target + find_package(NoxEngine) support
 - [ ] CI/CD on GitHub Actions (Windows MSVC, Ubuntu GCC, Ubuntu Clang)
 - [ ] vcpkg port
