@@ -111,4 +111,16 @@ namespace Nox {
         return static_cast<float>(width_) / static_cast<float>(height_);
     }
 
+    void Window::setRelativeMouseMode(bool enabled) {
+        relativeMouseMode_ = enabled;
+        SDL_SetWindowRelativeMouseMode(window_, enabled);
+        if (!enabled) {
+            // Show and un-lock the cursor when leaving relative mode
+            SDL_ShowCursor();
+        }
+        else {
+            SDL_HideCursor();
+        }
+    }
+
 } // namespace Nox

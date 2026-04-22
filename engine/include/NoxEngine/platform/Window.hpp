@@ -38,6 +38,10 @@ namespace Nox {
         [[nodiscard]] Input& input() { return input_; }
         [[nodiscard]] const Input& input() const { return input_; }
 
+        /// Enable or disable relative mouse mode (locks cursor, enables FPS-style look).
+        void setRelativeMouseMode(bool enabled);
+        [[nodiscard]] bool isRelativeMouseMode() const { return relativeMouseMode_; }
+
         Signal<int, int> onResize;
         Signal<>         onClose;
 
@@ -47,6 +51,7 @@ namespace Nox {
         int         width_   = 0;
         int         height_  = 0;
         Input       input_;
+        bool        relativeMouseMode_ = false;
     };
 
 } // namespace Nox
