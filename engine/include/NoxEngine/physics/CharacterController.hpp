@@ -15,14 +15,14 @@ namespace Nox {
     class CharacterController {
     public:
         struct Config {
-            float capsuleRadius    = 0.3f;
+            float capsuleRadius     = 0.3f;
             float capsuleHalfHeight = 0.9f;
-            float maxSlopeAngle    = 45.0f;   // degrees
-            float stepHeight       = 0.3f;
-            float mass             = 80.0f;
-            float moveSpeed        = 5.0f;
-            float jumpForce        = 5.0f;
-            float gravity          = -9.81f;
+            float maxSlopeAngle     = 45.0f;   // degrees
+            float stepHeight        = 0.3f;
+            float mass              = 80.0f;
+            float moveSpeed         = 5.0f;
+            float jumpForce         = 5.0f;
+            float gravity           = -9.81f;
             Math::Vec3 startPosition{ 0.0f, 1.0f, 0.0f };
         };
 

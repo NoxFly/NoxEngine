@@ -48,19 +48,28 @@ namespace Nox::Math {
 
             for (int i = 0; i < 3; ++i) {
                 if (std::abs(direction[i]) < 1e-8f) {
-                    if (origin[i] < aabb.min[i] || origin[i] > aabb.max[i])
+                    if (origin[i] < aabb.min[i] || origin[i] > aabb.max[i]) {
                         return false;
+                    }
                 }
                 else {
                     float invD = 1.0f / direction[i];
                     float t0 = (aabb.min[i] - origin[i]) * invD;
                     float t1 = (aabb.max[i] - origin[i]) * invD;
-                    if (invD < 0.0f) std::swap(t0, t1);
+
+                    if (invD < 0.0f) {
+                        std::swap(t0, t1);
+                    }
+
                     tMin = std::max(tMin, t0);
                     tMax = std::min(tMax, t1);
-                    if (tMax < tMin) return false;
+
+                    if (tMax < tMin) {
+                        return false;
+                    }
                 }
             }
+
             return true;
         }
     };
