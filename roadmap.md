@@ -101,6 +101,9 @@
 - [x] Indirect draw calls (GL_DRAW_INDIRECT_BUFFER / VkDrawIndirectCommand)
 - [x] Compute shaders — exposed API to engine's level
 - [x] GPU particle system (compute-driven, millions of particles)
+- [x] Dynamic library build (engine as shared DLL / .so)
+- [x] Frame limiter (configurable maxFps in EngineConfig)
+- [x] Shader preprocessor with #include directives and alias support
 - [ ] Mesh shaders (Vulkan / DX12 backend required)
 - [ ] Bindless textures (Vulkan)
 

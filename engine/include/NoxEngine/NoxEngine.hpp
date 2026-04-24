@@ -56,6 +56,7 @@
 #include <NoxEngine/renderer/OcclusionCulling.hpp>
 #include <NoxEngine/renderer/PostProcessStack.hpp>
 #include <NoxEngine/renderer/RenderContext.hpp>
+#include <NoxEngine/renderer/ShaderPreprocessor.hpp>
 #include <NoxEngine/renderer/Sky.hpp>
 #include <NoxEngine/renderer/TextureLoader.hpp>
 #include <NoxEngine/renderer/effects/BloomEffect.hpp>

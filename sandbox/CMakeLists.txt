@@ -12,9 +12,8 @@ target_include_directories(NoxEngineSandbox PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
-# ── MSVC Runtime must match Jolt libs (static /MT) ──────────────────────────
+# ── MSVC Runtime: suppress LNK4098 — SDL3 DLL uses /MD while we use /MT ─────
 if(MSVC)
-    # SDL3 is a DLL (/MD) — suppress the LNK4098 warning about MSVCRT(D) conflict
     target_link_options(NoxEngineSandbox PRIVATE
         $<$<CONFIG:Debug>:/NODEFAULTLIB:MSVCRTD>
         $<$<NOT:$<CONFIG:Debug>>:/NODEFAULTLIB:MSVCRT>
@@ -58,4 +57,12 @@ if(WIN32)
             )
         endif()
     endif()
+
+    # Copy NoxEngine DLL next to executable
+    add_custom_command(TARGET NoxEngineSandbox POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:NoxEngine>
+            $<TARGET_FILE_DIR:NoxEngineSandbox>
+        COMMENT "Copying NoxEngine.dll to output directory"
+    )
 endif()

@@ -25,6 +25,7 @@ namespace Nox {
         int         width  = 1280;
         int         height = 720;
         bool        vsync  = true;
+        int         maxFps = 0;   ///< FPS cap (0 = unlimited / vsync only).
     };
 
     class Engine {
@@ -93,6 +94,9 @@ namespace Nox {
 
         // All GPU rendering state lives here.
         RenderContext renderCtx_;
+
+        /// Engine configuration (stored for runtime access, e.g. FPS cap).
+        EngineConfig config_;
 
         /// Optional callback invoked while the HDR FBO is bound, before tone-mapping.
         std::function<void()> preToneMapCallback_;

@@ -54,6 +54,10 @@ namespace Nox {
     }
 
     std::shared_ptr<SceneNode> ModelLoader::load(const std::filesystem::path& path) {
+        constexpr auto loadOptions =
+            fastgltf::Options::LoadExternalBuffers |
+            fastgltf::Options::LoadExternalImages;
+
         fastgltf::Parser parser;
         auto data = fastgltf::GltfDataBuffer::FromPath(path);
 
@@ -66,10 +70,10 @@ namespace Nox {
         fastgltf::Expected<fastgltf::Asset> assetResult(fastgltf::Error::None);
 
         if (type == fastgltf::GltfType::glTF) {
-            assetResult = parser.loadGltf(data.get(), path.parent_path());
+            assetResult = parser.loadGltf(data.get(), path.parent_path(), loadOptions);
         }
         else if (type == fastgltf::GltfType::GLB) {
-            assetResult = parser.loadGltfBinary(data.get(), path.parent_path());
+            assetResult = parser.loadGltfBinary(data.get(), path.parent_path(), loadOptions);
         }
         else {
             NOX_LOG_ERROR("Unknown glTF file type: {}", path.string());

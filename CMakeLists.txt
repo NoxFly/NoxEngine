@@ -8,11 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ── MSVC Runtime: match Debug/Release config (static /MTd or /MT) ──────────
-# This must be set as a normal variable (not just CACHE) so it takes effect
-# in the current scope and all subdirectories, including Jolt added via
-# add_subdirectory. Jolt's USE_STATIC_MSVC_RUNTIME_LIBRARY also produces
-# MultiThreadedDebug in Debug and MultiThreaded in Release — so both agree.
+# ── MSVC Runtime: static CRT (/MTd or /MT) — matches pre-built third-party libs ──
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()

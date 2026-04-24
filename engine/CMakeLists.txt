@@ -5,8 +5,14 @@ file(GLOB_RECURSE NOX_ENGINE_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
-# ── NoxEngine static library ───────────────────────────────────
-add_library(NoxEngine STATIC ${NOX_ENGINE_SOURCES})
+# ── NoxEngine shared library ───────────────────────────────────
+add_library(NoxEngine SHARED ${NOX_ENGINE_SOURCES})
+
+# ── Auto-export all symbols on Windows (avoids annotating every class) ──
+set_target_properties(NoxEngine PROPERTIES
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+    POSITION_INDEPENDENT_CODE  ON
+)
 
 # ── Ensure consistent MSVC runtime (static /MT) ────────────────────────────
 # if(MSVC)
@@ -29,7 +35,7 @@ else()
 endif()
 
 # ── Backend define ──────────────────────────────────────────────
-target_compile_definitions(NoxEngine PRIVATE NOX_OPENGL)
+target_compile_definitions(NoxEngine PRIVATE NOX_OPENGL NOX_ENGINE_EXPORTS)
 
 # ── SDL3 ────────────────────────────────────────────────────────
 find_package(SDL3 REQUIRED CONFIG)

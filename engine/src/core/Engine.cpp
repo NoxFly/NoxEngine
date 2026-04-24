@@ -419,7 +419,9 @@ namespace Nox {
 
     // â”€â”€ Engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    Engine::Engine(const EngineConfig& config) {
+    Engine::Engine(const EngineConfig& config)
+        : config_(config)
+    {
         window_ = std::make_unique<Window>(config.title, config.width, config.height);
 
         auto rhi = createOpenGLRHI();
@@ -551,10 +553,24 @@ namespace Nox {
         float fpsTimer = 0.0f;
         int   frameCount = 0;
 
+        // Frame limiter
+        const float minFrameTime = (config_.maxFps > 0)
+            ? 1.0f / static_cast<float>(config_.maxFps)
+            : 0.0f;
+
         running_ = true;
         while (running_ && window_->pollEvents()) {
             uint64_t now = SDL_GetPerformanceCounter();
             float dt = static_cast<float>(now - lastTicks) / static_cast<float>(freq);
+
+            // FPS cap: busy-wait until min frame time elapsed
+            if (minFrameTime > 0.0f) {
+                while (dt < minFrameTime) {
+                    now = SDL_GetPerformanceCounter();
+                    dt = static_cast<float>(now - lastTicks) / static_cast<float>(freq);
+                }
+            }
+
             lastTicks = now;
 
             // Clamp large dt (e.g. after breakpoint)

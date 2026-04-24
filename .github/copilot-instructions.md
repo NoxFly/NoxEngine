@@ -6,6 +6,10 @@ NoxEngine is a C++ 3D engine built from scratch, structured as a **static librar
 by a separate sandbox executable. The goal is a clean, modern, architecturally sound codebase
 that can later support multiple rendering backends (OpenGL → Vulkan → DirectX).
 
+Projects that use the NoxEngine should NEVER know or use any of the internal technologies that NoxEngine uses (SDL, GLM, OpenGL, etc.).
+
+For instance, a project should not use SDL functions directly, nor GLEW functions. The only way to interact with the engine should be through the public API defined in `engine/include/NoxEngine/` (and its subfolders).
+
 ---
 
 ## Language & Standard

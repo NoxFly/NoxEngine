@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -73,5 +74,42 @@ namespace Nox::Math {
             return true;
         }
     };
+
+    // ── Free-function math wrappers ────────────────────────────────
+    // These forward to GLM so consumers never need to include <glm/...> directly.
+
+    /// @brief Linear interpolation between two values.
+    template<typename T, typename U>
+    [[nodiscard]] inline T mix(const T& a, const T& b, U t) { return glm::mix(a, b, t); }
+
+    /// @brief Normalize a vector.
+    template<typename T>
+    [[nodiscard]] inline T normalize(const T& v) { return glm::normalize(v); }
+
+    /// @brief Cross product of two vectors.
+    [[nodiscard]] inline Vec3 cross(const Vec3& a, const Vec3& b) { return glm::cross(a, b); }
+
+    /// @brief Dot product of two vectors.
+    template<typename T>
+    [[nodiscard]] inline float dot(const T& a, const T& b) { return glm::dot(a, b); }
+
+    /// @brief Length of a vector.
+    template<typename T>
+    [[nodiscard]] inline float length(const T& v) { return glm::length(v); }
+
+    /// @brief Convert degrees to radians.
+    [[nodiscard]] inline float radians(float deg) { return glm::radians(deg); }
+
+    /// @brief Convert radians to degrees.
+    [[nodiscard]] inline float degrees(float rad) { return glm::degrees(rad); }
+
+    /// @brief Build a translation matrix.
+    [[nodiscard]] inline Mat4 translate(const Mat4& m, const Vec3& v) { return glm::translate(m, v); }
+
+    /// @brief Build a rotation matrix.
+    [[nodiscard]] inline Mat4 rotate(const Mat4& m, float angle, const Vec3& axis) { return glm::rotate(m, angle, axis); }
+
+    /// @brief Build a scale matrix.
+    [[nodiscard]] inline Mat4 scale(const Mat4& m, const Vec3& v) { return glm::scale(m, v); }
 
 } // namespace Nox::Math
